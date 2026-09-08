@@ -1,0 +1,17 @@
+{
+  "name": "Prasaswo Tepe — DevOps & Infrastructure Engineer",
+  "short_name": "PRASASWO.TEPE",
+  "description": "Interactive DevOps Engineer Portfolio and Infrastructure Console",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060B12",
+  "theme_color": "#060B12",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

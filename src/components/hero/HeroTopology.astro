@@ -1,0 +1,407 @@
+---
+import Icon from '../common/Icon.astro';
+---
+
+<div class="hero-topology-card" data-reveal data-reveal-delay="200">
+  <div class="topology-header">
+    <div class="terminal-dots">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+    </div>
+    <div class="topology-title font-mono text-xs">
+      INFRASTRUCTURE TOPOLOGY // ACTIVE CLUSTER
+    </div>
+    <div class="topology-status font-mono text-xs">
+      <span class="status-indicator"></span> HEALTHY
+    </div>
+  </div>
+
+  <div class="topology-viewport">
+    <!-- SVG Connections overlay -->
+    <svg id="hero-topology-svg" class="topology-svg-lines" viewBox="0 0 520 380" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="hero-line-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#19D3E6" stop-opacity="0.9" />
+          <stop offset="100%" stop-color="#5C8DFF" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="hero-line-db" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#19D3E6" stop-opacity="0.85" />
+          <stop offset="100%" stop-color="#20D39B" stop-opacity="0.85" />
+        </linearGradient>
+        <linearGradient id="hero-line-cross" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#5C8DFF" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#19D3E6" stop-opacity="0.35" />
+        </linearGradient>
+      </defs>
+
+      <!-- 1. Internet to Nginx -->
+      <line id="hero-line-internet" x1="260" y1="56" x2="260" y2="98" stroke="url(#hero-line-flow)" stroke-width="2" stroke-dasharray="5 5" class="animate-flow" />
+
+      <!-- 2. Nginx to App 01 & App 02 -->
+      <path id="hero-path-app1" d="M 260 148 L 260 174 L 115 174 L 115 198" stroke="url(#hero-line-flow)" stroke-width="2" stroke-dasharray="5 5" class="animate-flow" fill="none" />
+      <path id="hero-path-app2" d="M 260 148 L 260 174 L 405 174 L 405 198" stroke="url(#hero-line-flow)" stroke-width="2" stroke-dasharray="5 5" class="animate-flow" fill="none" />
+
+      <!-- 3. App 01 to PostgreSQL HA (Aligned vertical column) -->
+      <path id="hero-path-db" d="M 115 248 L 115 298" stroke="url(#hero-line-db)" stroke-width="2" stroke-dasharray="5 5" class="animate-flow" fill="none" />
+
+      <!-- 4. App 02 to Redis Broker (Aligned vertical column) -->
+      <path id="hero-path-cache" d="M 405 248 L 405 298" stroke="url(#hero-line-flow)" stroke-width="2" stroke-dasharray="5 5" class="animate-flow" fill="none" />
+
+      <!-- 5. Cross replication / read connections -->
+      <path id="hero-path-cross-db" d="M 405 248 L 405 273 L 135 273 L 135 298" stroke="url(#hero-line-cross)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+      <path id="hero-path-cross-cache" d="M 115 248 L 115 273 L 385 273 L 385 298" stroke="url(#hero-line-cross)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+    </svg>
+
+    <!-- Node 1: Internet Traffic -->
+    <div id="hero-node-internet" class="topology-node node-ingress" style="top: 14px; left: 50%; transform: translateX(-50%);">
+      <div class="node-icon">
+        <Icon name="globe" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">INTERNET / EDGE</span>
+        <span class="node-sub">Cloudflare CDN &amp; WAF</span>
+      </div>
+    </div>
+
+    <!-- Node 2: Nginx Gateway -->
+    <div id="hero-node-nginx" class="topology-node node-proxy" style="top: 98px; left: 50%; transform: translateX(-50%);">
+      <div class="node-icon">
+        <Icon name="server" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">NGINX INGRESS</span>
+        <span class="node-sub">Reverse Proxy • TLS Auto-Renew</span>
+      </div>
+      <span class="node-status-dot"></span>
+    </div>
+
+    <!-- Node 3: App 01 -->
+    <div id="hero-node-app1" class="topology-node node-app" style="top: 198px; left: 24px;">
+      <div class="node-icon">
+        <Icon name="docker" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">APP NODE 01</span>
+        <span class="node-sub">Docker Container</span>
+      </div>
+      <span class="node-status-dot"></span>
+    </div>
+
+    <!-- Node 4: App 02 -->
+    <div id="hero-node-app2" class="topology-node node-app" style="top: 198px; right: 24px;">
+      <div class="node-icon">
+        <Icon name="docker" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">APP NODE 02</span>
+        <span class="node-sub">Docker Container</span>
+      </div>
+      <span class="node-status-dot"></span>
+    </div>
+
+    <!-- Node 5: PostgreSQL Database -->
+    <div id="hero-node-db" class="topology-node node-db" style="top: 298px; left: 24px;">
+      <div class="node-icon">
+        <Icon name="database" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">POSTGRESQL HA</span>
+        <span class="node-sub">Patroni Cluster</span>
+      </div>
+      <span class="node-status-dot"></span>
+    </div>
+
+    <!-- Node 6: Redis Cache -->
+    <div id="hero-node-cache" class="topology-node node-cache" style="top: 298px; right: 24px;">
+      <div class="node-icon">
+        <Icon name="layers" size={16} />
+      </div>
+      <div class="node-meta">
+        <span class="node-title">REDIS BROKER</span>
+        <span class="node-sub">Session &amp; Queue Cache</span>
+      </div>
+      <span class="node-status-dot"></span>
+    </div>
+  </div>
+
+  <div class="topology-footer font-mono">
+    <span>● 06 SERVICES SYNCHRONIZED</span>
+    <a href="#infrastructure" class="topology-link">EXPLORE TOPOLOGY &rarr;</a>
+  </div>
+</div>
+
+<script>
+  function updateHeroTopologyLines() {
+    const viewport = document.querySelector<HTMLElement>('.topology-viewport');
+    const svg = document.getElementById('hero-topology-svg') as SVGSVGElement | null;
+    if (!viewport || !svg) return;
+
+    const vpRect = viewport.getBoundingClientRect();
+    if (vpRect.width === 0 || vpRect.height === 0) return;
+
+    // Set SVG viewBox to match viewport actual pixels exactly
+    svg.setAttribute('viewBox', `0 0 ${vpRect.width} ${vpRect.height}`);
+
+    const getCenterTop = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left - vpRect.left + r.width / 2, y: r.top - vpRect.top };
+    };
+    const getCenterBottom = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left - vpRect.left + r.width / 2, y: r.bottom - vpRect.top };
+    };
+
+    const internet = document.getElementById('hero-node-internet');
+    const nginx = document.getElementById('hero-node-nginx');
+    const app1 = document.getElementById('hero-node-app1');
+    const app2 = document.getElementById('hero-node-app2');
+    const db = document.getElementById('hero-node-db');
+    const cache = document.getElementById('hero-node-cache');
+
+    if (!internet || !nginx || !app1 || !app2 || !db || !cache) return;
+
+    const pInternet = getCenterBottom(internet);
+    const pNginxTop = getCenterTop(nginx);
+    const pNginxBottom = getCenterBottom(nginx);
+    const pApp1Top = getCenterTop(app1);
+    const pApp2Top = getCenterTop(app2);
+    const pApp1Bottom = getCenterBottom(app1);
+    const pApp2Bottom = getCenterBottom(app2);
+    const pDbTop = getCenterTop(db);
+    const pCacheTop = getCenterTop(cache);
+
+    // 1. Internet -> Nginx
+    const lineInternet = document.getElementById('hero-line-internet');
+    if (lineInternet) {
+      lineInternet.setAttribute('x1', `${pInternet.x}`);
+      lineInternet.setAttribute('y1', `${pInternet.y}`);
+      lineInternet.setAttribute('x2', `${pNginxTop.x}`);
+      lineInternet.setAttribute('y2', `${pNginxTop.y}`);
+    }
+
+    // 2. Nginx -> App 01 and App 02
+    const midY1 = pNginxBottom.y + (pApp1Top.y - pNginxBottom.y) * 0.45;
+    const pathApp1 = document.getElementById('hero-path-app1');
+    if (pathApp1) {
+      pathApp1.setAttribute('d', `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${pApp1Top.x} ${midY1} L ${pApp1Top.x} ${pApp1Top.y}`);
+    }
+    const pathApp2 = document.getElementById('hero-path-app2');
+    if (pathApp2) {
+      pathApp2.setAttribute('d', `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${pApp2Top.x} ${midY1} L ${pApp2Top.x} ${pApp2Top.y}`);
+    }
+
+    // 3. App 01 -> DB (Primary write/read in column 1)
+    const pathDb = document.getElementById('hero-path-db');
+    if (pathDb) {
+      pathDb.setAttribute('d', `M ${pApp1Bottom.x} ${pApp1Bottom.y} L ${pDbTop.x} ${pDbTop.y}`);
+    }
+
+    // 4. App 02 -> Cache (Redis in column 2)
+    const pathCache = document.getElementById('hero-path-cache');
+    if (pathCache) {
+      pathCache.setAttribute('d', `M ${pApp2Bottom.x} ${pApp2Bottom.y} L ${pCacheTop.x} ${pCacheTop.y}`);
+    }
+
+    // 5. Cross replication / read connections
+    const pathCrossDb = document.getElementById('hero-path-cross-db');
+    if (pathCrossDb) {
+      const midY2 = pApp2Bottom.y + (pDbTop.y - pApp2Bottom.y) * 0.5;
+      pathCrossDb.setAttribute('d', `M ${pApp2Bottom.x} ${pApp2Bottom.y} L ${pApp2Bottom.x} ${midY2} L ${pDbTop.x + 24} ${midY2} L ${pDbTop.x + 24} ${pDbTop.y}`);
+    }
+
+    const pathCrossCache = document.getElementById('hero-path-cross-cache');
+    if (pathCrossCache) {
+      const midY2 = pApp1Bottom.y + (pCacheTop.y - pApp1Bottom.y) * 0.5;
+      pathCrossCache.setAttribute('d', `M ${pApp1Bottom.x} ${pApp1Bottom.y} L ${pApp1Bottom.x} ${midY2} L ${pCacheTop.x - 24} ${midY2} L ${pCacheTop.x - 24} ${pCacheTop.y}`);
+    }
+  }
+
+  // Run on load, resize, and Astro view transitions
+  window.addEventListener('load', updateHeroTopologyLines);
+  window.addEventListener('resize', updateHeroTopologyLines);
+  document.addEventListener('astro:page-load', updateHeroTopologyLines);
+
+  // ResizeObserver for reactive precision
+  const vp = document.querySelector('.topology-viewport');
+  if (vp && window.ResizeObserver) {
+    new ResizeObserver(() => updateHeroTopologyLines()).observe(vp);
+  }
+</script>
+
+<style>
+  .hero-topology-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 32px rgba(25, 211, 230, 0.08);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+  }
+
+  .topology-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #F05D6C; }
+  .dot-yellow { background: #F5B942; }
+  .dot-green { background: #20D39B; }
+
+  .topology-title {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+  }
+
+  .topology-status {
+    color: var(--color-success);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .status-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    animation: pulse-dot 2.5s infinite;
+  }
+
+  .topology-viewport {
+    position: relative;
+    height: 380px;
+    background: radial-gradient(circle at center, rgba(16, 26, 38, 0.5) 0%, rgba(6, 11, 18, 0.8) 100%);
+    overflow: hidden;
+  }
+
+  .topology-svg-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .animate-flow {
+    animation: flow-dash 1.2s linear infinite;
+  }
+
+  .topology-node {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 8px 14px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: default;
+    transition: all var(--duration-fast);
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .topology-node:hover {
+    border-color: var(--color-accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(25, 211, 230, 0.15);
+    background: var(--color-surface-2);
+  }
+
+  .node-icon {
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+  }
+
+  .node-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .node-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .node-sub {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+
+  .node-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    margin-left: 2px;
+  }
+
+  .topology-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-0);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .topology-link {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .topology-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .topology-viewport {
+      height: 420px;
+    }
+    .node-meta .node-sub {
+      display: none;
+    }
+    .topology-node {
+      padding: 6px 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-flow,
+    .status-indicator {
+      animation: none !important;
+    }
+    .topology-node:hover {
+      transform: none !important;
+    }
+  }
+</style>

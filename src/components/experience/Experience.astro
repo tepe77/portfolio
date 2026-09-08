@@ -1,0 +1,30 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import ExperienceItem from './ExperienceItem.astro';
+import { experienceData } from '../../data/experience';
+---
+
+<section id="experience" class="experience-section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="05 // CAREER PROGRESSION"
+      title="ENGINEERING TIMELINE"
+      description="The progression from software engineering and containerization into dedicated infrastructure reliability and production operations."
+    />
+
+    <div class="timeline-container">
+      {experienceData.map((item, index) => (
+        <ExperienceItem item={item} index={index} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .timeline-container {
+    max-width: 860px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+  }
+</style>

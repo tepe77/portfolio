@@ -1,0 +1,195 @@
+---
+---
+
+<div id="terminal-container" class="terminal-window" data-reveal>
+  <div class="terminal-bar">
+    <div class="terminal-controls" aria-hidden="true">
+      <span class="control-dot dot-close"></span>
+      <span class="control-dot dot-min"></span>
+      <span class="control-dot dot-max"></span>
+    </div>
+    <div class="terminal-title font-mono text-xs">
+      prasaswo@portfolio:~ (simulated-sh)
+    </div>
+    <div class="terminal-badge font-mono text-xs">
+      READ/WRITE
+    </div>
+  </div>
+
+  <div class="terminal-content font-mono">
+    <div id="terminal-output" class="terminal-output">
+      <div class="terminal-line terminal-dim"># Initializing interactive console session...</div>
+      <div class="terminal-line terminal-dim"># Type "help" to see available simulation commands.</div>
+      <div class="terminal-line terminal-command">prasaswo@portfolio:~$ cat profile.yaml</div>
+      <div class="terminal-line terminal-yaml">
+        <span class="yaml-key">name:</span> <span class="yaml-val">Prasaswo Tepe</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        <span class="yaml-key">role:</span> <span class="yaml-val">DevOps &amp; Infrastructure Engineer</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        <span class="yaml-key">specialization:</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        &nbsp;&nbsp;- <span class="yaml-val">Container Orchestration (Docker)</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        &nbsp;&nbsp;- <span class="yaml-val">Automated Delivery (GitLab CI/CD)</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        &nbsp;&nbsp;- <span class="yaml-val">Database HA Clustering (Patroni + etcd)</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        &nbsp;&nbsp;- <span class="yaml-val">Observability (Prometheus + Grafana)</span>
+      </div>
+      <div class="terminal-line terminal-yaml">
+        <span class="yaml-key">philosophy:</span> <span class="yaml-string">"Automate the repeatable. Observe the critical. Expect failure."</span>
+      </div>
+      <div class="terminal-line terminal-success">● System status: All nodes operational. Ready for input.</div>
+    </div>
+
+    <!-- Active Input Line -->
+    <div class="terminal-input-row">
+      <label for="terminal-input" class="terminal-prompt">prasaswo@portfolio:~$</label>
+      <input
+        type="text"
+        id="terminal-input"
+        class="terminal-input font-mono"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Terminal command input. Type help for commands."
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  .terminal-window {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md), 0 0 32px rgba(25, 211, 230, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 420px;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-1);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .terminal-controls {
+    display: flex;
+    gap: 6px;
+  }
+
+  .control-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-close { background: #F05D6C; }
+  .dot-min { background: #F5B942; }
+  .dot-max { background: #20D39B; }
+
+  .terminal-title {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .terminal-badge {
+    color: var(--color-accent-primary);
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    background: rgba(25, 211, 230, 0.1);
+    border-radius: var(--radius-sm);
+  }
+
+  .terminal-content {
+    padding: var(--space-4) var(--space-5);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    overflow-y: auto;
+    cursor: text;
+  }
+
+  .terminal-output {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: var(--space-3);
+  }
+
+  :global(.terminal-line) {
+    word-break: break-word;
+  }
+
+  :global(.terminal-dim) {
+    color: var(--color-text-muted);
+  }
+
+  :global(.terminal-command) {
+    color: var(--color-text-primary);
+    font-weight: 700;
+  }
+
+  :global(.terminal-success) {
+    color: var(--color-success);
+    margin-top: var(--space-1);
+  }
+
+  :global(.terminal-error) {
+    color: var(--color-danger);
+  }
+
+  :global(.terminal-response) {
+    color: var(--color-text-secondary);
+  }
+
+  .yaml-key {
+    color: var(--color-accent-primary);
+    font-weight: 600;
+  }
+
+  .yaml-val {
+    color: var(--color-text-primary);
+  }
+
+  .yaml-string {
+    color: #5ce7f5;
+  }
+
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: auto;
+  }
+
+  .terminal-prompt {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    caret-color: var(--color-accent-primary);
+  }
+</style>

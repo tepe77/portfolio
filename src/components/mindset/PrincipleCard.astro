@@ -1,0 +1,77 @@
+---
+export interface Props {
+  num: string;
+  title: string;
+  statement: string;
+  explanation: string;
+  delay?: number;
+}
+
+const { num, title, statement, explanation, delay = 0 } = Astro.props;
+---
+
+<div class="principle-card" data-reveal data-reveal-delay={delay}>
+  <div class="principle-num font-mono">{num}</div>
+  <h3 class="principle-title font-mono">{title}</h3>
+  <div class="principle-statement">{statement}</div>
+  <p class="principle-explanation">{explanation}</p>
+</div>
+
+<style>
+  .principle-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-6), 3vw, var(--space-8));
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+
+  .principle-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-border-hover);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    background: var(--color-surface-2);
+  }
+
+  .principle-num {
+    font-size: var(--text-3xl);
+    font-weight: 900;
+    color: var(--color-accent-primary);
+    opacity: 0.35;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .principle-title {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+  }
+
+  .principle-statement {
+    font-size: var(--text-md);
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    line-height: 1.4;
+    margin-bottom: var(--space-3);
+  }
+
+  .principle-explanation {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .principle-card:hover {
+      transform: none !important;
+    }
+  }
+</style>

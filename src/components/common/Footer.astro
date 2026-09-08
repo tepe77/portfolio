@@ -1,0 +1,92 @@
+---
+import StatusBadge from './StatusBadge.astro';
+---
+
+<footer class="site-footer">
+  <div class="container footer-container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-title font-mono">
+          <span class="brand-bracket">&lt;&gt;</span> PRASASWO.TEPE
+        </div>
+        <p class="brand-sub">DevOps Engineer &amp; Infrastructure Engineer</p>
+      </div>
+
+      <div class="footer-status-wrap">
+        <StatusBadge status="operational" label="STATUS: OPERATIONAL" size="sm" />
+      </div>
+    </div>
+
+    <div class="footer-divider" aria-hidden="true"></div>
+
+    <div class="footer-bottom">
+      <div class="footer-creds font-mono text-xs text-muted">
+        <span>BUILD &bull; AUTOMATE &bull; OBSERVE &bull; SCALE</span>
+      </div>
+
+      <div class="footer-copy font-mono text-xs text-muted">
+        &copy; 2026 Prasaswo Tepe. Built with Astro &bull; Deployed at the Edge.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-bg-0);
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-8);
+    position: relative;
+    z-index: var(--z-content);
+  }
+
+  .footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .brand-title {
+    font-size: var(--text-md);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: 0.05em;
+  }
+
+  .brand-bracket {
+    color: var(--color-accent-primary);
+  }
+
+  .brand-sub {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+  }
+
+  .footer-divider {
+    height: 1px;
+    background: rgba(27, 48, 66, 0.4);
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/common/Button.astro';
+import Icon from '../components/common/Icon.astro';
+---
+
+<BaseLayout
+  title="404 — Route Not Found // PRASASWO.TEPE"
+  description="The requested resource or cluster route could not be found."
+>
+  <div class="error-page-container">
+    <div class="container">
+      <div class="error-card font-mono" data-reveal>
+        <div class="error-terminal-bar">
+          <span class="error-dot dot-red"></span>
+          <span class="error-dot dot-yellow"></span>
+          <span class="error-dot dot-green"></span>
+          <span class="error-bar-title text-xs text-muted">ERR_ROUTING_FAILURE</span>
+        </div>
+
+        <div class="error-terminal-body">
+          <div class="error-code text-cyan">404</div>
+          <h1 class="error-heading">ROUTE NOT FOUND</h1>
+          <p class="error-text">
+            The requested resource, ingress endpoint, or documentation path does not exist on this cluster.
+          </p>
+
+          <div class="error-log">
+            <p>$ locate requested-resource</p>
+            <p class="text-danger">&gt; ERROR 404: Ingress target returned HTTP/2 404 Not Found</p>
+            <p class="text-muted">&gt; Fallback strategy: Reroute traffic to cluster root.</p>
+          </div>
+
+          <div class="error-action">
+            <Button href="/" variant="primary" size="md">
+              <Icon name="arrow-right" size={16} />
+              <span>RETURN TO SYSTEM ROOT</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .error-page-container {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: var(--space-12);
+  }
+
+  .error-card {
+    max-width: 600px;
+    margin-inline: auto;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md), 0 0 32px rgba(240, 93, 108, 0.1);
+    overflow: hidden;
+  }
+
+  .error-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .error-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #F05D6C; }
+  .dot-yellow { background: #F5B942; }
+  .dot-green { background: #20D39B; }
+
+  .error-bar-title {
+    margin-left: auto;
+  }
+
+  .error-terminal-body {
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .error-code {
+    font-size: clamp(4rem, 10vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.05em;
+  }
+
+  .error-heading {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .error-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    max-width: 440px;
+    margin-bottom: var(--space-6);
+    line-height: 1.6;
+  }
+
+  .error-log {
+    width: 100%;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    text-align: left;
+    font-size: var(--text-xs);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: var(--space-6);
+  }
+
+  .error-log p {
+    margin-bottom: 0;
+  }
+
+  .text-danger {
+    color: var(--color-danger);
+  }
+</style>

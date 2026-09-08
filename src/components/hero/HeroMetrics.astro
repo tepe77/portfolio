@@ -1,0 +1,42 @@
+---
+import MetricCard from '../common/MetricCard.astro';
+import { profileData } from '../../data/profile';
+
+const iconMap: Record<string, string> = {
+  cpu: 'cpu',
+  memory: 'layers',
+  uptime: 'check-circle',
+  deployments: 'zap'
+};
+---
+
+<div class="hero-metrics-grid">
+  {profileData.metrics.map((m, index) => (
+    <MetricCard
+      label={m.label}
+      value={m.value}
+      numericTarget={m.numericTarget}
+      unit={m.unit}
+      description={m.description}
+      sparkline={m.sparkline}
+      icon={iconMap[m.id] || 'activity'}
+      delay={index * 100}
+    />
+  ))}
+</div>
+
+<style>
+  .hero-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+
+  @media (max-width: 640px) {
+    .hero-metrics-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+  }
+</style>

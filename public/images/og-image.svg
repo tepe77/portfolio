@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <rect width="1200" height="630" fill="#060B12"/>
+  <defs>
+    <radialGradient id="og-glow" cx="60%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#19D3E6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#060B12" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1B3042" stroke-width="1" stroke-opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="800" cy="280" r="380" fill="url(#og-glow)"/>
+
+  <!-- Left Content -->
+  <rect x="80" y="80" width="180" height="32" rx="16" fill="#101A26" stroke="#1B3042"/>
+  <circle cx="98" cy="96" r="5" fill="#20D39B"/>
+  <text x="112" y="101" fill="#20D39B" font-family="monospace" font-size="13" font-weight="bold">SYSTEM OPERATIONAL</text>
+
+  <text x="80" y="190" fill="#9AA9B8" font-family="monospace" font-size="16" letter-spacing="3">HELLO, I'M</text>
+  <text x="80" y="260" fill="#E6EDF3" font-family="sans-serif" font-size="64" font-weight="900" letter-spacing="-1">PRASASWO TEPE</text>
+  <text x="80" y="320" fill="#19D3E6" font-family="sans-serif" font-size="34" font-weight="700">DEVOPS &amp; INFRASTRUCTURE ENGINEER</text>
+
+  <text x="80" y="390" fill="#9AA9B8" font-family="sans-serif" font-size="20">Building reliable systems, automating delivery, and designing for failure.</text>
+  <text x="80" y="425" fill="#647585" font-family="monospace" font-size="16">Docker • PostgreSQL HA • GitLab CI/CD • Prometheus • Linux</text>
+
+  <!-- Topology snippet graphic on the right -->
+  <g transform="translate(740, 110)">
+    <rect x="0" y="0" width="380" height="410" rx="14" fill="#0D1622" stroke="#1B3042" stroke-width="1.5"/>
+    <text x="24" y="36" fill="#647585" font-family="monospace" font-size="12">INFRASTRUCTURE ARCHITECTURE</text>
+
+    <!-- Node 1: CI/CD -->
+    <rect x="24" y="60" width="332" height="64" rx="8" fill="#101A26" stroke="#1B3042"/>
+    <circle cx="48" cy="92" r="6" fill="#19D3E6"/>
+    <text x="68" y="88" fill="#E6EDF3" font-family="sans-serif" font-size="15" font-weight="bold">GitLab CI/CD Pipeline</text>
+    <text x="68" y="108" fill="#647585" font-family="monospace" font-size="12">Automated Build &amp; Registry</text>
+
+    <!-- Connection -->
+    <line x1="190" y1="124" x2="190" y2="154" stroke="#19D3E6" stroke-width="2" stroke-dasharray="4 4"/>
+
+    <!-- Node 2: App Cluster -->
+    <rect x="24" y="154" width="332" height="64" rx="8" fill="#101A26" stroke="#126B83"/>
+    <circle cx="48" cy="186" r="6" fill="#20D39B"/>
+    <text x="68" y="182" fill="#E6EDF3" font-family="sans-serif" font-size="15" font-weight="bold">Containerized Application Cluster</text>
+    <text x="68" y="202" fill="#647585" font-family="monospace" font-size="12">Docker Swarm • Nginx Ingress</text>
+
+    <!-- Connection -->
+    <line x1="190" y1="218" x2="190" y2="248" stroke="#19D3E6" stroke-width="2" stroke-dasharray="4 4"/>
+
+    <!-- Node 3: PostgreSQL HA -->
+    <rect x="24" y="248" width="332" height="64" rx="8" fill="#101A26" stroke="#1B3042"/>
+    <circle cx="48" cy="280" r="6" fill="#5C8DFF"/>
+    <text x="68" y="276" fill="#E6EDF3" font-family="sans-serif" font-size="15" font-weight="bold">PostgreSQL High Availability</text>
+    <text x="68" y="296" fill="#647585" font-family="monospace" font-size="12">Patroni • etcd • PgBouncer</text>
+
+    <!-- Node 4: Monitoring -->
+    <rect x="24" y="326" width="332" height="60" rx="8" fill="#142130" stroke="#1B3042"/>
+    <circle cx="48" cy="356" r="6" fill="#F5B942"/>
+    <text x="68" y="352" fill="#E6EDF3" font-family="sans-serif" font-size="15" font-weight="bold">Observability &amp; Telemetry</text>
+    <text x="68" y="372" fill="#647585" font-family="monospace" font-size="12">Prometheus • Grafana • Alerts</text>
+  </g>
+</svg>

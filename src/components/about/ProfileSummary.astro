@@ -1,0 +1,155 @@
+---
+import Icon from '../common/Icon.astro';
+import { profileData } from '../../data/profile';
+
+const capabilities = [
+  {
+    title: "Containerization & Orchestration",
+    desc: "Docker, Docker Compose, microservice boundary isolation, and repeatable environment parity."
+  },
+  {
+    title: "Continuous Delivery & Automation",
+    desc: "GitLab CI/CD automated runner orchestration, vulnerability gate audits, and blue/green rollbacks."
+  },
+  {
+    title: "Database High Availability",
+    desc: "3-node PostgreSQL clusters managed by Patroni with etcd Raft consensus and PgBouncer pooling."
+  },
+  {
+    title: "Telemetry & Full Observability",
+    desc: "Prometheus scraping, custom Grafana operational dashboards, and synthetic blackbox probes."
+  }
+];
+---
+
+<div class="profile-summary-card" data-reveal data-reveal-delay="150">
+  <div class="summary-header">
+    <span class="summary-tag font-mono text-xs">SYS_ADMIN // IDENTITY</span>
+    <h3 class="summary-title">{profileData.name}</h3>
+    <p class="summary-role text-cyan font-mono text-sm">{profileData.role}</p>
+  </div>
+
+  <p class="summary-bio">
+    {profileData.summary}
+  </p>
+
+  <div class="capabilities-grid">
+    {capabilities.map((cap) => (
+      <div class="capability-item">
+        <div class="cap-icon-wrap" aria-hidden="true">
+          <Icon name="check-circle" size={16} />
+        </div>
+        <div class="cap-content">
+          <h4 class="cap-title">{cap.title}</h4>
+          <p class="cap-desc">{cap.desc}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="summary-philosophy">
+    <div class="philosophy-icon" aria-hidden="true">
+      <Icon name="terminal" size={18} />
+    </div>
+    <div class="philosophy-text font-mono text-xs">
+      "Systems are only reliable when their failure modes are anticipated, automated, and observable."
+    </div>
+  </div>
+</div>
+
+<style>
+  .profile-summary-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-6), 4vw, var(--space-8));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .summary-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .summary-tag {
+    color: var(--color-accent-primary);
+    letter-spacing: 0.1em;
+  }
+
+  .summary-title {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+  }
+
+  .summary-role {
+    letter-spacing: 0.04em;
+  }
+
+  .summary-bio {
+    font-size: var(--text-md);
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+  }
+
+  .capabilities-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .capability-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .cap-icon-wrap {
+    color: var(--color-success);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .cap-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cap-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+  }
+
+  .cap-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .summary-philosophy {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-0);
+    border-left: 3px solid var(--color-accent-primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .philosophy-icon {
+    color: var(--color-accent-primary);
+    flex-shrink: 0;
+  }
+
+  .philosophy-text {
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+</style>

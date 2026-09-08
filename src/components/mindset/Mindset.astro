@@ -1,0 +1,85 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import PrincipleCard from './PrincipleCard.astro';
+
+const principles = [
+  {
+    num: "01",
+    title: "AUTOMATE",
+    statement: "If a task happens repeatedly, it should be automated.",
+    explanation: "Manual actions introduce variance and human error into production. Automation turns infrastructure knowledge into version-controlled, auditable code."
+  },
+  {
+    num: "02",
+    title: "OBSERVE",
+    statement: "You cannot fix what you cannot measure.",
+    explanation: "Reliability requires deep observability into saturation, latencies, and anomalies. Telemetry must be active before incidents occur."
+  },
+  {
+    num: "03",
+    title: "DESIGN FOR FAILURE",
+    statement: "Assume every component will fail at the worst time.",
+    explanation: "Nodes crash, disks corrupt, networks partition. High availability is achieved by architecting automated consensus, leader elections, and recovery loops."
+  },
+  {
+    num: "04",
+    title: "SECURITY BY DEFAULT",
+    statement: "Security belongs in the pipeline, not as an afterthought.",
+    explanation: "Vulnerability gating, secret segregation, minimal container base images, and least-privilege firewalls must be integral to every deployment."
+  },
+  {
+    num: "05",
+    title: "KEEP IT SIMPLE",
+    statement: "Complexity is an operational tax. Prefer boring technology.",
+    explanation: "Proven, mature tools with predictable failure characteristics will always outperform bloated frameworks when troubleshooting outages at 3 AM."
+  }
+];
+---
+
+<section id="mindset" class="mindset-section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="06 // OPERATIONAL CULTURE"
+      title="ENGINEERING MINDSET"
+      description="The foundational axioms that guide architectural decisions, deployment pipelines, and disaster recovery strategies."
+    />
+
+    <div class="principles-grid">
+      {principles.map((p, index) => (
+        <PrincipleCard
+          num={p.num}
+          title={p.title}
+          statement={p.statement}
+          explanation={p.explanation}
+          delay={index * 100}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .principles-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .principles-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .principles-grid > :nth-child(4) {
+      grid-column: span 1;
+    }
+    .principles-grid > :nth-child(5) {
+      grid-column: span 2;
+    }
+  }
+</style>

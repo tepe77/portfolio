@@ -1,0 +1,111 @@
+---
+import Icon from '../common/Icon.astro';
+import { profileData } from '../../data/profile';
+
+const socialItems = [
+  { name: "Email", label: profileData.email, href: `mailto:${profileData.email}`, icon: "external-link" },
+  { name: "GitHub", label: "github.com/tepe77", href: profileData.github, icon: "git" },
+  { name: "LinkedIn", label: "linkedin.com/in/prasaswo-tepe-980a91b6", href: profileData.linkedin, icon: "globe" },
+  { name: "Resume", label: "prasaswo-tepe-resume.pdf", href: profileData.resumeUrl, icon: "download", download: true }
+];
+---
+
+<div class="social-links-grid">
+  {socialItems.map((item) => (
+    <a
+      href={item.href}
+      target={item.download ? undefined : "_blank"}
+      rel={item.download ? undefined : "noopener noreferrer"}
+      class="social-card"
+      download={item.download ? "prasaswo-tepe-resume.pdf" : undefined}
+    >
+      <div class="social-icon-wrap" aria-hidden="true">
+        <Icon name={item.icon} size={20} />
+      </div>
+      <div class="social-text">
+        <span class="social-name font-mono text-xs">{item.name}</span>
+        <span class="social-label">{item.label}</span>
+      </div>
+      <Icon name="arrow-up-right" size={16} class="social-arrow" />
+    </a>
+  ))}
+</div>
+
+<style>
+  .social-links-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .social-links-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .social-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    text-decoration: none;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+
+  .social-card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-3px);
+    background: var(--color-surface-2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .social-icon-wrap {
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .social-text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .social-name {
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+
+  .social-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    word-break: break-all;
+  }
+
+  .social-arrow {
+    color: var(--color-text-muted);
+    transition: transform var(--duration-fast), color var(--duration-fast);
+  }
+
+  .social-card:hover .social-arrow {
+    transform: translate(2px, -2px);
+    color: var(--color-accent-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .social-card:hover {
+      transform: none !important;
+    }
+  }
+</style>

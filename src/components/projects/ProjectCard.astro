@@ -1,0 +1,189 @@
+---
+import Icon from '../common/Icon.astro';
+import StatusBadge from '../common/StatusBadge.astro';
+import type { Project } from '../../data/projects';
+
+export interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+---
+
+<article class="project-card" data-reveal data-reveal-delay={index * 100}>
+  <div class="card-header">
+    <span class="project-category font-mono text-xs">{project.category}</span>
+    <StatusBadge status={project.status === 'live' ? 'healthy' : 'operational'} label={project.status.toUpperCase()} size="sm" />
+  </div>
+
+  <h3 class="project-title">{project.title}</h3>
+  <p class="project-desc">{project.description}</p>
+
+  <!-- Key Technologies -->
+  <div class="project-tech-tags">
+    {project.technologies.slice(0, 4).map((tech) => (
+      <span class="tech-tag font-mono">{tech}</span>
+    ))}
+    {project.technologies.length > 4 && (
+      <span class="tech-tag-more font-mono">+{project.technologies.length - 4}</span>
+    )}
+  </div>
+
+  {project.metrics && (
+    <div class="project-quick-metrics">
+      {project.metrics.map((m) => (
+        <div class="quick-metric">
+          <span class="qm-val font-mono">{m.value}</span>
+          <span class="qm-lbl">{m.label}</span>
+        </div>
+      ))}
+    </div>
+  )}
+
+  <div class="card-footer">
+    <button
+      type="button"
+      class="project-cta-btn font-mono"
+      data-open-project={project.id}
+      aria-label={`View full case study for ${project.title}`}
+    >
+      <span>VIEW CASE STUDY</span>
+      <Icon name="arrow-up-right" size={16} class="cta-arrow" />
+    </button>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all var(--duration-fast) var(--ease-standard);
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--color-border-hover);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(25, 211, 230, 0.12);
+    background: var(--color-surface-2);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+  }
+
+  .project-category {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .project-title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1.25;
+    margin-bottom: var(--space-3);
+  }
+
+  .project-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    flex-grow: 1;
+  }
+
+  .project-tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .tech-tag {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .tech-tag-more {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    color: var(--color-text-muted);
+  }
+
+  .project-quick-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-4);
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .quick-metric {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .qm-val {
+    font-size: var(--text-md);
+    font-weight: 700;
+    color: var(--color-accent-primary);
+  }
+
+  .qm-lbl {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+
+  .card-footer {
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(27, 48, 66, 0.5);
+  }
+
+  .project-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: transparent;
+    border: none;
+    color: var(--color-accent-primary);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    transition: color var(--duration-fast);
+  }
+
+  .cta-arrow {
+    transition: transform var(--duration-fast);
+  }
+
+  .project-card:hover .cta-arrow {
+    transform: translate(3px, -3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card:hover {
+      transform: none !important;
+    }
+    .project-card:hover .cta-arrow {
+      transform: none !important;
+    }
+  }
+</style>

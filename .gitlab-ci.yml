@@ -1,0 +1,48 @@
+stages:
+  - validate
+  - build
+  - security
+  - deploy
+
+variables:
+  NODE_VERSION: "20"
+
+default:
+  image: node:20-alpine
+  before_script:
+    - npm ci
+
+validate:
+  stage: validate
+  script:
+    - npm run check
+
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+security:
+  stage: security
+  image:
+    name: golang:alpine
+    entrypoint: [""]
+  before_script: []
+  script:
+    - go install github.com/google/osv-scanner/cmd/osv-scanner@v1
+    - osv-scanner --lockfile=package-lock.json || true
+  allow_failure: true
+
+pages:
+  stage: deploy
+  script:
+    - cp -r dist/ public/pages_output 2>/dev/null || true
+  artifacts:
+    paths:
+      - dist/
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

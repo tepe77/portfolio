@@ -1,0 +1,168 @@
+---
+import type { Experience } from '../../data/experience';
+
+export interface Props {
+  item: Experience;
+  index: number;
+}
+
+const { item, index } = Astro.props;
+---
+
+<div class="experience-milestone" data-reveal data-reveal-delay={index * 150}>
+  <div class="milestone-marker">
+    <div class="marker-dot"></div>
+    <div class="marker-line" aria-hidden="true"></div>
+  </div>
+
+  <div class="milestone-card">
+    <div class="milestone-header">
+      <span class="milestone-period font-mono text-xs">{item.period}</span>
+      <span class="milestone-cat font-mono text-xs text-cyan">{item.category}</span>
+    </div>
+
+    <h3 class="milestone-role">{item.role}</h3>
+    <p class="milestone-desc">{item.description}</p>
+
+    <div class="milestone-responsibilities">
+      <span class="resp-label font-mono text-xs">KEY ACHIEVEMENTS &amp; RESPONSIBILITIES</span>
+      <ul class="resp-list">
+        {item.responsibilities.map((resp) => (
+          <li>{resp}</li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="milestone-tech-list">
+      {item.technologies.map((t) => (
+        <span class="tech-tag font-mono">{t}</span>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .experience-milestone {
+    display: flex;
+    gap: var(--space-6);
+    position: relative;
+  }
+
+  .milestone-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .marker-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-bg-0);
+    border: 3px solid var(--color-accent-primary);
+    box-shadow: 0 0 12px rgba(25, 211, 230, 0.4);
+    margin-top: var(--space-4);
+    z-index: 2;
+  }
+
+  .marker-line {
+    width: 2px;
+    flex-grow: 1;
+    background: linear-gradient(to bottom, var(--color-accent-primary), var(--color-border));
+    margin-block: var(--space-2);
+  }
+
+  .milestone-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    flex: 1;
+    margin-bottom: var(--space-6);
+    transition: border-color var(--duration-fast), transform var(--duration-fast);
+  }
+
+  .milestone-card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateX(4px);
+  }
+
+  .milestone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .milestone-period {
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+
+  .milestone-role {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .milestone-desc {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+
+  .milestone-responsibilities {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    background: var(--color-bg-0);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .resp-label {
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+
+  .resp-list {
+    list-style-position: inside;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .resp-list li {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .milestone-tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tech-tag {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .milestone-card:hover {
+      transform: none !important;
+    }
+  }
+</style>

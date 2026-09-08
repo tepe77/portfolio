@@ -1,0 +1,268 @@
+---
+import Icon from '../common/Icon.astro';
+
+export interface Props {
+  id: string;
+  name: string;
+  subtitle: string;
+  icon: string;
+  status: "healthy" | "operational" | "active" | "standby";
+  connections: string[];
+  port?: string;
+  badge?: string;
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  subtitle,
+  icon,
+  status,
+  connections,
+  port,
+  badge,
+  top,
+  left,
+  right,
+  bottom,
+  class: className = ""
+} = Astro.props;
+
+const style = [
+  top ? `top: ${top};` : '',
+  left ? `left: ${left};` : '',
+  right ? `right: ${right};` : '',
+  bottom ? `bottom: ${bottom};` : ''
+].filter(Boolean).join(' ');
+---
+
+<div
+  class={`infra-node ${className}`}
+  data-node-id={id}
+  data-connections={connections.join(',')}
+  style={style}
+  tabindex="0"
+  role="button"
+  aria-haspopup="dialog"
+  aria-label={`Inspect ${name} (${status})`}
+>
+  <div class="node-header">
+    <div class="node-icon-wrap" aria-hidden="true">
+      <Icon name={icon} size={18} />
+    </div>
+
+    <div class="node-badges">
+      {badge && <span class={`node-role-badge badge-${badge.toLowerCase()}`}>{badge}</span>}
+      <span class={`node-status-dot status-${status}`} aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <div class="node-content">
+    <div class="node-name font-mono">{name}</div>
+    <div class="node-subtitle">{subtitle}</div>
+  </div>
+
+  {port && (
+    <div class="node-footer font-mono">
+      <span class="node-port">{port}</span>
+      <span class="node-hover-cta">INSPECT &rarr;</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .infra-node {
+    position: absolute;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    width: 210px;
+    cursor: pointer;
+    z-index: 5;
+    transition: all var(--duration-fast) var(--ease-standard);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    outline: none;
+    user-select: none;
+  }
+
+  .infra-node:hover,
+  .infra-node:focus-visible {
+    border-color: var(--color-accent-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 24px rgba(25, 211, 230, 0.25);
+    background: var(--color-surface-2);
+  }
+
+  .infra-node:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 3px;
+  }
+
+  :global(.infra-node.node-active) {
+    border-color: var(--color-accent-primary) !important;
+    background: var(--color-surface-2) !important;
+    box-shadow: 0 0 28px rgba(25, 211, 230, 0.35) !important;
+  }
+
+  :global(.infra-node.node-dimmed) {
+    opacity: 0.22 !important;
+    filter: grayscale(60%);
+  }
+
+  :global(.infra-node.node-error-flash) {
+    border-color: var(--color-danger) !important;
+    box-shadow: 0 0 32px rgba(240, 93, 108, 0.8) !important;
+    animation: pulse-dot-danger 1s infinite;
+  }
+
+  :global(.infra-node.node-promoted-flash) {
+    border-color: var(--color-success) !important;
+    box-shadow: 0 0 32px rgba(32, 211, 155, 0.8) !important;
+    animation: pulse-dot 1s infinite;
+  }
+
+  :global(.infra-node.sonar-pulse) {
+    animation: pulse-dot 0.8s ease-out;
+  }
+
+  .node-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+
+  .node-icon-wrap {
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: rgba(25, 211, 230, 0.08);
+  }
+
+  .node-badges {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .node-role-badge {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-leader,
+  .badge-master {
+    background: rgba(32, 211, 155, 0.15);
+    color: var(--color-success);
+    border: 1px solid rgba(32, 211, 155, 0.3);
+  }
+
+  .badge-standby,
+  .badge-sync,
+  .badge-async {
+    background: rgba(92, 141, 255, 0.15);
+    color: var(--color-accent-secondary);
+    border: 1px solid rgba(92, 141, 255, 0.3);
+  }
+
+  .badge-dcs {
+    background: rgba(245, 185, 66, 0.15);
+    color: var(--color-warning);
+    border: 1px solid rgba(245, 185, 66, 0.3);
+  }
+
+  .node-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-healthy,
+  .status-operational {
+    background: var(--color-success);
+    box-shadow: 0 0 6px rgba(32, 211, 155, 0.7);
+  }
+
+  .status-active {
+    background: var(--color-accent-primary);
+    box-shadow: 0 0 6px rgba(25, 211, 230, 0.7);
+  }
+
+  .status-standby {
+    background: var(--color-accent-secondary);
+    box-shadow: 0 0 6px rgba(92, 141, 255, 0.7);
+  }
+
+  .node-content {
+    margin-bottom: var(--space-2);
+  }
+
+  .node-name {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    margin-bottom: 2px;
+  }
+
+  .node-subtitle {
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+  }
+
+  .node-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(27, 48, 66, 0.6);
+  }
+
+  .node-port {
+    color: var(--color-text-muted);
+  }
+
+  .node-hover-cta {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    opacity: 0.6;
+    transition: opacity var(--duration-fast);
+  }
+
+  .infra-node:hover .node-hover-cta {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .infra-node {
+      position: static !important;
+      transform: none !important;
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .infra-node:hover,
+    .infra-node:focus-visible {
+      transform: none !important;
+    }
+  }
+</style>

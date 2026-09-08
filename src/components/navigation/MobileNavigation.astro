@@ -1,0 +1,151 @@
+---
+import Icon from '../common/Icon.astro';
+import StatusBadge from '../common/StatusBadge.astro';
+
+const navItems = [
+  { label: "ABOUT", href: "#about" },
+  { label: "INFRASTRUCTURE", href: "#infrastructure" },
+  { label: "PROJECTS", href: "#projects" },
+  { label: "TECH STACK", href: "#stack" },
+  { label: "EXPERIENCE", href: "#experience" },
+  { label: "MINDSET", href: "#mindset" },
+  { label: "CONTACT", href: "#contact" },
+];
+---
+
+<div id="mobile-drawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation" aria-hidden="true">
+  <div class="mobile-drawer-header">
+    <a href="#" class="mobile-brand font-mono">
+      <span class="brand-bracket">&lt;&gt;</span> PRASASWO.TEPE
+    </a>
+    <button type="button" id="mobile-drawer-close" class="mobile-close-btn" aria-label="Close navigation menu">
+      <Icon name="close" size={24} />
+    </button>
+  </div>
+
+  <nav class="mobile-nav-list">
+    {navItems.map((item, index) => (
+      <a href={item.href} class="mobile-nav-item">
+        <span class="mobile-nav-index font-mono">0{index + 1}</span>
+        <span class="mobile-nav-label">{item.label}</span>
+        <Icon name="arrow-right" size={18} class="mobile-nav-arrow" />
+      </a>
+    ))}
+  </nav>
+
+  <div class="mobile-drawer-footer">
+    <StatusBadge status="operational" label="SYSTEMS OPERATIONAL" size="sm" />
+    <div class="mobile-footer-meta font-mono text-xs">
+      DevOps &amp; Infrastructure Engineer
+    </div>
+  </div>
+</div>
+
+<style>
+  .mobile-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    background: rgba(6, 11, 18, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-6);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+    transition: transform var(--duration-normal) var(--ease-standard), opacity var(--duration-fast);
+  }
+
+  .mobile-drawer.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-brand {
+    font-size: var(--text-md);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .brand-bracket {
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-close-btn:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-block: auto;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-2);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.4);
+    transition: color var(--duration-fast), padding-left var(--duration-fast);
+  }
+
+  .mobile-nav-item:hover {
+    color: var(--color-accent-primary);
+    padding-left: var(--space-3);
+  }
+
+  .mobile-nav-index {
+    font-size: var(--text-xs);
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-nav-arrow {
+    margin-left: auto;
+    opacity: 0.4;
+  }
+
+  .mobile-nav-item:hover .mobile-nav-arrow {
+    opacity: 1;
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-drawer-footer {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .mobile-footer-meta {
+    color: var(--color-text-muted);
+  }
+</style>

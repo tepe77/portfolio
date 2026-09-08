@@ -1,0 +1,132 @@
+---
+import Navbar from '../components/navigation/Navbar.astro';
+import Footer from '../components/common/Footer.astro';
+import CommandPalette from '../components/common/CommandPalette.astro';
+import '../styles/tokens.css';
+import '../styles/globals.css';
+import '../styles/utilities.css';
+import '../styles/animations.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = "Prasaswo Tepe — DevOps & Infrastructure Engineer",
+  description = "DevOps Engineer specializing in container orchestration, PostgreSQL high-availability clustering with Patroni, automated GitLab CI/CD delivery pipelines, and Linux telemetry.",
+  ogImage = "/images/og-image.svg"
+} = Astro.props;
+
+const siteUrl = "https://prasaswo.dev";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#person`,
+      "name": "Prasaswo Tepe",
+      "jobTitle": "DevOps & Infrastructure Engineer",
+      "url": siteUrl,
+      "sameAs": [
+        "https://github.com/tepe77",
+        "https://www.linkedin.com/in/prasaswo-tepe-980a91b6/"
+      ],
+      "knowsAbout": [
+        "DevOps",
+        "Infrastructure as Code",
+        "Docker",
+        "PostgreSQL High Availability",
+        "Patroni",
+        "GitLab CI/CD",
+        "Prometheus",
+        "Linux Systems"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      "url": siteUrl,
+      "name": "Prasaswo Tepe — DevOps Portfolio",
+      "description": description,
+      "publisher": { "@id": `${siteUrl}/#person` }
+    }
+  ]
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#060B12" />
+
+    <!-- Self-hosted font preloading or system fallbacks -->
+    <link rel="dns-prefetch" href="https://prasaswo.dev" />
+
+    <!-- JSON-LD Structured Data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body>
+    <!-- Skip to content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <Navbar />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Global Command Palette -->
+    <CommandPalette />
+
+    <!-- Progressive Enhancement Interactive Controller -->
+    <script>
+      import { initNavigation } from '../scripts/navigation';
+      import { initTerminal } from '../scripts/terminal';
+      import { initTopology } from '../scripts/topology';
+      import { initCommandPalette } from '../scripts/command-palette';
+      import { initScrollReveal } from '../scripts/scroll-reveal';
+      import { initProjectModal, initTechDrawer } from '../scripts/modal';
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initNavigation();
+        initTerminal();
+        initTopology();
+        initCommandPalette();
+        initScrollReveal();
+        initProjectModal();
+        initTechDrawer();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+---
+import Icon from '../common/Icon.astro';
+import type { Technology } from '../../data/stack';
+
+export interface Props {
+  tech: Technology;
+}
+
+const { tech } = Astro.props;
+
+const levelColors: Record<string, string> = {
+  primary: 'var(--color-accent-primary)',
+  advanced: 'var(--color-accent-secondary)',
+  working: 'var(--color-success)'
+};
+
+const categorySlug = tech.category.toLowerCase().replace(/[^a-z0-9]/g, '-');
+---
+
+<div
+  class="tech-card"
+  data-open-tech={tech.id}
+  data-category={categorySlug}
+  tabindex="0"
+  role="button"
+  aria-label={`View details for ${tech.name} (${tech.category})`}
+>
+  <div class="tech-header">
+    <div class="tech-icon-wrap" aria-hidden="true">
+      <Icon name={tech.icon} size={20} />
+    </div>
+    <span class="tech-level font-mono" style={`color: ${levelColors[tech.level] || 'var(--color-text-muted)'}`}>
+      <span class="level-dot" style={`background: ${levelColors[tech.level] || 'var(--color-text-muted)'}`}></span>
+      {tech.level.toUpperCase()}
+    </span>
+  </div>
+
+  <div class="tech-body">
+    <h4 class="tech-name">{tech.name}</h4>
+    <span class="tech-cat font-mono text-xs">{tech.category}</span>
+  </div>
+
+  <div class="tech-card-footer font-mono">
+    <span class="tech-inspect">INSPECT</span>
+    <span class="tech-arrow">&rarr;</span>
+  </div>
+</div>
+
+<style>
+  .tech-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+    outline: none;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-card:hover,
+  .tech-card:focus-visible {
+    border-color: var(--color-accent-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(25, 211, 230, 0.15);
+    background: var(--color-surface-2);
+  }
+
+  .tech-card:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+  }
+
+  .tech-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tech-icon-wrap {
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: rgba(25, 211, 230, 0.08);
+    border: 1px solid rgba(25, 211, 230, 0.15);
+  }
+
+  .tech-level {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .level-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .tech-body {
+    margin-block: var(--space-2);
+  }
+
+  .tech-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+    line-height: 1.25;
+  }
+
+  .tech-cat {
+    color: var(--color-text-muted);
+    font-size: 0.68rem;
+    display: block;
+  }
+
+  .tech-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    opacity: 0.5;
+    padding-top: var(--space-2);
+    border-top: 1px dashed rgba(27, 48, 66, 0.5);
+    transition: opacity var(--duration-fast);
+  }
+
+  .tech-card:hover .tech-card-footer {
+    opacity: 1;
+  }
+
+  .tech-arrow {
+    transition: transform var(--duration-fast);
+  }
+
+  .tech-card:hover .tech-arrow {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tech-card:hover {
+      transform: none !important;
+    }
+  }
+</style>

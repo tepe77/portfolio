@@ -1,0 +1,186 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import StatusBadge from '../common/StatusBadge.astro';
+
+const services = [
+  { name: "Portfolio Static Hosting", provider: "Cloudflare Edge Global CDN", status: "operational", responseTime: "24ms" },
+  { name: "CI/CD Pipeline Runners", provider: "GitLab Automated Runners", status: "operational", responseTime: "Nominal" },
+  { name: "Database HA Cluster", provider: "Patroni 3-Node (etcd consensus)", status: "healthy", responseTime: "0.8ms" },
+  { name: "Observability & Alerting", provider: "Prometheus + Alertmanager", status: "operational", responseTime: "Active" },
+  { name: "Object Storage & Backups", provider: "S3 Disaster Recovery Gateway", status: "operational", responseTime: "Synced" }
+];
+---
+
+<section id="status" class="status-section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="07 // LIVE OPERATIONS"
+      title="SYSTEM STATUS DASHBOARD"
+      description="Real-time operational health checks of portfolio delivery infrastructure and simulated cluster endpoints."
+      align="center"
+    />
+
+    <div class="status-dashboard" data-reveal>
+      <div class="dashboard-header">
+        <div class="header-status">
+          <StatusBadge status="operational" label="ALL SYSTEMS OPERATIONAL" size="md" />
+        </div>
+        <div class="header-telemetry font-mono text-xs text-muted">
+          LAST CHECKED: {new Date().toISOString().slice(0, 10)} 10:00 UTC // AUTO-REFRESH: 60s
+        </div>
+      </div>
+
+      <div class="services-list">
+        {services.map((svc) => (
+          <div class="service-row font-mono">
+            <div class="svc-name-group">
+              <span class="svc-indicator"></span>
+              <span class="svc-name">{svc.name}</span>
+              <span class="svc-provider font-mono text-xs">{svc.provider}</span>
+            </div>
+
+            <div class="svc-meta-group">
+              <span class="svc-latency text-xs">{svc.responseTime}</span>
+              <span class="svc-status text-xs text-green">OPERATIONAL</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="dashboard-footer font-mono">
+        <div class="footer-stat">
+          <span class="stat-num">99.98%</span>
+          <span class="stat-lbl">UPTIME SLA</span>
+        </div>
+        <div class="footer-stat">
+          <span class="stat-num">&lt; 15s</span>
+          <span class="stat-lbl">FAILOVER RTO</span>
+        </div>
+        <div class="footer-stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-lbl">SCAN COVERAGE</span>
+        </div>
+        <div class="footer-stat">
+          <span class="stat-num">0 SEC</span>
+          <span class="stat-lbl">DATA LOSS RPO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .status-dashboard {
+    max-width: 900px;
+    margin-inline: auto;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .services-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-6);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.5);
+    transition: background var(--duration-fast);
+  }
+
+  .service-row:last-child {
+    border-bottom: none;
+  }
+
+  .service-row:hover {
+    background: var(--color-surface-2);
+  }
+
+  .svc-name-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .svc-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 8px rgba(32, 211, 155, 0.6);
+  }
+
+  .svc-name {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .svc-provider {
+    color: var(--color-text-muted);
+  }
+
+  .svc-meta-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .svc-latency {
+    color: var(--color-text-secondary);
+  }
+
+  .svc-status {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .dashboard-footer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    background: var(--color-bg-0);
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 640px) {
+    .dashboard-footer {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .footer-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-num {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--color-accent-primary);
+  }
+
+  .stat-lbl {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,207 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import TechnologyCard from './TechnologyCard.astro';
+import TechnologyDrawer from './TechnologyDrawer.astro';
+import { stackData } from '../../data/stack';
+
+// Group technologies by category
+const categories = Array.from(new Set(stackData.map((s) => s.category)));
+---
+
+<section id="stack" class="stack-section">
+  <div class="container-wide">
+    <SectionHeader
+      eyebrow="04 // TECH STACK & CAPABILITIES"
+      title="CORE TECHNOLOGIES"
+      description="Reliable, production-proven DevOps and infrastructure technologies. Filter by specialization or click any component to inspect architecture details."
+    />
+
+    <!-- Interactive Category Filter Pill Bar -->
+    <div class="tech-filter-wrapper" data-reveal>
+      <div class="tech-filter-bar" role="tablist" aria-label="Filter technologies by category">
+        <button
+          type="button"
+          class="tech-filter-pill active font-mono text-xs"
+          data-tech-filter="all"
+          role="tab"
+          aria-selected="true"
+        >
+          <span>ALL</span>
+          <span class="filter-count">[{stackData.length}]</span>
+        </button>
+
+        {categories.map((cat) => {
+          const count = stackData.filter((s) => s.category === cat).length;
+          const slug = cat.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          return (
+            <button
+              type="button"
+              class="tech-filter-pill font-mono text-xs"
+              data-tech-filter={slug}
+              role="tab"
+              aria-selected="false"
+            >
+              <span>{cat.toUpperCase()}</span>
+              <span class="filter-count">[{count}]</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div class="tech-filter-meta font-mono text-xs">
+        <span id="tech-visible-count">{stackData.length} TECHNOLOGIES LOADED</span>
+        <span class="tech-hint-text">CLICK CARD TO INSPECT SPECS &darr;</span>
+      </div>
+    </div>
+
+    <!-- Unified Minimalist Technology Grid -->
+    <div id="tech-cards-grid" class="tech-grid" data-reveal>
+      {stackData.map((tech) => (
+        <TechnologyCard tech={tech} />
+      ))}
+    </div>
+  </div>
+
+  <TechnologyDrawer />
+</section>
+
+<script>
+  function initTechFilter() {
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('.tech-filter-pill');
+    const cards = document.querySelectorAll<HTMLElement>('.tech-card');
+    const countDisplay = document.getElementById('tech-visible-count');
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.techFilter;
+        if (!filter) return;
+
+        // Update active tab state
+        filterButtons.forEach((b) => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const cardCat = card.dataset.category;
+          if (filter === 'all' || cardCat === filter) {
+            card.classList.remove('is-hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('is-hidden');
+          }
+        });
+
+        if (countDisplay) {
+          countDisplay.textContent = `${visibleCount} TECHNOLOGIES LOADED`;
+        }
+      });
+    });
+  }
+
+  initTechFilter();
+  document.addEventListener('astro:page-load', initTechFilter);
+</script>
+
+<style>
+  .stack-section {
+    position: relative;
+  }
+
+  .tech-filter-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .tech-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .tech-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+    outline: none;
+    user-select: none;
+  }
+
+  .tech-filter-pill:hover {
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .tech-filter-pill.active {
+    background: var(--color-surface-2);
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 0 16px rgba(25, 211, 230, 0.2);
+  }
+
+  .filter-count {
+    font-size: 0.68rem;
+    opacity: 0.7;
+  }
+
+  .tech-filter-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-text-muted);
+    padding-inline: var(--space-2);
+  }
+
+  .tech-hint-text {
+    color: var(--color-accent-primary);
+    opacity: 0.8;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  :global(.tech-card.is-hidden) {
+    display: none !important;
+  }
+
+  @media (min-width: 640px) {
+    .tech-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .tech-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1300px) {
+    .tech-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

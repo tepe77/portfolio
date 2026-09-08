@@ -1,0 +1,22 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import InfrastructureTopology from './InfrastructureTopology.astro';
+---
+
+<section id="infrastructure" class="infrastructure-section">
+  <div class="container-wide">
+    <SectionHeader
+      eyebrow="02 // ARCHITECTURE & TOPOLOGY"
+      title="SYSTEM TOPOLOGY"
+      description="Interactive architecture diagram of a high-availability production cluster. Hover or select nodes to trace network paths and inspect technical implementations."
+    />
+
+    <InfrastructureTopology />
+  </div>
+</section>
+
+<style>
+  .infrastructure-section {
+    position: relative;
+  }
+</style>

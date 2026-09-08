@@ -1,0 +1,114 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import Button from '../common/Button.astro';
+import Icon from '../common/Icon.astro';
+import SocialLinks from './SocialLinks.astro';
+import { profileData } from '../../data/profile';
+---
+
+<section id="contact" class="contact-section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="08 // INITIATE TRANSMISSION"
+      title="LET'S BUILD RELIABLE SYSTEMS"
+      description="Interested in infrastructure engineering, CI/CD automation, database clustering, or operational reliability? Let's connect."
+      align="center"
+    />
+
+    <div class="contact-wrapper" data-reveal>
+      <!-- Terminal Contact Card -->
+      <div class="contact-terminal font-mono">
+        <div class="ct-header">
+          <span class="ct-prompt">prasaswo@portfolio:~$</span>
+          <span class="ct-cmd">ssh connect@prasaswo.dev</span>
+        </div>
+        <div class="ct-output">
+          <p>SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u2</p>
+          <p class="text-green">Connection established with 256-bit elliptic curve encryption.</p>
+          <p class="text-muted">Direct messaging channel open. Ready for collaboration or inquiries.</p>
+        </div>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="contact-cta-bar">
+        <Button href={`mailto:${profileData.email}`} variant="primary" size="lg">
+          <Icon name="external-link" size={18} />
+          <span>EMAIL ME DIRECTLY</span>
+        </Button>
+
+        <Button href={profileData.resumeUrl} variant="secondary" size="lg" download="prasaswo-tepe-resume.pdf">
+          <Icon name="download" size={18} />
+          <span>DOWNLOAD RESUME</span>
+        </Button>
+      </div>
+
+      <!-- Social Links Grid -->
+      <SocialLinks />
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-wrapper {
+    max-width: 800px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .contact-terminal {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .ct-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.4);
+  }
+
+  .ct-prompt {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .ct-cmd {
+    color: var(--color-text-primary);
+  }
+
+  .ct-output {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+  }
+
+  .ct-output p {
+    margin-bottom: 0;
+  }
+
+  .contact-cta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  @media (max-width: 640px) {
+    .contact-cta-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>

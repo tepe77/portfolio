@@ -1,0 +1,42 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import Terminal from './Terminal.astro';
+import ProfileSummary from './ProfileSummary.astro';
+---
+
+<section id="about" class="about-section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="01 // BACKGROUND & PHILOSOPHY"
+      title="ENGINEERING OVERVIEW"
+      description="Systems, philosophies, and operational approaches cultivated across containerized deployments and high-availability databases."
+    />
+
+    <div class="about-layout">
+      <!-- Left Column: Terminal simulation -->
+      <div class="about-col">
+        <Terminal />
+      </div>
+
+      <!-- Right Column: Profile summary & capabilities -->
+      <div class="about-col">
+        <ProfileSummary />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 960px) {
+    .about-layout {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>
