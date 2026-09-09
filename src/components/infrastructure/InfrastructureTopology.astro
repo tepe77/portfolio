@@ -8,23 +8,30 @@ import InfrastructureNode from './InfrastructureNode.astro';
   <div class="topology-toolbar">
     <div class="toolbar-main">
       <div class="toolbar-brand">
-        <span class="toolbar-title font-mono">CLUSTER TOPOLOGY // MULTI-TIER HA ARCHITECTURE</span>
-        <span class="badge-live font-mono text-xs">● LIVE TOPOLOGY</span>
+        <span class="toolbar-title font-mono">
+          <span class="desktop-text">CLUSTER TOPOLOGY // MULTI-TIER HA ARCHITECTURE</span>
+          <span class="mobile-text">CLUSTER TOPOLOGY // HA</span>
+        </span>
+        <span class="badge-live font-mono text-xs">● LIVE</span>
       </div>
 
       <!-- Filter Buttons -->
       <div class="topology-filters" role="tablist" aria-label="Filter Topology Views">
         <button type="button" class="filter-btn active font-mono text-xs" data-topo-filter="all">
-          ALL NODES
+          <span class="desktop-text">ALL NODES</span>
+          <span class="mobile-text">ALL</span>
         </button>
         <button type="button" class="filter-btn font-mono text-xs" data-topo-filter="ingress">
-          INGRESS &amp; APPS
+          <span class="desktop-text">INGRESS &amp; APPS</span>
+          <span class="mobile-text">INGRESS</span>
         </button>
         <button type="button" class="filter-btn font-mono text-xs" data-topo-filter="database">
-          DATABASE HA (3-NODE)
+          <span class="desktop-text">DATABASE HA (3-NODE)</span>
+          <span class="mobile-text">DATABASE HA</span>
         </button>
         <button type="button" class="filter-btn font-mono text-xs" data-topo-filter="observability">
-          OBSERVABILITY
+          <span class="desktop-text">OBSERVABILITY</span>
+          <span class="mobile-text">METRICS</span>
         </button>
       </div>
     </div>
@@ -37,8 +44,9 @@ import InfrastructureNode from './InfrastructureNode.astro';
         class="action-btn action-failover font-mono text-xs"
         aria-label="Simulate Patroni high availability failover drill"
       >
-        <Icon name="refresh" size={14} />
-        <span>SIMULATE FAILOVER DRILL</span>
+        <Icon name="refresh" size={13} />
+        <span class="desktop-text">SIMULATE FAILOVER DRILL</span>
+        <span class="mobile-text">FAILOVER DRILL</span>
       </button>
 
       <button
@@ -47,7 +55,7 @@ import InfrastructureNode from './InfrastructureNode.astro';
         class="action-btn action-ping font-mono text-xs"
         aria-label="Send cluster heartbeat health ping"
       >
-        <Icon name="activity" size={14} />
+        <Icon name="activity" size={13} />
         <span>HEALTH PING</span>
       </button>
     </div>
@@ -355,6 +363,7 @@ import InfrastructureNode from './InfrastructureNode.astro';
 
     <!-- Inspector Sidepanel / Drawer HUD -->
     <aside id="topology-details-panel" class="topology-details-panel" aria-label="Service Details Inspector" aria-hidden="true">
+      <div class="panel-drag-handle" aria-hidden="true"></div>
       <div class="panel-header">
         <div>
           <span id="topology-detail-category" class="panel-category font-mono text-xs">TIER // CATEGORY</span>
@@ -428,6 +437,14 @@ import InfrastructureNode from './InfrastructureNode.astro';
     overflow: hidden;
     position: relative;
     width: 100%;
+  }
+
+  .desktop-text {
+    display: inline;
+  }
+
+  .mobile-text {
+    display: none;
   }
 
   .topology-toolbar {
@@ -844,20 +861,127 @@ import InfrastructureNode from './InfrastructureNode.astro';
     text-decoration: underline;
   }
 
+  .panel-drag-handle {
+    display: none;
+    width: 44px;
+    height: 4px;
+    background: var(--color-border-hover);
+    border-radius: var(--radius-pill);
+    margin: 0 auto var(--space-3);
+    flex-shrink: 0;
+  }
+
   @media (max-width: 768px) {
+    .desktop-text {
+      display: none;
+    }
+
+    .mobile-text {
+      display: inline;
+    }
+
+    .topology-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .toolbar-main {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+      width: 100%;
+    }
+
+    .toolbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .toolbar-title {
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-live {
+      font-size: 0.62rem;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+
+    .topology-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 100%;
+    }
+
+    .filter-btn {
+      padding: 5px 2px;
+      font-size: 0.65rem;
+      text-align: center;
+      white-space: nowrap;
+      border-radius: var(--radius-sm);
+    }
+
+    .toolbar-actions {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .action-btn {
+      justify-content: center;
+      padding: 6px 8px;
+      font-size: 0.68rem;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .mobile-topology-flow {
+      padding: var(--space-4) var(--space-3);
+      gap: var(--space-4);
+    }
+
+    .mobile-tier-title {
+      font-size: 0.68rem;
+    }
+
+    .mobile-flow-connector {
+      font-size: 1.1rem;
+      margin-block: -4px;
+      opacity: 0.6;
+    }
+
+    .panel-drag-handle {
+      display: block;
+    }
+
     .topology-details-panel {
       position: fixed;
-      inset: auto 0 0 0;
-      width: 100%;
-      height: 80vh;
+      top: auto;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 82vh;
+      max-height: 82dvh;
       border-left: none;
       border-top: 1px solid var(--color-border);
       border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-4) var(--space-5);
+      z-index: 460;
+      box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.7);
       transform: translateY(100%);
     }
 
     .topology-details-panel.visible {
       transform: translateY(0);
+      opacity: 1;
     }
   }
 </style>

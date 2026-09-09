@@ -36,6 +36,17 @@ import { profileData } from '../../data/profile';
           <span>EMAIL ME DIRECTLY</span>
         </Button>
 
+        <button
+          type="button"
+          id="copy-email-btn"
+          class="btn-copy-email font-mono"
+          data-email={profileData.email}
+          aria-label="Copy email address to clipboard"
+        >
+          <Icon name="copy" size={18} />
+          <span id="copy-email-text">COPY EMAIL</span>
+        </button>
+
         <Button href={profileData.resumeUrl} variant="secondary" size="lg" download="prasaswo-tepe-resume.pdf">
           <Icon name="download" size={18} />
           <span>DOWNLOAD RESUME</span>
@@ -105,6 +116,39 @@ import { profileData } from '../../data/profile';
     gap: var(--space-4);
   }
 
+  .btn-copy-email {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    outline: none;
+    user-select: none;
+    min-height: 48px;
+  }
+
+  .btn-copy-email:hover {
+    background: var(--color-surface-2);
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 0 16px rgba(25, 211, 230, 0.2);
+  }
+
+  .btn-copy-email.copied {
+    background: rgba(32, 211, 155, 0.15);
+    border-color: var(--color-success);
+    color: var(--color-success);
+    box-shadow: 0 0 16px rgba(32, 211, 155, 0.3);
+  }
+
   @media (max-width: 640px) {
     .contact-cta-bar {
       flex-direction: column;
@@ -112,3 +156,30 @@ import { profileData } from '../../data/profile';
     }
   }
 </style>
+
+<script>
+  function initCopyEmail() {
+    const btn = document.getElementById('copy-email-btn');
+    const text = document.getElementById('copy-email-text');
+    if (!btn || !text) return;
+
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.email || 'prasaswo@gmail.com';
+      try {
+        await navigator.clipboard.writeText(email);
+        text.textContent = 'COPIED TO CLIPBOARD!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          text.textContent = 'COPY EMAIL';
+          btn.classList.remove('copied');
+        }, 2500);
+      } catch {
+        // Fallback for browsers with strict clipboard permissions
+        text.textContent = email;
+      }
+    });
+  }
+
+  initCopyEmail();
+  document.addEventListener('astro:page-load', initCopyEmail);
+</script>

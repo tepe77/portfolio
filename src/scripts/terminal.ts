@@ -88,25 +88,45 @@ export function initTerminal() {
     output.scrollTop = output.scrollHeight;
   };
 
+  const runCommand = (rawCommand: string) => {
+    const trimmed = rawCommand.trim();
+    if (!trimmed) return;
+
+    appendLine(`prasaswo@portfolio:~$ ${trimmed}`, 'command');
+    const normalized = trimmed.toLowerCase();
+
+    if (normalized === 'clear') {
+      output.innerHTML = '';
+    } else if (normalized === 'skills') {
+      commandMap['stack'].forEach((line) => appendLine(line, 'response'));
+    } else if (normalized === 'cluster') {
+      commandMap['status'].forEach((line) => appendLine(line, 'response'));
+    } else if (commandMap[normalized]) {
+      commandMap[normalized].forEach((line) => appendLine(line, 'response'));
+    } else {
+      appendLine(`bash: command not found: ${trimmed}`, 'error');
+      appendLine('Type "help" to view allowed simulation commands.', 'response');
+    }
+  };
+
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      const rawCommand = input.value.trim();
-      if (!rawCommand) return;
-
-      appendLine(`prasaswo@portfolio:~$ ${rawCommand}`, 'command');
-      const normalized = rawCommand.toLowerCase();
-
-      if (normalized === 'clear') {
-        output.innerHTML = '';
-      } else if (commandMap[normalized]) {
-        commandMap[normalized].forEach((line) => appendLine(line, 'response'));
-      } else {
-        appendLine(`bash: command not found: ${rawCommand}`, 'error');
-        appendLine('Type "help" to view allowed simulation commands.', 'response');
-      }
-
+      runCommand(input.value);
       input.value = '';
     }
+  });
+
+  // Quick Command Chips click handling (optimized for mobile 1-tap)
+  const chips = terminal.querySelectorAll<HTMLButtonElement>('.terminal-chip');
+  chips.forEach((chip) => {
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cmd = chip.dataset.cmd;
+      if (cmd) {
+        runCommand(cmd);
+        input.value = '';
+      }
+    });
   });
 
   // Clicking anywhere inside terminal focuses input

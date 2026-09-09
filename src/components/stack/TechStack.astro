@@ -50,6 +50,7 @@ const categories = Array.from(new Set(stackData.map((s) => s.category)));
 
       <div class="tech-filter-meta font-mono text-xs">
         <span id="tech-visible-count">{stackData.length} TECHNOLOGIES LOADED</span>
+        <span class="tech-scroll-indicator font-mono">&larr; SWIPE CATEGORIES &rarr;</span>
         <span class="tech-hint-text">CLICK CARD TO INSPECT SPECS &darr;</span>
       </div>
     </div>
@@ -84,6 +85,9 @@ const categories = Array.from(new Set(stackData.map((s) => s.category)));
         btn.classList.add('active');
         btn.setAttribute('aria-selected', 'true');
 
+        // Smoothly center the clicked pill in the horizontal scroll container
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
         let visibleCount = 0;
 
         cards.forEach((card) => {
@@ -115,19 +119,29 @@ const categories = Array.from(new Set(stackData.map((s) => s.category)));
   .tech-filter-wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
     margin-bottom: var(--space-8);
   }
 
+  /* Single row swipeable pill bar on mobile, no vertical stacking */
   .tech-filter-bar {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
     gap: var(--space-2);
     padding: var(--space-2);
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    scroll-snap-type: x proximity;
+  }
+
+  .tech-filter-bar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
   }
 
   .tech-filter-pill {
@@ -145,6 +159,9 @@ const categories = Array.from(new Set(stackData.map((s) => s.category)));
     transition: all var(--duration-fast) var(--ease-standard);
     outline: none;
     user-select: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    scroll-snap-align: center;
   }
 
   .tech-filter-pill:hover {
@@ -170,11 +187,40 @@ const categories = Array.from(new Set(stackData.map((s) => s.category)));
     justify-content: space-between;
     color: var(--color-text-muted);
     padding-inline: var(--space-2);
+    font-size: 0.75rem;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tech-scroll-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-accent-primary);
+    opacity: 0.75;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
   }
 
   .tech-hint-text {
     color: var(--color-accent-primary);
     opacity: 0.8;
+  }
+
+  @media (min-width: 1200px) {
+    .tech-filter-bar {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+    .tech-scroll-indicator {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .tech-hint-text {
+      display: none;
+    }
   }
 
   .tech-grid {

@@ -3,13 +3,13 @@ import Icon from '../common/Icon.astro';
 import StatusBadge from '../common/StatusBadge.astro';
 
 const navItems = [
-  { label: "ABOUT", href: "#about" },
-  { label: "INFRASTRUCTURE", href: "#infrastructure" },
-  { label: "PROJECTS", href: "#projects" },
-  { label: "TECH STACK", href: "#stack" },
-  { label: "EXPERIENCE", href: "#experience" },
-  { label: "MINDSET", href: "#mindset" },
-  { label: "CONTACT", href: "#contact" },
+  { label: "ABOUT", href: "#about", desc: "Background & Philosophy" },
+  { label: "INFRASTRUCTURE", href: "#infrastructure", desc: "Multi-Tier Cluster Topology" },
+  { label: "PROJECTS", href: "#projects", desc: "Production Case Studies" },
+  { label: "CORE TECH STACK", href: "#stack", desc: "Tools & Production Capabilities" },
+  { label: "EXPERIENCE", href: "#experience", desc: "Career Timeline & History" },
+  { label: "ENGINEERING MINDSET", href: "#mindset", desc: "Architecture Principles" },
+  { label: "INITIATE CONTACT", href: "#contact", desc: "Transmission & Collaboration" },
 ];
 ---
 
@@ -19,24 +19,51 @@ const navItems = [
       <span class="brand-bracket">&lt;&gt;</span> PRASASWO.TEPE
     </a>
     <button type="button" id="mobile-drawer-close" class="mobile-close-btn" aria-label="Close navigation menu">
-      <Icon name="close" size={24} />
+      <Icon name="close" size={22} />
     </button>
   </div>
 
-  <nav class="mobile-nav-list">
+  <nav class="mobile-nav-list" aria-label="Mobile Navigation Menu">
     {navItems.map((item, index) => (
       <a href={item.href} class="mobile-nav-item">
-        <span class="mobile-nav-index font-mono">0{index + 1}</span>
-        <span class="mobile-nav-label">{item.label}</span>
-        <Icon name="arrow-right" size={18} class="mobile-nav-arrow" />
+        <div class="mobile-nav-lead">
+          <span class="mobile-nav-index font-mono">0{index + 1}</span>
+          <div class="mobile-nav-texts">
+            <span class="mobile-nav-label font-mono">{item.label}</span>
+            <span class="mobile-nav-desc">{item.desc}</span>
+          </div>
+        </div>
+        <Icon name="arrow-right" size={16} class="mobile-nav-arrow" />
       </a>
     ))}
   </nav>
 
   <div class="mobile-drawer-footer">
-    <StatusBadge status="operational" label="SYSTEMS OPERATIONAL" size="sm" />
-    <div class="mobile-footer-meta font-mono text-xs">
-      DevOps &amp; Infrastructure Engineer
+    <div class="mobile-footer-actions">
+      <a
+        href="/resume/prasaswo-tepe-resume.pdf"
+        class="mobile-action-btn mobile-action-resume font-mono"
+        download="prasaswo-tepe-resume.pdf"
+      >
+        <Icon name="download" size={15} />
+        <span>DOWNLOAD RESUME</span>
+      </a>
+
+      <button
+        type="button"
+        class="mobile-action-btn mobile-action-search font-mono"
+        onclick="window.openCommandPalette && window.openCommandPalette(); document.getElementById('mobile-drawer-close')?.click();"
+      >
+        <Icon name="search" size={15} />
+        <span>QUICK SEARCH</span>
+      </button>
+    </div>
+
+    <div class="mobile-footer-status">
+      <StatusBadge status="operational" label="SYSTEMS OPERATIONAL" size="sm" />
+      <div class="mobile-footer-meta font-mono text-xs">
+        DevOps &amp; Infrastructure
+      </div>
     </div>
   </div>
 </div>
@@ -44,23 +71,32 @@ const navItems = [
 <style>
   .mobile-drawer {
     position: fixed;
-    inset: 0;
-    z-index: var(--z-modal);
-    background: rgba(6, 11, 18, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 450;
+    background: rgba(6, 11, 18, 0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transform: translateX(100%);
-    transition: transform var(--duration-normal) var(--ease-standard), opacity var(--duration-fast);
+    transition: transform 280ms var(--ease-standard), opacity 200ms ease, visibility 280ms;
   }
 
   .mobile-drawer.open {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
     transform: translateX(0);
   }
@@ -69,14 +105,17 @@ const navItems = [
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
   }
 
   .mobile-brand {
     font-size: var(--text-md);
     font-weight: 700;
     color: var(--color-text-primary);
+    text-decoration: none;
+    letter-spacing: 0.05em;
   }
 
   .brand-bracket {
@@ -85,64 +124,151 @@ const navItems = [
 
   .mobile-close-btn {
     background: transparent;
-    border: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
     cursor: pointer;
     padding: var(--space-2);
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all var(--duration-fast);
   }
 
   .mobile-close-btn:hover {
+    border-color: var(--color-accent-primary);
     color: var(--color-accent-primary);
   }
 
   .mobile-nav-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-    margin-block: auto;
+    gap: 2px;
+    margin-block: var(--space-3);
+    flex-grow: 1;
   }
 
   .mobile-nav-item {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-4) var(--space-2);
-    font-size: var(--text-lg);
-    font-weight: 700;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-2);
+    min-height: 50px;
     color: var(--color-text-primary);
     border-bottom: 1px solid rgba(27, 48, 66, 0.4);
-    transition: color var(--duration-fast), padding-left var(--duration-fast);
+    text-decoration: none;
+    transition: color var(--duration-fast), background-color var(--duration-fast), padding-left var(--duration-fast);
+    border-radius: var(--radius-sm);
   }
 
-  .mobile-nav-item:hover {
+  .mobile-nav-item:hover,
+  .mobile-nav-item:focus-visible {
     color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.06);
     padding-left: var(--space-3);
+  }
+
+  .mobile-nav-lead {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
   }
 
   .mobile-nav-index {
     font-size: var(--text-xs);
+    font-weight: 700;
     color: var(--color-accent-primary);
+    opacity: 0.8;
+  }
+
+  .mobile-nav-texts {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-nav-label {
+    font-size: var(--text-md);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-nav-desc {
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    line-height: 1.2;
+    margin-top: 2px;
   }
 
   .mobile-nav-arrow {
-    margin-left: auto;
     opacity: 0.4;
+    transition: transform var(--duration-fast), opacity var(--duration-fast);
   }
 
   .mobile-nav-item:hover .mobile-nav-arrow {
     opacity: 1;
+    transform: translateX(4px);
     color: var(--color-accent-primary);
   }
 
   .mobile-drawer-footer {
-    padding-top: var(--space-6);
+    padding-top: var(--space-3);
     border-top: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    flex-shrink: 0;
+  }
+
+  .mobile-footer-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  .mobile-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    border: 1px solid var(--color-border);
+  }
+
+  .mobile-action-resume {
+    background: rgba(25, 211, 230, 0.1);
+    color: var(--color-accent-primary);
+    border-color: rgba(25, 211, 230, 0.3);
+  }
+
+  .mobile-action-resume:hover {
+    background: var(--color-accent-primary);
+    color: var(--color-bg-0);
+  }
+
+  .mobile-action-search {
+    background: var(--color-surface-2);
+    color: var(--color-text-secondary);
+  }
+
+  .mobile-action-search:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-footer-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-top: var(--space-1);
   }
 
   .mobile-footer-meta {

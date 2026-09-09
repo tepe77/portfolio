@@ -77,4 +77,28 @@ const {
   .align-center .header-line {
     background: linear-gradient(to right, transparent, var(--color-accent-primary), transparent);
   }
+
+  @media (max-width: 640px) {
+    .section-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      margin-bottom: var(--space-1);
+    }
+
+    .section-title {
+      font-size: clamp(1.65rem, 5.5vw, 2.1rem);
+      margin-bottom: var(--space-2);
+      line-height: 1.15;
+    }
+
+    .section-description {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: var(--space-3);
+    }
+  }
 </style>

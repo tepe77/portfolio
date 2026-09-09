@@ -139,10 +139,24 @@ const isAriaHidden = !ariaLabel;
     </g>
   )}
 
+  {name === 'arrow-up' && (
+    <g>
+      <line x1="12" y1="19" x2="12" y2="5" />
+      <polyline points="5 12 12 5 19 12" />
+    </g>
+  )}
+
   {name === 'arrow-up-right' && (
     <g>
       <line x1="7" y1="17" x2="17" y2="7" />
       <polyline points="7 7 17 7 17 17" />
+    </g>
+  )}
+
+  {name === 'copy' && (
+    <g>
+      <rect width="13" height="13" x="9" y="9" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </g>
   )}
 
