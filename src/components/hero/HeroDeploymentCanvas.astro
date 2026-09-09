@@ -1,0 +1,582 @@
+---
+// Minimalist 3D Deployment Flow Canvas
+// Pure HTML5 Canvas + 3D Perspective Projection (Zero heavy dependencies)
+---
+
+<div class="hero-deployment-canvas-wrapper" aria-hidden="true">
+  <canvas id="hero-deployment-canvas" class="hero-canvas"></canvas>
+  <div class="canvas-vignette"></div>
+</div>
+
+<script>
+  function initHeroDeploymentCanvas() {
+    const canvas = document.getElementById('hero-deployment-canvas') as HTMLCanvasElement | null;
+    const wrapper = document.querySelector('.hero-deployment-canvas-wrapper') as HTMLElement | null;
+    if (!canvas || !wrapper) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    // Check reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let animFrameId: number | null = null;
+    let isVisible = true;
+
+    // Mouse Parallax targets & smoothed state
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let currentRotX = 0;
+    let currentRotY = 0;
+
+    // Handle high-DPI scaling & resize
+    const resize = () => {
+      const rect = wrapper.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.scale(dpr, dpr);
+    };
+
+    // 3D Point projection math
+    interface Point3D {
+      x: number;
+      y: number;
+      z: number;
+    }
+
+    interface ProjectedPoint {
+      x: number;
+      y: number;
+      scale: number;
+      alpha: number;
+    }
+
+    const fov = 450;
+    const project3D = (p: Point3D): ProjectedPoint => {
+      // 1. Apply Parallax Rotation (Yaw = Y, Pitch = X)
+      const radY = currentRotY;
+      const radX = currentRotX;
+
+      const cosY = Math.cos(radY);
+      const sinY = Math.sin(radY);
+      const x1 = p.x * cosY - p.z * sinY;
+      const z1 = p.x * sinY + p.z * cosY;
+
+      const cosX = Math.cos(radX);
+      const sinX = Math.sin(radX);
+      const y1 = p.y * cosX - z1 * sinX;
+      const z2 = p.y * sinX + z1 * cosX;
+
+      // Distance factor from camera (camera positioned at z = -fov)
+      const depth = fov + z2;
+      const safeDepth = Math.max(depth, 10);
+      const scale = fov / safeDepth;
+
+      return {
+        x: width * 0.5 + x1 * scale,
+        y: height * 0.48 + y1 * scale,
+        scale,
+        alpha: Math.min(Math.max((1 - z2 / 750), 0), 1)
+      };
+    };
+
+    // 1. Definition of 3D Deployment Pipeline Rails
+    // Each rail curves through 3D space (Code -> Build -> Test -> Containerize -> Cluster)
+    interface PipelineRail {
+      name: string;
+      color: string;
+      glowColor: string;
+      nodes: Point3D[];
+    }
+
+    const rails: PipelineRail[] = [
+      // Primary CI/CD Pipeline (Main branch deploy)
+      {
+        name: "PIPELINE_MAIN // GIT_PUSH",
+        color: "rgba(25, 211, 230, 0.35)",
+        glowColor: "#19D3E6",
+        nodes: [
+          { x: -380, y: -90, z: 280 },
+          { x: -220, y: -40, z: 180 },
+          { x: -60,  y: 20,  z: 80  },
+          { x: 120,  y: 60,  z: -20 },
+          { x: 320,  y: 110, z: -140 },
+          { x: 480,  y: 150, z: -260 }
+        ]
+      },
+      // Secondary Artifact & Container Build stream
+      {
+        name: "REGISTRY // CONTAINER_SYNC",
+        color: "rgba(92, 141, 255, 0.3)",
+        glowColor: "#5C8DFF",
+        nodes: [
+          { x: -340, y: 40,  z: 320 },
+          { x: -180, y: 70,  z: 220 },
+          { x: -10,  y: 90,  z: 110 },
+          { x: 180,  y: 100, z: -10 },
+          { x: 360,  y: 130, z: -160 },
+          { x: 520,  y: 180, z: -280 }
+        ]
+      },
+      // Database HA & Cluster Telemetry bus
+      {
+        name: "CLUSTER // MESH_INGRESS",
+        color: "rgba(32, 211, 155, 0.28)",
+        glowColor: "#20D39B",
+        nodes: [
+          { x: -420, y: -160, z: 360 },
+          { x: -260, y: -100, z: 240 },
+          { x: -90,  y: -50,  z: 120 },
+          { x: 90,   y: 10,   z: -30 },
+          { x: 280,  y: 50,   z: -170 },
+          { x: 440,  y: 90,   z: -300 }
+        ]
+      }
+    ];
+
+    // Stage milestones along the pipelines
+    const stages = [
+      { label: "01_SOURCE", t: 0.05 },
+      { label: "02_BUILD", t: 0.28 },
+      { label: "03_TEST", t: 0.52 },
+      { label: "04_SECURITY", t: 0.74 },
+      { label: "05_PRODUCTION", t: 0.94 }
+    ];
+
+    // Spline Interpolation for smooth 3D curves
+    const interpolateRail = (nodes: Point3D[], t: number): Point3D => {
+      const count = nodes.length - 1;
+      const scaledT = t * count;
+      const idx = Math.min(Math.floor(scaledT), count - 1);
+      const subT = scaledT - idx;
+
+      const p0 = nodes[idx];
+      const p1 = nodes[idx + 1];
+
+      return {
+        x: p0.x + (p1.x - p0.x) * subT,
+        y: p0.y + (p1.y - p0.y) * subT,
+        z: p0.z + (p1.z - p0.z) * subT
+      };
+    };
+
+    // 2. Active Deployment Packets (Moving pulses of light)
+    interface DeploymentPacket {
+      railIndex: number;
+      t: number;
+      speed: number;
+      trailLength: number;
+      color: string;
+      size: number;
+    }
+
+    const packets: DeploymentPacket[] = [
+      { railIndex: 0, t: 0.1, speed: 0.0018, trailLength: 0.14, color: "#19D3E6", size: 3.5 },
+      { railIndex: 0, t: 0.65, speed: 0.0022, trailLength: 0.12, color: "#19D3E6", size: 3.0 },
+      { railIndex: 1, t: 0.35, speed: 0.0016, trailLength: 0.15, color: "#5C8DFF", size: 3.2 },
+      { railIndex: 1, t: 0.85, speed: 0.0019, trailLength: 0.10, color: "#5C8DFF", size: 2.8 },
+      { railIndex: 2, t: 0.2, speed: 0.0014, trailLength: 0.16, color: "#20D39B", size: 3.2 },
+      { railIndex: 2, t: 0.72, speed: 0.0020, trailLength: 0.11, color: "#20D39B", size: 3.0 }
+    ];
+
+    // Stage Pulses (Expanding concentric rings triggered when a packet hits a stage)
+    interface StagePulse {
+      x: number;
+      y: number;
+      z: number;
+      radius: number;
+      maxRadius: number;
+      color: string;
+      alpha: number;
+    }
+    const stagePulses: StagePulse[] = [];
+
+    // 3. Floating Minimalist Wireframe Cluster Nodes (3D Isometric Boxes)
+    interface ClusterBox {
+      x: number;
+      y: number;
+      z: number;
+      size: number;
+      rotX: number;
+      rotY: number;
+      rotSpeedX: number;
+      rotSpeedY: number;
+      color: string;
+    }
+
+    const boxes: ClusterBox[] = [
+      { x: -280, y: 140, z: 120, size: 28, rotX: 0.3, rotY: 0.5, rotSpeedX: 0.003, rotSpeedY: 0.005, color: "rgba(25, 211, 230, 0.2)" },
+      { x: 260, y: -120, z: -40, size: 36, rotX: 0.2, rotY: 0.8, rotSpeedX: 0.004, rotSpeedY: 0.003, color: "rgba(92, 141, 255, 0.18)" },
+      { x: 380, y: 60, z: -180, size: 44, rotX: 0.5, rotY: 0.2, rotSpeedX: 0.002, rotSpeedY: 0.004, color: "rgba(32, 211, 155, 0.18)" }
+    ];
+
+    // 4. Perspective Grid Floor
+    const gridCols = 14;
+    const gridRows = 12;
+    const gridSpacing = 68;
+
+    // Mouse movement listener for smooth parallax tilt
+    const handleMouseMove = (e: MouseEvent) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      // Max tilt: ~4 degrees
+      targetRotY = nx * 0.07;
+      targetRotX = -ny * 0.05;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Draw a wireframe 3D box centered at (x, y, z)
+    const drawBox = (b: ClusterBox) => {
+      b.rotX += b.rotSpeedX;
+      b.rotY += b.rotSpeedY;
+
+      const half = b.size * 0.5;
+      const localVerts = [
+        { x: -half, y: -half, z: -half },
+        { x:  half, y: -half, z: -half },
+        { x:  half, y:  half, z: -half },
+        { x: -half, y:  half, z: -half },
+        { x: -half, y: -half, z:  half },
+        { x:  half, y: -half, z:  half },
+        { x:  half, y:  half, z:  half },
+        { x: -half, y:  half, z:  half }
+      ];
+
+      // Rotate locally
+      const cosY = Math.cos(b.rotY);
+      const sinY = Math.sin(b.rotY);
+      const cosX = Math.cos(b.rotX);
+      const sinX = Math.sin(b.rotX);
+
+      const worldVerts = localVerts.map((v) => {
+        const x1 = v.x * cosY - v.z * sinY;
+        const z1 = v.x * sinY + v.z * cosY;
+        const y1 = v.y * cosX - z1 * sinX;
+        const z2 = v.y * sinX + z1 * cosX;
+        return {
+          x: b.x + x1,
+          y: b.y + y1,
+          z: b.z + z2
+        };
+      });
+
+      const projected = worldVerts.map(project3D);
+
+      const edges = [
+        [0, 1], [1, 2], [2, 3], [3, 0], // front
+        [4, 5], [5, 6], [6, 7], [7, 4], // back
+        [0, 4], [1, 5], [2, 6], [3, 7]  // connecting
+      ];
+
+      ctx.save();
+      ctx.lineWidth = 1;
+
+      edges.forEach(([i, j]) => {
+        const p1 = projected[i];
+        const p2 = projected[j];
+        if (p1.alpha <= 0.01 || p2.alpha <= 0.01) return;
+
+        const avgAlpha = (p1.alpha + p2.alpha) * 0.5;
+        ctx.strokeStyle = b.color.replace(/[\d.]+\)$/, `${(avgAlpha * 0.28).toFixed(3)})`);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      });
+
+      ctx.restore();
+    };
+
+    // Render loop
+    let tick = 0;
+    const render = () => {
+      if (!isVisible) return;
+
+      tick++;
+
+      // Smooth parallax interpolation (lerp)
+      currentRotX += (targetRotX - currentRotX) * 0.05;
+      currentRotY += (targetRotY - currentRotY) * 0.05;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // --- LAYER 1: Perspective Grid Floor ---
+      ctx.save();
+      ctx.lineWidth = 1;
+      const startX = -((gridCols * gridSpacing) * 0.5);
+      const startZ = -150;
+      const gridY = 240; // below content
+
+      // Longitudinal lines
+      for (let c = 0; c <= gridCols; c++) {
+        const gx = startX + c * gridSpacing;
+        const p1 = project3D({ x: gx, y: gridY, z: startZ });
+        const p2 = project3D({ x: gx, y: gridY, z: startZ + (gridRows * gridSpacing) });
+
+        if (p1.scale > 0 && p2.scale > 0) {
+          const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+          grad.addColorStop(0, "rgba(25, 211, 230, 0.0)");
+          grad.addColorStop(0.5, "rgba(25, 211, 230, 0.07)");
+          grad.addColorStop(1, "rgba(25, 211, 230, 0.0)");
+          ctx.strokeStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+
+      // Latitudinal lines
+      for (let r = 0; r <= gridRows; r++) {
+        const gz = startZ + r * gridSpacing;
+        const p1 = project3D({ x: startX, y: gridY, z: gz });
+        const p2 = project3D({ x: -startX, y: gridY, z: gz });
+
+        if (p1.scale > 0 && p2.scale > 0) {
+          const alpha = (p1.alpha + p2.alpha) * 0.04;
+          ctx.strokeStyle = `rgba(92, 141, 255, ${alpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      // --- LAYER 2: Floating Cluster Boxes ---
+      boxes.forEach(drawBox);
+
+      // --- LAYER 3: 3D Pipeline Rails ---
+      rails.forEach((rail) => {
+        ctx.save();
+        ctx.beginPath();
+        const steps = 40;
+        let started = false;
+
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const pt3D = interpolateRail(rail.nodes, t);
+          const proj = project3D(pt3D);
+
+          if (proj.scale > 0) {
+            if (!started) {
+              ctx.moveTo(proj.x, proj.y);
+              started = true;
+            } else {
+              ctx.lineTo(proj.x, proj.y);
+            }
+          }
+        }
+
+        ctx.strokeStyle = rail.color;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 6]);
+        ctx.stroke();
+        ctx.restore();
+
+        // Stage waypoint markers along rail 0
+        if (rail === rails[0]) {
+          stages.forEach((st) => {
+            const pos = interpolateRail(rail.nodes, st.t);
+            const pr = project3D(pos);
+            if (pr.scale <= 0 || pr.alpha <= 0.05) return;
+
+            ctx.save();
+            ctx.fillStyle = "rgba(25, 211, 230, 0.4)";
+            ctx.beginPath();
+            ctx.arc(pr.x, pr.y, 2.5 * pr.scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tiny stage label in monospace
+            if (width > 640 && pr.alpha > 0.4) {
+              ctx.font = `600 ${Math.max(8 * pr.scale, 7)}px monospace`;
+              ctx.fillStyle = `rgba(25, 211, 230, ${(pr.alpha * 0.35).toFixed(3)})`;
+              ctx.fillText(st.label, pr.x + 8 * pr.scale, pr.y - 4);
+            }
+            ctx.restore();
+          });
+        }
+      });
+
+      // --- LAYER 4: Deployment Packets (Light Pulses) ---
+      packets.forEach((pkt) => {
+        const rail = rails[pkt.railIndex];
+        if (!rail) return;
+
+        // Advance progress
+        pkt.t += pkt.speed;
+        if (pkt.t > 1) {
+          pkt.t = 0;
+        }
+
+        // Trigger stage pulse
+        stages.forEach((st) => {
+          if (Math.abs(pkt.t - st.t) < 0.003 && stagePulses.length < 8) {
+            const pt = interpolateRail(rail.nodes, st.t);
+            stagePulses.push({
+              x: pt.x,
+              y: pt.y,
+              z: pt.z,
+              radius: 4,
+              maxRadius: 28,
+              color: pkt.color,
+              alpha: 0.6
+            });
+          }
+        });
+
+        // Draw luminous trail
+        const trailSteps = 12;
+        ctx.save();
+        for (let j = 0; j < trailSteps; j++) {
+          const trailT = pkt.t - (j / trailSteps) * pkt.trailLength;
+          if (trailT < 0 || trailT > 1) continue;
+
+          const p3D = interpolateRail(rail.nodes, trailT);
+          const pr = project3D(p3D);
+          if (pr.scale <= 0) continue;
+
+          const fade = (1 - j / trailSteps) * pr.alpha;
+          const radius = (pkt.size * (1 - j / (trailSteps * 1.5))) * pr.scale;
+
+          ctx.fillStyle = pkt.color;
+          ctx.globalAlpha = Math.max(fade * 0.7, 0);
+          ctx.beginPath();
+          ctx.arc(pr.x, pr.y, Math.max(radius, 0.5), 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Head glowing core
+        const head3D = interpolateRail(rail.nodes, pkt.t);
+        const headPr = project3D(head3D);
+        if (headPr.scale > 0) {
+          ctx.globalAlpha = headPr.alpha * 0.9;
+          ctx.shadowColor = pkt.color;
+          ctx.shadowBlur = 10 * headPr.scale;
+          ctx.fillStyle = "#FFFFFF";
+          ctx.beginPath();
+          ctx.arc(headPr.x, headPr.y, Math.max(pkt.size * 0.8 * headPr.scale, 1), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // --- LAYER 5: Stage Pulses ---
+      for (let i = stagePulses.length - 1; i >= 0; i--) {
+        const p = stagePulses[i];
+        p.radius += 0.8;
+        p.alpha *= 0.94;
+
+        const pr = project3D(p);
+        if (pr.scale > 0 && p.alpha > 0.02) {
+          ctx.save();
+          ctx.strokeStyle = p.color;
+          ctx.globalAlpha = p.alpha * pr.alpha * 0.5;
+          ctx.lineWidth = 1.2 * pr.scale;
+          ctx.beginPath();
+          ctx.arc(pr.x, pr.y, p.radius * pr.scale, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        if (p.alpha <= 0.02 || p.radius >= p.maxRadius) {
+          stagePulses.splice(i, 1);
+        }
+      }
+
+      if (!prefersReducedMotion) {
+        animFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    // Pause when out of screen to protect CPU / battery
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animFrameId && !prefersReducedMotion) {
+            animFrameId = requestAnimationFrame(render);
+          } else if (!isVisible && animFrameId) {
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(wrapper);
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    // Initial render
+    render();
+  }
+
+  // Initialize on load and Astro View Transitions
+  initHeroDeploymentCanvas();
+  document.addEventListener('astro:page-load', initHeroDeploymentCanvas);
+</script>
+
+<style>
+  .hero-deployment-canvas-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+  }
+
+  .hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0.85;
+    mix-blend-mode: screen;
+  }
+
+  /* Soft Vignette Mask to keep Hero text perfectly legible */
+  .canvas-vignette {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 75% 45%, transparent 30%, rgba(6, 11, 18, 0.75) 85%),
+      linear-gradient(to right, rgba(6, 11, 18, 0.95) 0%, rgba(6, 11, 18, 0.45) 45%, rgba(6, 11, 18, 0.2) 100%),
+      linear-gradient(to bottom, rgba(6, 11, 18, 0.6) 0%, transparent 20%, transparent 80%, rgba(6, 11, 18, 0.95) 100%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .canvas-vignette {
+      background: 
+        radial-gradient(circle at 50% 30%, transparent 20%, rgba(6, 11, 18, 0.85) 75%),
+        linear-gradient(to bottom, rgba(6, 11, 18, 0.8) 0%, rgba(6, 11, 18, 0.3) 30%, rgba(6, 11, 18, 0.85) 100%);
+    }
+    .hero-canvas {
+      opacity: 0.65;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-canvas {
+      opacity: 0.4;
+    }
+  }
+</style>

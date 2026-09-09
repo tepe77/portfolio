@@ -3,10 +3,14 @@ import Button from '../common/Button.astro';
 import Icon from '../common/Icon.astro';
 import HeroTopology from './HeroTopology.astro';
 import HeroMetrics from './HeroMetrics.astro';
+import HeroDeploymentCanvas from './HeroDeploymentCanvas.astro';
 import { profileData } from '../../data/profile';
 ---
 
 <section id="hero" class="hero-section">
+  <!-- Minimalist 3D Deployment Flow Canvas Background -->
+  <HeroDeploymentCanvas />
+
   <div class="container-wide hero-container">
     <!-- Left Column: Identity & Value Proposition -->
     <div class="hero-content" data-reveal>
@@ -58,6 +62,7 @@ import { profileData } from '../../data/profile';
     padding-top: clamp(40px, 6vw, 80px);
     padding-bottom: clamp(60px, 8vw, 100px);
     position: relative;
+    overflow: hidden;
   }
 
   .hero-container {
@@ -65,6 +70,8 @@ import { profileData } from '../../data/profile';
     grid-template-columns: 1fr;
     gap: var(--space-12);
     align-items: center;
+    position: relative;
+    z-index: 2;
   }
 
   @media (min-width: 1024px) {
