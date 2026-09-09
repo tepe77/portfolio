@@ -1,0 +1,28 @@
+---
+import SectionHeader from '../common/SectionHeader.astro';
+import PipelineVisualizer from './PipelineVisualizer.astro';
+import ConfigInspector from './ConfigInspector.astro';
+---
+
+<section id="pipeline" class="pipeline-section">
+  <div class="container-wide">
+    <SectionHeader
+      eyebrow="04 // AUTOMATED DELIVERY & PIPELINES"
+      title="CI/CD &amp; INFRASTRUCTURE AS CODE"
+      description="Automated multi-stage delivery pipelines with Trivy container security gates and production-tested configuration blueprints. Trigger live deployment scenarios or inspect architecture manifests."
+    />
+
+    <!-- 1. Interactive Pipeline Visualizer (DAG runner & live log stream) -->
+    <PipelineVisualizer />
+
+    <!-- 2. Production Config & IaC Blueprints Inspector -->
+    <ConfigInspector />
+  </div>
+</section>
+
+<style>
+  .pipeline-section {
+    position: relative;
+    padding-block: var(--space-12);
+  }
+</style>

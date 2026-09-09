@@ -37,6 +37,22 @@ export function initCommandPalette() {
       shortcut: "P"
     },
     {
+      id: "pipeline",
+      label: "Jump to CI/CD & IaC Pipelines",
+      category: "Navigation",
+      action: () => document.getElementById('pipeline')?.scrollIntoView({ behavior: 'smooth' }),
+      shortcut: "L"
+    },
+    {
+      id: "run-pipeline",
+      label: "Trigger CI/CD Pipeline Run",
+      category: "Actions",
+      action: () => {
+        document.getElementById('pipeline')?.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => document.getElementById('btn-run-pipeline')?.click(), 400);
+      }
+    },
+    {
       id: "stack",
       label: "Jump to Technology Stack",
       category: "Navigation",

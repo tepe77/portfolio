@@ -1,0 +1,856 @@
+---
+import Icon from '../common/Icon.astro';
+import { pipelineStages } from '../../data/pipeline';
+---
+
+<div id="pipeline-visualizer" class="pipeline-card" data-reveal>
+  <!-- Pipeline Header & Scenario Selector -->
+  <div class="pipeline-header">
+    <div class="header-lead">
+      <div class="pipeline-title-wrap">
+        <span class="pipeline-badge font-mono text-xs">CI/CD ENGINE</span>
+        <h3 class="pipeline-title">AUTOMATED DELIVERY &amp; DEVSECOPS PIPELINE</h3>
+      </div>
+      <div class="scenario-selector" role="tablist" aria-label="Select Pipeline Scenario">
+        <button
+          type="button"
+          class="scenario-pill active font-mono text-xs"
+          data-scenario="green"
+          role="tab"
+          aria-selected="true"
+        >
+          <span class="scenario-dot dot-green"></span>
+          <span>GREEN RELEASE</span>
+        </button>
+        <button
+          type="button"
+          class="scenario-pill font-mono text-xs"
+          data-scenario="cve-blocked"
+          role="tab"
+          aria-selected="false"
+        >
+          <span class="scenario-dot dot-red"></span>
+          <span>CVE GATE BLOCKED</span>
+        </button>
+        <button
+          type="button"
+          class="scenario-pill font-mono text-xs"
+          data-scenario="canary"
+          role="tab"
+          aria-selected="false"
+        >
+          <span class="scenario-dot dot-yellow"></span>
+          <span>CANARY ROLLOUT</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Controls & Timer -->
+    <div class="header-actions">
+      <div class="timer-badge font-mono text-xs">
+        <span class="timer-label">ELAPSED:</span>
+        <span id="pipeline-timer" class="timer-value">00:00.0s</span>
+      </div>
+
+      <button
+        type="button"
+        id="btn-run-pipeline"
+        class="action-btn btn-run font-mono text-xs"
+        aria-label="Run automated pipeline execution simulation"
+      >
+        <Icon name="zap" size={14} />
+        <span id="btn-run-label">TRIGGER PIPELINE</span>
+      </button>
+
+      <button
+        type="button"
+        id="btn-reset-pipeline"
+        class="action-btn btn-reset font-mono text-xs"
+        aria-label="Reset pipeline to idle state"
+      >
+        <Icon name="refresh" size={13} />
+        <span>RESET</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Realtime Progress Bar -->
+  <div class="pipeline-progress-track">
+    <div id="pipeline-progress-bar" class="pipeline-progress-fill" style="width: 0%;"></div>
+  </div>
+
+  <!-- Scenario Summary Banner -->
+  <div class="scenario-banner font-mono text-xs">
+    <span class="banner-scenario-tag" id="banner-scenario-tag">SCENARIO // STANDARD GREEN RELEASE</span>
+    <span class="banner-summary" id="banner-scenario-summary">All 5 stages pass automated tests, linting, caching, and vulnerability scans with zero errors.</span>
+  </div>
+
+  <!-- Visual DAG Stage Flow -->
+  <div class="pipeline-dag-container">
+    <div class="dag-stages-track">
+      {pipelineStages.map((stage, idx) => (
+        <div
+          class={`dag-stage-node ${idx === 0 ? 'selected' : ''}`}
+          data-stage-id={stage.id}
+          tabindex="0"
+          role="button"
+          aria-label={`View logs for ${stage.name}`}
+        >
+          <div class="node-stage-header font-mono">
+            <span class="node-stage-cat">{stage.category}</span>
+            <span class="node-stage-time">{stage.duration}</span>
+          </div>
+
+          <div class="node-stage-main">
+            <div class="node-status-indicator" data-status="idle">
+              <span class="status-icon icon-idle font-mono">0{idx + 1}</span>
+              <span class="status-icon icon-running"></span>
+              <span class="status-icon icon-passed font-mono">&#10003;</span>
+              <span class="status-icon icon-failed font-mono">&#10005;</span>
+              <span class="status-icon icon-skipped font-mono">&mdash;</span>
+            </div>
+            <div class="node-stage-meta">
+              <h4 class="node-stage-name font-mono">{stage.name}</h4>
+              <p class="node-stage-desc">{stage.description}</p>
+            </div>
+          </div>
+
+          <div class="node-stage-footer font-mono">
+            <span class="node-stage-runner">{stage.runner}</span>
+            <span class="node-stage-cta">LOGS &rarr;</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Embedded Live Terminal Log Console -->
+  <div class="pipeline-console">
+    <div class="console-header font-mono text-xs">
+      <div class="console-dots" aria-hidden="true">
+        <span class="cdot cdot-red"></span>
+        <span class="cdot cdot-yellow"></span>
+        <span class="cdot cdot-green"></span>
+      </div>
+      <div class="console-title">
+        <span>LOG STREAM:</span>
+        <span id="console-active-job" class="text-cyan">01 // LINT &amp; AUDIT</span>
+        <span class="text-muted">|</span>
+        <span id="console-active-status" class="text-green">IDLE</span>
+      </div>
+      <button type="button" id="console-clear-btn" class="console-clear-btn" aria-label="Clear log viewer">
+        CLEAR
+      </button>
+    </div>
+
+    <div id="pipeline-log-viewport" class="console-body font-mono text-xs">
+      <!-- Streamed lines injected via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  import { pipelineStages, pipelineScenarios } from '../../data/pipeline';
+
+  function initPipelineVisualizer() {
+    const container = document.getElementById('pipeline-visualizer');
+    if (!container) return;
+
+    const scenarioPills = container.querySelectorAll<HTMLButtonElement>('.scenario-pill');
+    const runBtn = document.getElementById('btn-run-pipeline') as HTMLButtonElement | null;
+    const runLabel = document.getElementById('btn-run-label');
+    const resetBtn = document.getElementById('btn-reset-pipeline');
+    const timerDisplay = document.getElementById('pipeline-timer');
+    const progressBar = document.getElementById('pipeline-progress-bar');
+    const stageNodes = container.querySelectorAll<HTMLElement>('.dag-stage-node');
+    const logViewport = document.getElementById('pipeline-log-viewport');
+    const activeJobDisplay = document.getElementById('console-active-job');
+    const activeStatusDisplay = document.getElementById('console-active-status');
+    const bannerTag = document.getElementById('banner-scenario-tag');
+    const bannerSummary = document.getElementById('banner-scenario-summary');
+    const clearBtn = document.getElementById('console-clear-btn');
+
+    let currentScenarioKey: 'green' | 'cve-blocked' | 'canary' = 'green';
+    let isRunning = false;
+    let timerInterval: number | null = null;
+    let startTime = 0;
+
+    // Update Scenario
+    const setScenario = (key: 'green' | 'cve-blocked' | 'canary') => {
+      if (isRunning) return;
+      currentScenarioKey = key;
+      const scenario = pipelineScenarios[key];
+
+      scenarioPills.forEach((p) => {
+        const active = p.dataset.scenario === key;
+        p.classList.toggle('active', active);
+        p.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      if (bannerTag) bannerTag.textContent = `SCENARIO // ${scenario.name}`;
+      if (bannerSummary) bannerSummary.textContent = scenario.summary;
+
+      resetPipeline(false);
+    };
+
+    scenarioPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const key = pill.dataset.scenario as 'green' | 'cve-blocked' | 'canary';
+        if (key) setScenario(key);
+      });
+    });
+
+    // Display static or recorded logs for a stage
+    const displayStageLogs = (stageId: string, customStatus?: string) => {
+      const stage = pipelineStages.find((s) => s.id === stageId);
+      if (!stage || !logViewport) return;
+
+      stageNodes.forEach((node) => {
+        node.classList.toggle('selected', node.dataset.stageId === stageId);
+      });
+
+      if (activeJobDisplay) activeJobDisplay.textContent = stage.name;
+      if (activeStatusDisplay) {
+        const status = customStatus || (stageNodes[0].querySelector('.node-status-indicator')?.getAttribute('data-status') || 'READY');
+        activeStatusDisplay.textContent = status.toUpperCase();
+      }
+
+      // Pick scenario log array
+      let lines = stage.logs.green;
+      if (currentScenarioKey === 'cve-blocked' && stage.logs.cveBlocked) {
+        lines = stage.logs.cveBlocked;
+      } else if (currentScenarioKey === 'canary' && stage.logs.canary) {
+        lines = stage.logs.canary;
+      }
+
+      logViewport.innerHTML = '';
+      lines.forEach((line) => {
+        const lineEl = document.createElement('div');
+        lineEl.className = 'log-line';
+
+        if (line.startsWith('$')) {
+          lineEl.className += ' log-command';
+        } else if (line.includes('PASS') || line.includes('PASSED') || line.includes('✔')) {
+          lineEl.className += ' log-success';
+        } else if (line.includes('ERROR') || line.includes('CRITICAL') || line.includes('✖')) {
+          lineEl.className += ' log-danger';
+        } else if (line.includes('WARNING') || line.includes('SKIPPED')) {
+          lineEl.className += ' log-warning';
+        } else {
+          lineEl.className += ' log-text';
+        }
+
+        lineEl.textContent = line;
+        logViewport.appendChild(lineEl);
+      });
+
+      logViewport.scrollTop = logViewport.scrollHeight;
+    };
+
+    // Stage card click
+    stageNodes.forEach((node) => {
+      node.addEventListener('click', () => {
+        const stageId = node.dataset.stageId;
+        if (stageId) displayStageLogs(stageId);
+      });
+    });
+
+    // Reset Pipeline
+    const resetPipeline = (resetLogs = true) => {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      if (timerDisplay) timerDisplay.textContent = '00:00.0s';
+      if (progressBar) progressBar.style.width = '0%';
+      if (runBtn) runBtn.disabled = false;
+      if (runLabel) runLabel.textContent = 'TRIGGER PIPELINE';
+
+      stageNodes.forEach((node) => {
+        const indicator = node.querySelector('.node-status-indicator');
+        indicator?.setAttribute('data-status', 'idle');
+        node.classList.remove('running', 'passed', 'failed', 'skipped');
+      });
+
+      if (resetLogs) {
+        displayStageLogs(pipelineStages[0].id, 'IDLE');
+      }
+    };
+
+    resetBtn?.addEventListener('click', () => resetPipeline(true));
+    clearBtn?.addEventListener('click', () => {
+      if (logViewport) logViewport.innerHTML = '<div class="log-line log-text text-muted"># Console buffer cleared. Ready for next pipeline run.</div>';
+    });
+
+    // Run Automated Execution Simulation
+    const runPipeline = async () => {
+      if (isRunning) return;
+      isRunning = true;
+      if (runBtn) runBtn.disabled = true;
+      if (runLabel) runLabel.textContent = 'EXECUTING...';
+
+      const scenario = pipelineScenarios[currentScenarioKey];
+      startTime = performance.now();
+
+      timerInterval = window.setInterval(() => {
+        const elapsed = (performance.now() - startTime) / 1000;
+        const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const secs = (elapsed % 60).toFixed(1).padStart(4, '0');
+        if (timerDisplay) timerDisplay.textContent = `${mins}:${secs}s`;
+      }, 100);
+
+      const stageKeys = pipelineStages.map((s) => s.id);
+
+      for (let i = 0; i < stageKeys.length; i++) {
+        const stageId = stageKeys[i];
+        const node = container.querySelector<HTMLElement>(`[data-stage-id="${stageId}"]`);
+        const indicator = node?.querySelector('.node-status-indicator');
+        const result = scenario.stagesResult[stageId];
+
+        displayStageLogs(stageId, 'RUNNING');
+        indicator?.setAttribute('data-status', 'running');
+        node?.classList.add('running');
+
+        // Progress update
+        const progressPct = ((i + 0.5) / stageKeys.length) * 100;
+        if (progressBar) progressBar.style.width = `${progressPct}%`;
+
+        // Simulate execution delay (1.2s to 1.8s per stage)
+        await new Promise((resolve) => setTimeout(resolve, 1400));
+
+        node?.classList.remove('running');
+        indicator?.setAttribute('data-status', result);
+        node?.classList.add(result);
+
+        displayStageLogs(stageId, result);
+
+        const stageProgressPct = ((i + 1) / stageKeys.length) * 100;
+        if (progressBar) progressBar.style.width = `${stageProgressPct}%`;
+
+        if (result === 'failed') {
+          // If a stage failed (CVE Gate), skip all subsequent downstream stages
+          for (let j = i + 1; j < stageKeys.length; j++) {
+            const nextId = stageKeys[j];
+            const nextNode = container.querySelector<HTMLElement>(`[data-stage-id="${nextId}"]`);
+            const nextIndicator = nextNode?.querySelector('.node-status-indicator');
+            nextIndicator?.setAttribute('data-status', 'skipped');
+            nextNode?.classList.add('skipped');
+          }
+          break;
+        }
+      }
+
+      // Finish execution
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      isRunning = false;
+      if (runBtn) runBtn.disabled = false;
+      if (runLabel) runLabel.textContent = 'RUN AGAIN';
+    };
+
+    runBtn?.addEventListener('click', runPipeline);
+
+    // Initial setup
+    displayStageLogs('lint', 'IDLE');
+  }
+
+  initPipelineVisualizer();
+  document.addEventListener('astro:page-load', initPipelineVisualizer);
+</script>
+
+<style>
+  .pipeline-card {
+    background: var(--color-bg-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md), 0 0 48px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pipeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-surface-1);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-lead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .pipeline-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .pipeline-badge {
+    background: rgba(25, 211, 230, 0.12);
+    border: 1px solid rgba(25, 211, 230, 0.3);
+    color: var(--color-accent-primary);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+  }
+
+  .pipeline-title {
+    font-size: var(--text-sm);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .scenario-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .scenario-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+  }
+
+  .scenario-pill:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+  }
+
+  .scenario-pill.active {
+    background: var(--color-surface-2);
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 0 12px rgba(25, 211, 230, 0.2);
+  }
+
+  .scenario-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .dot-green { background: var(--color-success); }
+  .dot-red { background: var(--color-danger); }
+  .dot-yellow { background: var(--color-warning); }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .timer-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .timer-label {
+    color: var(--color-text-muted);
+  }
+
+  .timer-value {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    min-width: 58px;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+  }
+
+  .btn-run {
+    background: rgba(25, 211, 230, 0.15);
+    border: 1px solid var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+
+  .btn-run:hover:not(:disabled) {
+    background: var(--color-accent-primary);
+    color: var(--color-bg-0);
+    box-shadow: 0 0 16px rgba(25, 211, 230, 0.4);
+  }
+
+  .btn-run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-reset {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .btn-reset:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+
+  /* Progress Bar */
+  .pipeline-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(27, 48, 66, 0.6);
+  }
+
+  .pipeline-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--color-accent-secondary), var(--color-accent-primary));
+    box-shadow: 0 0 10px var(--color-accent-primary);
+    transition: width 350ms ease-out;
+  }
+
+  /* Banner */
+  .scenario-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-6);
+    background: rgba(13, 22, 34, 0.9);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.6);
+    font-size: 0.72rem;
+  }
+
+  .banner-scenario-tag {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .banner-summary {
+    color: var(--color-text-muted);
+  }
+
+  /* DAG Stages Grid Track */
+  .pipeline-dag-container {
+    padding: var(--space-6);
+    background: 
+      radial-gradient(ellipse 90% 60% at 50% 25%, rgba(20, 33, 48, 0.4) 0%, rgba(6, 11, 18, 0.8) 100%),
+      linear-gradient(to right, rgba(27, 48, 66, 0.1) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dag-stages-track {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: var(--space-4);
+    min-width: 1100px;
+  }
+
+  .dag-stage-node {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    outline: none;
+    position: relative;
+  }
+
+  .dag-stage-node:hover {
+    border-color: var(--color-accent-primary);
+    background: var(--color-surface-2);
+    transform: translateY(-2px);
+  }
+
+  .dag-stage-node.selected {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 20px rgba(25, 211, 230, 0.2);
+    background: var(--color-surface-2);
+  }
+
+  .node-stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.65rem;
+  }
+
+  .node-stage-cat {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .node-stage-time {
+    color: var(--color-text-muted);
+  }
+
+  .node-stage-main {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .node-status-indicator {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .status-icon {
+    display: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .node-status-indicator[data-status="idle"] .icon-idle { display: block; color: var(--color-text-muted); }
+  .node-status-indicator[data-status="running"] .icon-running {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(25, 211, 230, 0.2);
+    border-top-color: var(--color-accent-primary);
+    border-radius: 50%;
+    animation: spin-loader 0.8s linear infinite;
+  }
+  .node-status-indicator[data-status="passed"] {
+    background: rgba(32, 211, 155, 0.15);
+    border-color: var(--color-success);
+  }
+  .node-status-indicator[data-status="passed"] .icon-passed { display: block; color: var(--color-success); }
+
+  .node-status-indicator[data-status="failed"] {
+    background: rgba(240, 93, 108, 0.15);
+    border-color: var(--color-danger);
+  }
+  .node-status-indicator[data-status="failed"] .icon-failed { display: block; color: var(--color-danger); }
+
+  .node-status-indicator[data-status="skipped"] {
+    opacity: 0.5;
+  }
+  .node-status-indicator[data-status="skipped"] .icon-skipped { display: block; color: var(--color-text-muted); }
+
+  .node-stage-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .node-stage-name {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+  }
+
+  .node-stage-desc {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  .node-stage-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(27, 48, 66, 0.6);
+    font-size: 0.62rem;
+  }
+
+  .node-stage-runner {
+    color: var(--color-text-muted);
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .node-stage-cta {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  /* Console Log Viewer */
+  .pipeline-console {
+    background: #04080D;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .console-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    background: rgba(13, 22, 34, 0.95);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.6);
+  }
+
+  .console-dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .cdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .cdot-red { background: #F05D6C; }
+  .cdot-yellow { background: #F5B942; }
+  .cdot-green { background: #20D39B; }
+
+  .console-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+  }
+
+  .console-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+  }
+
+  .console-clear-btn:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .console-body {
+    padding: var(--space-4) var(--space-5);
+    height: 190px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.6;
+  }
+
+  .log-line {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  .log-command {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .log-success {
+    color: var(--color-success);
+  }
+
+  .log-danger {
+    color: var(--color-danger);
+    font-weight: 700;
+  }
+
+  .log-warning {
+    color: var(--color-warning);
+  }
+
+  .log-text {
+    color: var(--color-text-secondary);
+  }
+
+  @keyframes spin-loader {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .pipeline-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .header-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .timer-badge {
+      grid-column: span 2;
+      justify-content: space-between;
+    }
+
+    .btn-run, .btn-reset {
+      justify-content: center;
+    }
+
+    .scenario-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .scenario-pill {
+      padding: 5px 2px;
+      font-size: 0.62rem;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .scenario-banner {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--space-2) var(--space-4);
+    }
+
+    .pipeline-dag-container {
+      padding: var(--space-4) var(--space-3);
+    }
+
+    .dag-stages-track {
+      min-width: 900px;
+    }
+  }
+</style>

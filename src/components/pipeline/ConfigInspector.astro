@@ -1,0 +1,513 @@
+---
+import Icon from '../common/Icon.astro';
+import { productionConfigs } from '../../data/pipeline';
+---
+
+<div id="config-inspector" class="config-inspector-card" data-reveal>
+  <!-- Control Bar & Tab Switcher -->
+  <div class="config-header">
+    <div class="config-title-wrap">
+      <span class="config-badge font-mono text-xs">IaC BLUEPRINTS</span>
+      <h3 class="config-title">PRODUCTION CONFIGURATIONS &amp; MANIFESTS</h3>
+    </div>
+
+    <!-- Tabs for Config Files -->
+    <div class="config-tabs-bar" role="tablist" aria-label="Select Configuration Manifest">
+      {productionConfigs.map((cfg, idx) => (
+        <button
+          type="button"
+          class={`config-tab-btn font-mono text-xs ${idx === 0 ? 'active' : ''}`}
+          data-config-id={cfg.id}
+          role="tab"
+          aria-selected={idx === 0 ? 'true' : 'false'}
+        >
+          <Icon name={cfg.language === 'yaml' ? 'layers' : 'server'} size={13} />
+          <span>{cfg.filename}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Content Split: Code Viewer + Engineering Annotations -->
+  <div class="config-content-grid">
+    <!-- Code Window -->
+    <div class="code-viewport-column">
+      <div class="code-window-bar font-mono text-xs">
+        <div class="file-meta">
+          <span id="active-config-filename" class="text-cyan">.gitlab-ci.yml</span>
+          <span id="active-config-badge" class="badge-role">PIPELINE AS CODE</span>
+        </div>
+        <button type="button" id="copy-config-btn" class="copy-code-btn" aria-label="Copy configuration code">
+          <Icon name="copy" size={14} />
+          <span id="copy-config-text">COPY MANIFEST</span>
+        </button>
+      </div>
+
+      <div class="code-editor-wrap">
+        <pre class="code-pre font-mono text-xs"><code id="code-snippet-content"></code></pre>
+      </div>
+    </div>
+
+    <!-- Engineering Annotations & Architecture Rationales -->
+    <div class="annotations-column">
+      <div class="annotations-header font-mono text-xs">
+        <Icon name="shield" size={14} />
+        <span>PRODUCTION ENGINEERING RATIONALE</span>
+      </div>
+
+      <p id="active-config-description" class="config-lead-text">
+        Enterprise multi-stage delivery pipeline featuring remote Docker layer caching, automated Trivy container security gates, and zero-downtime rolling deployment.
+      </p>
+
+      <div class="annotations-list-title font-mono text-xs">
+        KEY ARCHITECTURAL DECISIONS &darr;
+      </div>
+
+      <div id="annotations-list" class="annotations-items">
+        <!-- Injected via script -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { productionConfigs } from '../../data/pipeline';
+
+  function initConfigInspector() {
+    const container = document.getElementById('config-inspector');
+    if (!container) return;
+
+    const tabs = container.querySelectorAll<HTMLButtonElement>('.config-tab-btn');
+    const filenameEl = document.getElementById('active-config-filename');
+    const badgeEl = document.getElementById('active-config-badge');
+    const codeContentEl = document.getElementById('code-snippet-content');
+    const descEl = document.getElementById('active-config-description');
+    const annotationsList = document.getElementById('annotations-list');
+    const copyBtn = document.getElementById('copy-config-btn');
+    const copyText = document.getElementById('copy-config-text');
+
+    let currentConfig = productionConfigs[0];
+
+    // Render selected configuration
+    const renderConfig = (cfgId: string) => {
+      const cfg = productionConfigs.find((c) => c.id === cfgId);
+      if (!cfg) return;
+      currentConfig = cfg;
+
+      // Update tabs
+      tabs.forEach((t) => {
+        const active = t.dataset.configId === cfgId;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      if (filenameEl) filenameEl.textContent = cfg.filename;
+      if (badgeEl) badgeEl.textContent = cfg.badge;
+      if (descEl) descEl.textContent = cfg.description;
+
+      // Render Code with line numbers
+      if (codeContentEl) {
+        const lines = cfg.code.split('\n');
+        codeContentEl.innerHTML = '';
+
+        lines.forEach((line, index) => {
+          const lineNum = index + 1;
+          const lineRow = document.createElement('div');
+          lineRow.className = 'code-line-row';
+          lineRow.dataset.line = String(lineNum);
+
+          const numEl = document.createElement('span');
+          numEl.className = 'code-num';
+          numEl.textContent = String(lineNum).padStart(2, ' ');
+
+          const textEl = document.createElement('span');
+          textEl.className = 'code-text';
+
+          // Syntax highlighting
+          let formattedLine = line;
+          if (line.trim().startsWith('#')) {
+            textEl.className += ' code-comment';
+          } else if (line.includes(':')) {
+            const parts = line.split(':');
+            formattedLine = `<span class="yaml-k">${parts[0]}:</span>${parts.slice(1).join(':')}`;
+          }
+
+          textEl.innerHTML = formattedLine;
+          lineRow.appendChild(numEl);
+          lineRow.appendChild(textEl);
+          codeContentEl.appendChild(lineRow);
+        });
+      }
+
+      // Render Annotations
+      if (annotationsList) {
+        annotationsList.innerHTML = '';
+        cfg.annotations.forEach((ann) => {
+          const item = document.createElement('div');
+          item.className = 'annotation-card';
+          item.innerHTML = `
+            <div class="annotation-card-top font-mono text-xs">
+              <span class="ann-line-badge">LINE ${ann.line}</span>
+              <span class="ann-title">${ann.title}</span>
+            </div>
+            <p class="ann-desc">${ann.explanation}</p>
+          `;
+
+          // Clicking annotation highlights code line
+          item.addEventListener('click', () => {
+            container.querySelectorAll('.code-line-row').forEach((r) => r.classList.remove('highlighted'));
+            const targetLine = container.querySelector(`.code-line-row[data-line="${ann.line}"]`);
+            if (targetLine) {
+              targetLine.classList.add('highlighted');
+              targetLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+
+          annotationsList.appendChild(item);
+        });
+      }
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.configId;
+        if (id) renderConfig(id);
+      });
+    });
+
+    // Copy to clipboard
+    copyBtn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(currentConfig.code);
+        if (copyText) copyText.textContent = 'COPIED TO CLIPBOARD!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          if (copyText) copyText.textContent = 'COPY MANIFEST';
+          copyBtn.classList.remove('copied');
+        }, 2200);
+      } catch {
+        if (copyText) copyText.textContent = 'ERROR COPYING';
+      }
+    });
+
+    // Initial render
+    renderConfig('gitlab-ci');
+  }
+
+  initConfigInspector();
+  document.addEventListener('astro:page-load', initConfigInspector);
+</script>
+
+<style>
+  .config-inspector-card {
+    background: var(--color-bg-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md), 0 0 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-8);
+  }
+
+  .config-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-surface-1);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .config-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .config-badge {
+    background: rgba(92, 141, 255, 0.12);
+    border: 1px solid rgba(92, 141, 255, 0.3);
+    color: var(--color-accent-secondary);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+  }
+
+  .config-title {
+    font-size: var(--text-sm);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .config-tabs-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .config-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .config-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .config-tab-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+  }
+
+  .config-tab-btn.active {
+    background: var(--color-surface-2);
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 0 12px rgba(25, 211, 230, 0.2);
+  }
+
+  .config-content-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+  }
+
+  /* Code Viewport Column */
+  .code-viewport-column {
+    background: #03070C;
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .code-window-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-5);
+    background: rgba(13, 22, 34, 0.95);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .file-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-weight: 700;
+  }
+
+  .badge-role {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-text-muted);
+  }
+
+  .copy-code-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.68rem;
+    font-family: var(--font-mono);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+  }
+
+  .copy-code-btn:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+
+  .copy-code-btn.copied {
+    border-color: var(--color-success);
+    color: var(--color-success);
+    background: rgba(32, 211, 155, 0.1);
+  }
+
+  .code-editor-wrap {
+    padding: var(--space-4) var(--space-2);
+    height: 480px;
+    overflow-y: auto;
+  }
+
+  .code-pre {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  :global(.code-line-row) {
+    display: flex;
+    padding: 1px var(--space-3);
+    border-radius: 2px;
+    transition: background-color var(--duration-fast);
+  }
+
+  :global(.code-line-row:hover) {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  :global(.code-line-row.highlighted) {
+    background: rgba(25, 211, 230, 0.15) !important;
+    border-left: 2px solid var(--color-accent-primary);
+  }
+
+  :global(.code-num) {
+    color: rgba(148, 163, 184, 0.4);
+    user-select: none;
+    margin-right: var(--space-4);
+    min-width: 24px;
+    text-align: right;
+  }
+
+  :global(.code-text) {
+    color: var(--color-text-primary);
+    white-space: pre;
+  }
+
+  :global(.code-comment) {
+    color: var(--color-text-muted) !important;
+    font-style: italic;
+  }
+
+  :global(.yaml-k) {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  /* Annotations Column */
+  .annotations-column {
+    background: var(--color-surface-1);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .annotations-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .config-lead-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  .annotations-list-title {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    margin-top: var(--space-2);
+  }
+
+  .annotations-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  :global(.annotation-card) {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+  }
+
+  :global(.annotation-card:hover) {
+    border-color: var(--color-accent-primary);
+    transform: translateX(4px);
+    background: var(--color-surface-2);
+  }
+
+  :global(.annotation-card-top) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: 4px;
+  }
+
+  :global(.ann-line-badge) {
+    background: rgba(25, 211, 230, 0.12);
+    color: var(--color-accent-primary);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  :global(.ann-title) {
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  :global(.ann-desc) {
+    font-size: 0.76rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .config-content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .code-viewport-column {
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .code-editor-wrap {
+      height: 360px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .config-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .config-window-bar {
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .annotations-column {
+      padding: var(--space-4);
+    }
+  }
+</style>

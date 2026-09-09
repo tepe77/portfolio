@@ -11,6 +11,7 @@ export function initTerminal() {
       "Available commands:",
       "  about        Overview of engineering background",
       "  projects     List featured engineering case studies",
+      "  pipeline     CI/CD pipeline and IaC configurations",
       "  stack        Primary tools and technology stack",
       "  experience   Career timeline and milestones",
       "  status       Current simulated production status",
@@ -43,6 +44,14 @@ export function initTerminal() {
       "05. S3 Object Storage & DR (RustFS • Encrypted Backups • GPG)",
       "",
       "Use the Projects section above for full interactive case study diagrams."
+    ],
+    pipeline: [
+      "Automated CI/CD Delivery & DevSecOps Platform:",
+      "  Stages:    Lint -> Unit Test -> Docker Build -> Trivy CVE Scan -> Cluster Deploy",
+      "  Features:  BuildKit caching, zero unmasked secrets, Cosign signing, rolling update",
+      "  IaC Files: .gitlab-ci.yml, patroni.yml, compose.prod.yml, nginx.conf",
+      "",
+      "Trigger the visual pipeline DAG runner in Section 04."
     ],
     stack: [
       "Containerization:  Docker, Docker Swarm, Container Registries",
