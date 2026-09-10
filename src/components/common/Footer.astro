@@ -89,4 +89,10 @@ import StatusBadge from './StatusBadge.astro';
     flex-wrap: wrap;
     gap: var(--space-3);
   }
+
+  @media (max-width: 899px) {
+    .site-footer {
+      padding-bottom: calc(var(--space-8) + 56px + env(safe-area-inset-bottom, 0px));
+    }
+  }
 </style>

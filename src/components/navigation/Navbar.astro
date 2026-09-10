@@ -53,17 +53,6 @@ const navLinks = [
       <div class="desktop-status-wrap">
         <StatusBadge status="operational" label="ALL SYSTEMS OPERATIONAL" size="sm" />
       </div>
-
-      <!-- Mobile Hamburger Button -->
-      <button
-        type="button"
-        id="mobile-menu-toggle"
-        class="mobile-menu-btn"
-        aria-label="Open mobile navigation menu"
-        aria-controls="mobile-drawer"
-      >
-        <Icon name="menu" size={24} />
-      </button>
     </div>
   </div>
 </header>
@@ -179,7 +168,7 @@ const navLinks = [
   }
 
   .cmd-trigger-btn {
-    display: none;
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     padding: 6px 12px;
@@ -190,12 +179,6 @@ const navLinks = [
     font-size: var(--text-xs);
     cursor: pointer;
     transition: all var(--duration-fast);
-  }
-
-  @media (min-width: 640px) {
-    .cmd-trigger-btn {
-      display: inline-flex;
-    }
   }
 
   .cmd-trigger-btn:hover {
@@ -223,24 +206,12 @@ const navLinks = [
     }
   }
 
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    color: var(--color-text-primary);
-    cursor: pointer;
-    padding: var(--space-1);
-  }
-
-  @media (min-width: 900px) {
-    .mobile-menu-btn {
+  @media (max-width: 640px) {
+    .cmd-trigger-btn {
+      padding: 5px 9px;
+    }
+    .cmd-text {
       display: none;
     }
-  }
-
-  .mobile-menu-btn:hover {
-    color: var(--color-accent-primary);
   }
 </style>

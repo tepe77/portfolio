@@ -74,12 +74,6 @@ export function initCommandPalette() {
       shortcut: "M"
     },
     {
-      id: "status",
-      label: "View System Status",
-      category: "Operations",
-      action: () => document.getElementById('status')?.scrollIntoView({ behavior: 'smooth' })
-    },
-    {
       id: "contact",
       label: "Jump to Contact",
       category: "Contact",

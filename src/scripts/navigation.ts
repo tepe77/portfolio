@@ -1,15 +1,12 @@
-// Navigation controller for desktop & mobile
+// Navigation controller for desktop & mobile bottom bar
 export function initNavigation() {
   const navbar = document.getElementById('main-navbar');
-  const mobileToggle = document.getElementById('mobile-menu-toggle');
-  const mobileDrawer = document.getElementById('mobile-drawer');
-  const mobileClose = document.getElementById('mobile-drawer-close');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>('.nav-link, .bottom-nav-link');
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
 
   if (!navbar) return;
 
-  // Scroll effect on navbar (translucent -> solid with border)
+  // Scroll effect on top navbar (translucent -> solid with border)
   const handleScroll = () => {
     if (window.scrollY > 40) {
       navbar.classList.add('scrolled');
@@ -18,20 +15,32 @@ export function initNavigation() {
     }
 
     // Active link highlighting via scroll spy
-    const scrollPos = window.scrollY + 120;
+    const scrollPos = window.scrollY + 140;
+    let currentActiveId = '';
+
     sections.forEach((section) => {
-      const top = (section as HTMLElement).offsetTop;
-      const height = (section as HTMLElement).offsetHeight;
+      const top = section.offsetTop;
+      const height = section.offsetHeight;
       const id = section.getAttribute('id');
 
-      if (scrollPos >= top && scrollPos < top + height) {
-        navLinks.forEach((link) => {
-          if (link.getAttribute('href') === `#${id}`) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
+      if (id && scrollPos >= top && scrollPos < top + height) {
+        currentActiveId = id;
+      }
+    });
+
+    // If near the top, default to about or first section
+    if (window.scrollY < 200) {
+      currentActiveId = 'about';
+    }
+
+    navLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href === `#${currentActiveId}`) {
+        link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
       }
     });
   };
@@ -39,34 +48,26 @@ export function initNavigation() {
   window.addEventListener('scroll', handleScroll, { passive: true });
   handleScroll();
 
-  // Mobile drawer controls
-  const openDrawer = () => {
-    if (!mobileDrawer) return;
-    mobileDrawer.classList.add('open');
-    mobileDrawer.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    mobileClose?.focus();
-  };
+  // Smooth scroll and active state on bottom nav clicks
+  const bottomLinks = document.querySelectorAll<HTMLAnchorElement>('.bottom-nav-link');
+  bottomLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const targetSection = document.getElementById(href.substring(1));
+        if (targetSection) {
+          const topOffset = targetSection.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({
+            top: Math.max(0, topOffset),
+            behavior: 'smooth'
+          });
 
-  const closeDrawer = () => {
-    if (!mobileDrawer) return;
-    mobileDrawer.classList.remove('open');
-    mobileDrawer.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    mobileToggle?.focus();
-  };
-
-  mobileToggle?.addEventListener('click', openDrawer);
-  mobileClose?.addEventListener('click', closeDrawer);
-
-  // Close drawer on link click or Escape key
-  mobileDrawer?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', closeDrawer);
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileDrawer?.classList.contains('open')) {
-      closeDrawer();
-    }
+          // Instant active state update
+          bottomLinks.forEach((l) => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      }
+    });
   });
 }

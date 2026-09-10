@@ -1,42 +1,334 @@
 ---
-import MetricCard from '../common/MetricCard.astro';
+import Icon from '../common/Icon.astro';
 import { profileData } from '../../data/profile';
 
-const iconMap: Record<string, string> = {
-  cpu: 'cpu',
-  memory: 'layers',
-  uptime: 'check-circle',
-  deployments: 'zap'
+const gaugeConfigs: Record<string, {
+  shortLabel: string;
+  pct: number;
+  colorVar: string;
+  gradientId: string;
+  stopColor1: string;
+  stopColor2: string;
+  displayValue: string;
+  icon: string;
+}> = {
+  cpu: {
+    shortLabel: 'CPU LOAD',
+    pct: 0.23,
+    colorVar: '#19D3E6',
+    gradientId: 'gauge-grad-cpu',
+    stopColor1: '#06B6D4',
+    stopColor2: '#19D3E6',
+    displayValue: '23%',
+    icon: 'cpu'
+  },
+  memory: {
+    shortLabel: 'MEMORY',
+    pct: 0.41,
+    colorVar: '#38BDF8',
+    gradientId: 'gauge-grad-mem',
+    stopColor1: '#0284C7',
+    stopColor2: '#38BDF8',
+    displayValue: '41%',
+    icon: 'layers'
+  },
+  uptime: {
+    shortLabel: 'UPTIME',
+    pct: 0.9998,
+    colorVar: '#10B981',
+    gradientId: 'gauge-grad-uptime',
+    stopColor1: '#059669',
+    stopColor2: '#10B981',
+    displayValue: '99.98%',
+    icon: 'check-circle'
+  },
+  deployments: {
+    shortLabel: 'PIPELINES',
+    pct: 0.88,
+    colorVar: '#818CF8',
+    gradientId: 'gauge-grad-pipelines',
+    stopColor1: '#6366F1',
+    stopColor2: '#818CF8',
+    displayValue: '1,284',
+    icon: 'zap'
+  }
 };
+
+// Radius and circumference for SVG circle
+const radius = 28;
+const circumference = 2 * Math.PI * radius; // ~175.93
 ---
 
-<div class="hero-metrics-grid">
-  {profileData.metrics.map((m, index) => (
-    <MetricCard
-      label={m.label}
-      value={m.value}
-      numericTarget={m.numericTarget}
-      unit={m.unit}
-      description={m.description}
-      sparkline={m.sparkline}
-      icon={iconMap[m.id] || 'activity'}
-      delay={index * 100}
-    />
-  ))}
+<div class="hero-metrics-strip" data-reveal>
+  {profileData.metrics.map((m, index) => {
+    const config = gaugeConfigs[m.id] || {
+      shortLabel: m.label,
+      pct: 0.5,
+      colorVar: '#19D3E6',
+      gradientId: `gauge-grad-${m.id}`,
+      stopColor1: '#06B6D4',
+      stopColor2: '#19D3E6',
+      displayValue: m.value,
+      icon: 'activity'
+    };
+    const dashoffset = circumference * (1 - config.pct);
+
+    return (
+      <div
+        class="circle-gauge-item"
+        title={`${m.label}: ${m.value} — ${m.description}`}
+        tabindex="0"
+        aria-label={`${m.label}: ${m.value}`}
+        style={`--item-delay: ${index * 60}ms; --gauge-accent: ${config.colorVar};`}
+      >
+        <div class="gauge-ring-wrap">
+          <svg viewBox="0 0 68 68" class="gauge-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id={config.gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color={config.stopColor1} />
+                <stop offset="100%" stop-color={config.stopColor2} />
+              </linearGradient>
+              <filter id={`glow-${m.id}`} x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Background Track Circle -->
+            <circle
+              cx="34"
+              cy="34"
+              r={radius}
+              class="gauge-bg-track"
+            />
+
+            <!-- Foreground Progress Arc -->
+            <circle
+              cx="34"
+              cy="34"
+              r={radius}
+              class="gauge-progress-arc"
+              stroke={`url(#${config.gradientId})`}
+              stroke-dasharray={circumference}
+              stroke-dashoffset={dashoffset}
+            />
+          </svg>
+
+          <!-- Inside Center: Mini Icon & Value -->
+          <div class="gauge-inner-content">
+            <div class="gauge-icon" aria-hidden="true">
+              <Icon name={config.icon} size={13} />
+            </div>
+            <span
+              class="gauge-value font-mono"
+              data-counter-target={m.numericTarget}
+              data-counter-unit={m.unit}
+            >
+              {config.displayValue}
+            </span>
+          </div>
+        </div>
+
+        <!-- Label Below Circle -->
+        <div class="gauge-label-wrap">
+          <span class="gauge-label font-mono">{config.shortLabel}</span>
+          <span class="gauge-live-dot" aria-hidden="true"></span>
+        </div>
+      </div>
+    );
+  })}
 </div>
 
 <style>
-  .hero-metrics-grid {
+  .hero-metrics-strip {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-    margin-top: var(--space-8);
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .circle-gauge-item {
+    background: rgba(13, 22, 34, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    transition: transform var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast), background-color var(--duration-fast);
+    position: relative;
+    cursor: default;
+    user-select: none;
+    outline: none;
+  }
+
+  .circle-gauge-item:hover,
+  .circle-gauge-item:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--gauge-accent);
+    background: rgba(18, 30, 46, 0.85);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 0 12px rgba(25, 211, 230, 0.15);
+  }
+
+  .circle-gauge-item:focus-visible {
+    box-shadow: 0 0 0 2px var(--gauge-accent);
+  }
+
+  .gauge-ring-wrap {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Start progress from top (12 o'clock) */
+    display: block;
+  }
+
+  .gauge-bg-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 3.5;
+  }
+
+  .gauge-progress-arc {
+    fill: none;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s var(--ease-standard);
+  }
+
+  .circle-gauge-item:hover .gauge-progress-arc {
+    stroke-width: 4;
+    filter: drop-shadow(0 0 3px var(--gauge-accent));
+  }
+
+  .gauge-inner-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .gauge-icon {
+    color: var(--gauge-accent);
+    opacity: 0.85;
+    margin-bottom: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gauge-value {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .gauge-label-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .gauge-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+
+  .gauge-live-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gauge-accent);
+    box-shadow: 0 0 4px var(--gauge-accent);
+    flex-shrink: 0;
   }
 
   @media (max-width: 640px) {
-    .hero-metrics-grid {
-      grid-template-columns: 1fr;
-      gap: var(--space-3);
+    .hero-metrics-strip {
+      gap: 6px;
+      margin-top: var(--space-5);
+    }
+
+    .circle-gauge-item {
+      padding: var(--space-2) 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .gauge-ring-wrap {
+      width: 54px;
+      height: 54px;
+    }
+
+    .gauge-icon :global(svg) {
+      width: 11px;
+      height: 11px;
+    }
+
+    .gauge-value {
+      font-size: 0.68rem;
+    }
+
+    .gauge-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.04em;
+    }
+
+    .gauge-live-dot {
+      width: 3px;
+      height: 3px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .gauge-ring-wrap {
+      width: 48px;
+      height: 48px;
+    }
+
+    .gauge-value {
+      font-size: 0.62rem;
+    }
+
+    .gauge-label {
+      font-size: 0.52rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .circle-gauge-item:hover {
+      transform: none !important;
+    }
+    .gauge-progress-arc {
+      transition: none !important;
     }
   }
 </style>
