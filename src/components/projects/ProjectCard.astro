@@ -6,52 +6,242 @@ import type { Project } from '../../data/projects';
 export interface Props {
   project: Project;
   index: number;
+  bentoSpan?: 'span-1' | 'span-2' | 'span-3';
 }
 
-const { project, index } = Astro.props;
+const { project, index, bentoSpan = 'span-1' } = Astro.props;
 ---
 
-<article class="project-card" data-reveal data-reveal-delay={index * 100}>
-  <div class="card-header">
-    <span class="project-category font-mono text-xs">{project.category}</span>
-    <StatusBadge status={project.status === 'live' ? 'healthy' : 'operational'} label={project.status.toUpperCase()} size="sm" />
-  </div>
-
-  <h3 class="project-title">{project.title}</h3>
-  <p class="project-desc">{project.description}</p>
-
-  <!-- Key Technologies -->
-  <div class="project-tech-tags">
-    {project.technologies.slice(0, 4).map((tech) => (
-      <span class="tech-tag font-mono">{tech}</span>
-    ))}
-    {project.technologies.length > 4 && (
-      <span class="tech-tag-more font-mono">+{project.technologies.length - 4}</span>
-    )}
-  </div>
-
-  {project.metrics && (
-    <div class="project-quick-metrics">
-      {project.metrics.map((m) => (
-        <div class="quick-metric">
-          <span class="qm-val font-mono">{m.value}</span>
-          <span class="qm-lbl">{m.label}</span>
+<article
+  class={`project-card bento-${bentoSpan}`}
+  data-reveal
+  data-reveal-delay={index * 90}
+>
+  {/* ----------------- SPAN 2 (WIDE BENTO CARD) ----------------- */}
+  {bentoSpan === 'span-2' && (
+    <div class="bento-wide-content">
+      <!-- Left side: Narrative, Highlights, CTA -->
+      <div class="wide-left-col">
+        <div class="card-header">
+          <span class="project-category font-mono text-xs">{project.category}</span>
+          <StatusBadge
+            status={project.status === 'live' ? 'healthy' : 'operational'}
+            label={project.status.toUpperCase()}
+            size="sm"
+          />
         </div>
-      ))}
+
+        <h3 class="project-title wide-title">{project.title}</h3>
+        <p class="project-desc">{project.description}</p>
+
+        <!-- Key Engineering Highlights -->
+        <div class="wide-highlights">
+          <span class="highlights-label font-mono text-xs">// PRODUCTION HIGHLIGHTS</span>
+          <ul class="highlights-list">
+            {project.highlights.map((h) => (
+              <li>
+                <span class="highlight-bullet font-mono" aria-hidden="true">&gt;</span>
+                <span>{h}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="card-footer wide-footer">
+          <button
+            type="button"
+            class="project-cta-btn font-mono"
+            data-open-project={project.id}
+            aria-label={`View full case study for ${project.title}`}
+          >
+            <span>EXPLORE FULL ARCHITECTURE</span>
+            <Icon name="arrow-up-right" size={16} class="cta-arrow" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Right side: Mini Architecture Flow & Metrics -->
+      <div class="wide-right-col">
+        {project.id === 'postgres-ha' && (
+          <div class="bento-mini-flow">
+            <div class="flow-title font-mono">
+              <Icon name="database" size={13} />
+              <span>PATRONI HA CLUSTER TOPOLOGY</span>
+            </div>
+            <div class="flow-diagram font-mono">
+              <div class="flow-node active">Leader (RW)</div>
+              <div class="flow-connector">&rarr;</div>
+              <div class="flow-node">etcd Raft</div>
+              <div class="flow-connector">&rarr;</div>
+              <div class="flow-node">Standby (RO)</div>
+            </div>
+          </div>
+        )}
+
+        {project.id === 'cicd-platform' && (
+          <div class="bento-mini-flow">
+            <div class="flow-title font-mono">
+              <Icon name="zap" size={13} />
+              <span>GATED PIPELINE LIFECYCLE</span>
+            </div>
+            <div class="flow-diagram font-mono">
+              <div class="flow-node">Lint</div>
+              <div class="flow-connector">&rarr;</div>
+              <div class="flow-node">OSV Scan</div>
+              <div class="flow-connector">&rarr;</div>
+              <div class="flow-node">Build</div>
+              <div class="flow-connector">&rarr;</div>
+              <div class="flow-node active">Deploy Gate</div>
+            </div>
+          </div>
+        )}
+
+        {project.metrics && (
+          <div class="wide-metrics-grid">
+            {project.metrics.map((m) => (
+              <div class="wide-metric-card">
+                <span class="wm-val font-mono">{m.value}</span>
+                <span class="wm-lbl">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div class="project-tech-tags wide-tech-tags">
+          {project.technologies.map((tech) => (
+            <span class="tech-tag font-mono">{tech}</span>
+          ))}
+        </div>
+      </div>
     </div>
   )}
 
-  <div class="card-footer">
-    <button
-      type="button"
-      class="project-cta-btn font-mono"
-      data-open-project={project.id}
-      aria-label={`View full case study for ${project.title}`}
-    >
-      <span>VIEW CASE STUDY</span>
-      <Icon name="arrow-up-right" size={16} class="cta-arrow" />
-    </button>
-  </div>
+  {/* ----------------- SPAN 3 (PANORAMIC FOUNDATION BENTO) ----------------- */}
+  {bentoSpan === 'span-3' && (
+    <div class="bento-panoramic-content">
+      <div class="card-header">
+        <div class="panoramic-badge-group">
+          <span class="project-category font-mono text-xs">{project.category}</span>
+          <span class="panoramic-flagship-pill font-mono">CORE FOUNDATION</span>
+        </div>
+        <StatusBadge
+          status={project.status === 'live' ? 'healthy' : 'operational'}
+          label={project.status.toUpperCase()}
+          size="sm"
+        />
+      </div>
+
+      <div class="panoramic-main-grid">
+        <div class="panoramic-desc-col">
+          <h3 class="project-title panoramic-title">{project.title}</h3>
+          <p class="project-desc">{project.description}</p>
+        </div>
+
+        {project.metrics && (
+          <div class="panoramic-metrics-col">
+            {project.metrics.map((m) => (
+              <div class="panoramic-metric-box">
+                <span class="pm-val font-mono">{m.value}</span>
+                <span class="pm-lbl">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- End-to-End Pipeline Visualization Flow -->
+      <div class="panoramic-flow-strip">
+        <div class="pflow-label font-mono">
+          <Icon name="server" size={13} />
+          <span>PRODUCTION INGRESS &amp; CONTAINER RUNTIME PIPELINE</span>
+        </div>
+        <div class="pflow-steps font-mono">
+          <div class="pflow-step"><span class="pf-num">01</span><span>Cloudflare Edge</span></div>
+          <span class="pflow-arrow">&rarr;</span>
+          <div class="pflow-step"><span class="pf-num">02</span><span>Nginx Ingress</span></div>
+          <span class="pflow-arrow">&rarr;</span>
+          <div class="pflow-step active"><span class="pf-num">03</span><span>App Containers</span></div>
+          <span class="pflow-arrow">&rarr;</span>
+          <div class="pflow-step"><span class="pf-num">04</span><span>Redis Cache</span></div>
+          <span class="pflow-arrow">&rarr;</span>
+          <div class="pflow-step"><span class="pf-num">05</span><span>PostgreSQL HA</span></div>
+          <span class="pflow-arrow">&rarr;</span>
+          <div class="pflow-step"><span class="pf-num">06</span><span>Telemetry</span></div>
+        </div>
+      </div>
+
+      <div class="panoramic-footer">
+        <div class="project-tech-tags">
+          {project.technologies.map((tech) => (
+            <span class="tech-tag font-mono">{tech}</span>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          class="project-cta-btn font-mono"
+          data-open-project={project.id}
+          aria-label={`View full case study for ${project.title}`}
+        >
+          <span>VIEW FULL CASE STUDY</span>
+          <Icon name="arrow-up-right" size={16} class="cta-arrow" />
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* ----------------- SPAN 1 (STANDARD COMPACT BENTO) ----------------- */}
+  {bentoSpan === 'span-1' && (
+    <div class="bento-standard-content">
+      <div>
+        <div class="card-header">
+          <span class="project-category font-mono text-xs">{project.category}</span>
+          <StatusBadge
+            status={project.status === 'live' ? 'healthy' : 'operational'}
+            label={project.status.toUpperCase()}
+            size="sm"
+          />
+        </div>
+
+        <h3 class="project-title">{project.title}</h3>
+        <p class="project-desc">{project.description}</p>
+
+        <div class="project-tech-tags">
+          {project.technologies.slice(0, 4).map((tech) => (
+            <span class="tech-tag font-mono">{tech}</span>
+          ))}
+          {project.technologies.length > 4 && (
+            <span class="tech-tag-more font-mono">+{project.technologies.length - 4}</span>
+          )}
+        </div>
+      </div>
+
+      <div>
+        {project.metrics && (
+          <div class="project-quick-metrics">
+            {project.metrics.map((m) => (
+              <div class="quick-metric">
+                <span class="qm-val font-mono">{m.value}</span>
+                <span class="qm-lbl">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div class="card-footer">
+          <button
+            type="button"
+            class="project-cta-btn font-mono"
+            data-open-project={project.id}
+            aria-label={`View full case study for ${project.title}`}
+          >
+            <span>VIEW CASE STUDY</span>
+            <Icon name="arrow-up-right" size={16} class="cta-arrow" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
 </article>
 
 <style>
@@ -62,14 +252,31 @@ const { project, index } = Astro.props;
     padding: clamp(var(--space-5), 3vw, var(--space-6));
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     transition: all var(--duration-fast) var(--ease-standard);
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   }
 
+  /* Bento grid column spans */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .project-card.bento-span-2,
+    .project-card.bento-span-3 {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .project-card.bento-span-2 {
+      grid-column: span 2;
+    }
+
+    .project-card.bento-span-3 {
+      grid-column: span 3;
+    }
+  }
+
   .project-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     border-color: var(--color-border-hover);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(25, 211, 230, 0.12);
     background: var(--color-surface-2);
@@ -80,6 +287,7 @@ const { project, index } = Astro.props;
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--space-3);
+    gap: var(--space-2);
   }
 
   .project-category {
@@ -101,56 +309,38 @@ const { project, index } = Astro.props;
     color: var(--color-text-secondary);
     line-height: 1.6;
     margin-bottom: var(--space-4);
-    flex-grow: 1;
   }
 
+  /* Tech tags */
   .project-tech-tags {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
   }
 
   .tech-tag {
-    font-size: 0.7rem;
+    font-size: 0.70rem;
     padding: 3px 8px;
     background: var(--color-bg-0);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
+    transition: all var(--duration-fast);
+  }
+
+  .project-card:hover .tech-tag {
+    border-color: rgba(25, 211, 230, 0.3);
+    color: var(--color-text-primary);
   }
 
   .tech-tag-more {
-    font-size: 0.7rem;
+    font-size: 0.70rem;
     padding: 3px 6px;
     color: var(--color-text-muted);
   }
 
-  .project-quick-metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2);
-    padding-top: var(--space-3);
-    margin-bottom: var(--space-4);
-    border-top: 1px dashed var(--color-border);
-  }
-
-  .quick-metric {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .qm-val {
-    font-size: var(--text-md);
-    font-weight: 700;
-    color: var(--color-accent-primary);
-  }
-
-  .qm-lbl {
-    font-size: 0.65rem;
-    color: var(--color-text-muted);
-  }
-
+  /* Footer & CTA */
   .card-footer {
     padding-top: var(--space-3);
     border-top: 1px solid rgba(27, 48, 66, 0.5);
@@ -176,6 +366,331 @@ const { project, index } = Astro.props;
 
   .project-card:hover .cta-arrow {
     transform: translate(3px, -3px);
+  }
+
+  /* ----------------- SPAN 1 SPECIFICS ----------------- */
+  .bento-standard-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .project-quick-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-3);
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .quick-metric {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .qm-val {
+    font-size: var(--text-md);
+    font-weight: 700;
+    color: var(--color-accent-primary);
+  }
+
+  .qm-lbl {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+
+  /* ----------------- SPAN 2 SPECIFICS ----------------- */
+  .bento-wide-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    height: 100%;
+  }
+
+  @media (min-width: 900px) {
+    .bento-wide-content {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: stretch;
+    }
+  }
+
+  .wide-left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .wide-title {
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  }
+
+  .wide-highlights {
+    margin-bottom: var(--space-4);
+    background: rgba(6, 11, 18, 0.45);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+  }
+
+  .highlights-label {
+    display: block;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+    letter-spacing: 0.05em;
+  }
+
+  .highlights-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .highlights-list li {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .highlight-bullet {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .wide-right-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+    background: rgba(6, 11, 18, 0.6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .bento-mini-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .flow-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 0.65rem;
+    background: var(--color-bg-0);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(27, 48, 66, 0.8);
+  }
+
+  .flow-node {
+    padding: 2px 6px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-text-secondary);
+  }
+
+  .flow-node.active {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.1);
+  }
+
+  .flow-connector {
+    color: var(--color-text-muted);
+    font-weight: bold;
+  }
+
+  .wide-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  .wide-metric-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wm-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-accent-primary);
+    line-height: 1.1;
+  }
+
+  .wm-lbl {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .wide-tech-tags {
+    margin-bottom: 0;
+  }
+
+  /* ----------------- SPAN 3 SPECIFICS ----------------- */
+  .bento-panoramic-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .panoramic-badge-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .panoramic-flagship-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-accent-secondary);
+    background: rgba(92, 141, 255, 0.12);
+    border: 1px solid rgba(92, 141, 255, 0.25);
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .panoramic-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 900px) {
+    .panoramic-main-grid {
+      grid-template-columns: 1.4fr 0.6fr;
+      align-items: center;
+    }
+  }
+
+  .panoramic-title {
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+    margin-bottom: var(--space-2);
+  }
+
+  .panoramic-metrics-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .panoramic-metric-box {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pm-val {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--color-accent-primary);
+  }
+
+  .pm-lbl {
+    font-size: 0.70rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Panoramic Flow Strip */
+  .panoramic-flow-strip {
+    background: rgba(6, 11, 18, 0.65);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pflow-label {
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .pflow-steps {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: 4px;
+    font-size: 0.70rem;
+  }
+
+  .pflow-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 3px 8px;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+  }
+
+  .pflow-step.active {
+    border-color: var(--color-accent-primary);
+    color: var(--color-text-primary);
+    background: rgba(25, 211, 230, 0.08);
+  }
+
+  .pf-num {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    font-size: 0.65rem;
+  }
+
+  .pflow-arrow {
+    color: var(--color-text-muted);
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .panoramic-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding-top: var(--space-2);
+    border-top: 1px solid rgba(27, 48, 66, 0.5);
   }
 
   @media (prefers-reduced-motion: reduce) {

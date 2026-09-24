@@ -3,6 +3,25 @@ import SectionHeader from '../common/SectionHeader.astro';
 import ProjectCard from './ProjectCard.astro';
 import ProjectModal from './ProjectModal.astro';
 import { projectsData } from '../../data/projects';
+
+// Structured Bento Grid ordering:
+// Row 1: PostgreSQL HA Cluster (span-2) + Observability Stack (span-1)
+// Row 2: Object Storage & DR (span-1) + Automated CI/CD Platform (span-2)
+// Row 3: ION Core Infrastructure (span-3, Panoramic Foundation)
+const bentoLayoutConfig = [
+  { id: 'postgres-ha', span: 'span-2' as const },
+  { id: 'observability', span: 'span-1' as const },
+  { id: 'object-storage', span: 'span-1' as const },
+  { id: 'cicd-platform', span: 'span-2' as const },
+  { id: 'ion-core', span: 'span-3' as const }
+];
+
+const bentoProjects = bentoLayoutConfig
+  .map((config) => {
+    const project = projectsData.find((p) => p.id === config.id);
+    return project ? { project, span: config.span } : null;
+  })
+  .filter((item): item is { project: typeof projectsData[0]; span: 'span-1' | 'span-2' | 'span-3' } => item !== null);
 ---
 
 <section id="projects" class="projects-section">
@@ -10,12 +29,12 @@ import { projectsData } from '../../data/projects';
     <SectionHeader
       eyebrow="03 // PROOF OF ENGINEERING"
       title="FEATURED CASE STUDIES"
-      description="Engineered solutions detailing the real-world operational problem, architectural choices, technology decisions, and measurable outcomes."
+      description="Engineered solutions detailing real-world operational challenges, high-availability database architectures, automated CI/CD gates, and measurable production telemetry."
     />
 
-    <div class="projects-grid">
-      {projectsData.map((project, index) => (
-        <ProjectCard project={project} index={index} />
+    <div class="projects-bento-grid">
+      {bentoProjects.map(({ project, span }, index) => (
+        <ProjectCard project={project} index={index} bentoSpan={span} />
       ))}
     </div>
   </div>
@@ -24,20 +43,26 @@ import { projectsData } from '../../data/projects';
 </section>
 
 <style>
-  .projects-grid {
+  .projects-section {
+    position: relative;
+  }
+
+  .projects-bento-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
 
-  @media (min-width: 768px) {
-    .projects-grid {
+  /* Tablet: 2 columns */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .projects-bento-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
+  /* Desktop: 3 columns Bento Grid */
   @media (min-width: 1100px) {
-    .projects-grid {
+    .projects-bento-grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }

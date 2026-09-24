@@ -2,76 +2,285 @@
 export interface Props {
   num: string;
   title: string;
+  category: string;
   statement: string;
   explanation: string;
+  rule: string;
+  impact: string;
   delay?: number;
 }
 
-const { num, title, statement, explanation, delay = 0 } = Astro.props;
+const {
+  num,
+  title,
+  category,
+  statement,
+  explanation,
+  rule,
+  impact,
+  delay = 0
+} = Astro.props;
 ---
 
-<div class="principle-card" data-reveal data-reveal-delay={delay}>
-  <div class="principle-num font-mono">{num}</div>
-  <h3 class="principle-title font-mono">{title}</h3>
-  <div class="principle-statement">{statement}</div>
-  <p class="principle-explanation">{explanation}</p>
-</div>
+<article class="matrix-row" data-reveal data-reveal-delay={delay} tabindex="0">
+  <!-- Col 1: Index & Enforcement Status -->
+  <div class="row-index-col">
+    <span class="row-num font-mono">{num}</span>
+    <div class="row-status font-mono">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">ENFORCED</span>
+    </div>
+  </div>
+
+  <!-- Col 2: Core Philosophy & Axiom -->
+  <div class="row-core-col">
+    <span class="row-category font-mono">{category}</span>
+    <h3 class="row-title font-mono">{title}</h3>
+    <p class="row-statement">{statement}</p>
+  </div>
+
+  <!-- Col 3: Practical Implementation & Guardrails -->
+  <div class="row-detail-col">
+    <p class="row-explanation">{explanation}</p>
+    <div class="row-guardrail font-mono">
+      <div class="guardrail-item">
+        <span class="guardrail-key">POLICY:</span>
+        <code class="guardrail-code">{rule}</code>
+      </div>
+      <div class="guardrail-item">
+        <span class="guardrail-key">OUTCOME:</span>
+        <span class="guardrail-impact">{impact}</span>
+      </div>
+    </div>
+  </div>
+</article>
 
 <style>
-  .principle-card {
-    background: var(--color-surface-1);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: clamp(var(--space-6), 3vw, var(--space-8));
+  .matrix-row {
+    display: grid;
+    grid-template-columns: 140px 1.15fr 1.35fr;
+    gap: var(--space-8);
+    align-items: start;
+    padding: clamp(var(--space-6), 2.5vw, var(--space-8)) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    background: transparent;
+    border-left: 3px solid transparent;
+    transition:
+      background var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  .matrix-row:hover,
+  .matrix-row:focus-visible {
+    background: rgba(16, 26, 38, 0.55);
+    border-left-color: var(--color-accent-primary);
+    border-bottom-color: var(--color-border-hover);
+    box-shadow: inset 1px 0 0 rgba(25, 211, 230, 0.2);
+  }
+
+  .matrix-row:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: -2px;
+  }
+
+  /* Column 1: Index & Status */
+  .row-index-col {
     display: flex;
     flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    transition: all var(--duration-fast) var(--ease-standard);
+    gap: var(--space-2);
   }
 
-  .principle-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--color-border-hover);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-    background: var(--color-surface-2);
-  }
-
-  .principle-num {
-    font-size: var(--text-3xl);
-    font-weight: 900;
-    color: var(--color-accent-primary);
-    opacity: 0.35;
+  .row-num {
+    font-size: clamp(2rem, 2.8vw, 2.5rem);
+    font-weight: 800;
     line-height: 1;
-    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    opacity: 0.5;
+    transition: color var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard);
   }
 
-  .principle-title {
-    font-size: var(--text-lg);
+  .matrix-row:hover .row-num,
+  .matrix-row:focus-visible .row-num {
+    color: var(--color-accent-primary);
+    opacity: 0.9;
+  }
+
+  .row-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6875rem;
+    color: var(--color-success);
+    letter-spacing: 0.08em;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 8px rgba(32, 211, 155, 0.6);
+  }
+
+  /* Column 2: Core Philosophy */
+  .row-core-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .row-category {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--color-accent-primary);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .row-title {
+    font-size: clamp(1.125rem, 1.6vw, 1.35rem);
     font-weight: 800;
     color: var(--color-text-primary);
-    letter-spacing: 0.06em;
-    margin-bottom: var(--space-3);
+    letter-spacing: 0.04em;
+    margin: 0;
+    transition: color var(--duration-fast) var(--ease-standard);
   }
 
-  .principle-statement {
-    font-size: var(--text-md);
-    font-weight: 700;
-    color: var(--color-accent-primary);
-    line-height: 1.4;
-    margin-bottom: var(--space-3);
+  .matrix-row:hover .row-title,
+  .matrix-row:focus-visible .row-title {
+    color: #FFFFFF;
   }
 
-  .principle-explanation {
+  .row-statement {
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--color-text-primary);
+    margin: var(--space-2) 0 0 0;
+  }
+
+  /* Column 3: Explanation & Guardrails */
+  .row-detail-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .row-explanation {
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
-    line-height: 1.6;
-    margin-bottom: 0;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .row-guardrail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--space-3) var(--space-4);
+    background: rgba(6, 11, 18, 0.7);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-top: var(--space-1);
+    transition: border-color var(--duration-fast) var(--ease-standard);
+  }
+
+  .matrix-row:hover .row-guardrail,
+  .matrix-row:focus-visible .row-guardrail {
+    border-color: rgba(25, 211, 230, 0.3);
+  }
+
+  .guardrail-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .guardrail-key {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    min-width: 60px;
+  }
+
+  .guardrail-code {
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.08);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    word-break: break-all;
+  }
+
+  .guardrail-impact {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  /* Tablet reflow (641px - 1023px) */
+  @media (min-width: 641px) and (max-width: 1023px) {
+    .matrix-row {
+      grid-template-columns: 110px 1fr;
+      gap: var(--space-6);
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .row-detail-col {
+      grid-column: 2 / -1;
+      padding-top: var(--space-2);
+    }
+  }
+
+  /* Mobile reflow (<= 640px) */
+  @media (max-width: 640px) {
+    .matrix-row {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: var(--space-6) var(--space-3);
+    }
+
+    .row-index-col {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: var(--space-2);
+      border-bottom: 1px dashed rgba(27, 48, 66, 0.6);
+    }
+
+    .row-num {
+      font-size: 1.5rem;
+    }
+
+    .row-statement {
+      margin-top: var(--space-1);
+    }
+
+    .guardrail-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .guardrail-key {
+      min-width: auto;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .principle-card:hover {
-      transform: none !important;
+    .matrix-row,
+    .row-num,
+    .row-title,
+    .row-guardrail {
+      transition: none !important;
     }
   }
 </style>
