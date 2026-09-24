@@ -5,10 +5,10 @@ stages:
   - deploy
 
 variables:
-  NODE_VERSION: "20"
+  NODE_VERSION: "22"
 
 default:
-  image: node:20-alpine
+  image: node:22-alpine
   before_script:
     - npm ci
 
