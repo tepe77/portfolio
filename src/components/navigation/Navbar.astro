@@ -1,12 +1,11 @@
 ---
 import Icon from '../common/Icon.astro';
-import StatusBadge from '../common/StatusBadge.astro';
 
 const navLinks = [
   { label: "ABOUT", href: "#about" },
-  { label: "INFRASTRUCTURE", href: "#infrastructure" },
+  { label: "INFRA", href: "#infrastructure" },
   { label: "PROJECTS", href: "#projects" },
-  { label: "PIPELINES", href: "#pipeline" },
+  { label: "CI/CD", href: "#pipeline" },
   { label: "STACK", href: "#stack" },
   { label: "EXPERIENCE", href: "#experience" },
   { label: "CONTACT", href: "#contact" }
@@ -15,8 +14,9 @@ const navLinks = [
 
 <header id="main-navbar" class="navbar">
   <div class="container navbar-container">
-    <!-- Brand Logo -->
+    <!-- Brand Logo with micro pulse status dot -->
     <a href="#" class="brand-logo" aria-label="Prasaswo Tepe Portfolio Home">
+      <span class="status-indicator-dot" title="Systems Operational" aria-hidden="true"></span>
       <span class="brand-bracket font-mono">&lt;&gt;</span>
       <span class="brand-name font-mono">PRASASWO.TEPE</span>
     </a>
@@ -34,9 +34,8 @@ const navLinks = [
       </ul>
     </nav>
 
-    <!-- Right Controls: Status & Cmd+K & Mobile Toggle -->
+    <!-- Right Controls: Compact Cmd+K Search -->
     <div class="navbar-actions">
-      <!-- Cmd+K Quick Search Trigger Button -->
       <button
         type="button"
         id="cmd-palette-btn"
@@ -44,15 +43,9 @@ const navLinks = [
         aria-label="Open command palette (Ctrl+K or Cmd+K)"
         onclick="window.openCommandPalette && window.openCommandPalette()"
       >
-        <Icon name="search" size={14} />
-        <span class="cmd-text font-mono">Search</span>
+        <Icon name="search" size={13} />
         <kbd class="cmd-kbd font-mono">⌘K</kbd>
       </button>
-
-      <!-- System Status Badge -->
-      <div class="desktop-status-wrap">
-        <StatusBadge status="operational" label="ALL SYSTEMS OPERATIONAL" size="sm" />
-      </div>
     </div>
   </div>
 </header>
@@ -77,7 +70,7 @@ const navLinks = [
       height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-      background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      background 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       padding 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -95,15 +88,19 @@ const navLinks = [
       left: 50%;
       right: auto;
       transform: translateX(-50%);
-      width: min(calc(100% - 48px), 1260px);
-      height: 56px;
+      width: min(calc(100% - 48px), 960px);
+      height: 54px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(27, 48, 66, 0.75);
-      background: rgba(10, 17, 26, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 16px rgba(25, 211, 230, 0.05);
-      padding-inline: var(--space-4);
+      border: 1px solid rgba(25, 211, 230, 0.28);
+      background: linear-gradient(180deg, rgba(20, 33, 49, 0.88) 0%, rgba(10, 18, 28, 0.82) 100%);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow: 
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+        inset 0 0 16px rgba(25, 211, 230, 0.06),
+        0 14px 40px rgba(0, 0, 0, 0.75),
+        0 0 28px rgba(25, 211, 230, 0.12);
+      padding-inline: var(--space-5);
     }
 
     .navbar .navbar-container {
@@ -124,10 +121,10 @@ const navLinks = [
       border-left: none;
       border-right: none;
       border-bottom: 1px solid rgba(27, 48, 66, 0.85);
-      background: rgba(6, 11, 18, 0.85);
+      background: rgba(6, 11, 18, 0.90);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
       padding-inline: 0;
     }
 
@@ -149,12 +146,34 @@ const navLinks = [
   .brand-logo {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 6px;
     font-size: var(--text-sm);
     font-weight: 700;
     color: var(--color-text-primary);
     text-decoration: none;
     letter-spacing: 0.05em;
+  }
+
+  .status-indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 8px rgba(32, 211, 155, 0.8);
+    display: inline-block;
+    flex-shrink: 0;
+    animation: status-pulse 3s infinite ease-in-out;
+  }
+
+  @keyframes status-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.85);
+    }
   }
 
   .brand-bracket {
@@ -183,8 +202,10 @@ const navLinks = [
   .nav-list {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: clamp(14px, 1.8vw, 22px);
     list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .nav-link {
@@ -225,54 +246,77 @@ const navLinks = [
   .navbar-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .cmd-trigger-btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: 6px 12px;
-    background: var(--color-surface-1);
-    border: 1px solid var(--color-border);
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    background: rgba(16, 26, 38, 0.6);
+    border: 1px solid rgba(27, 48, 66, 0.85);
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
     font-size: var(--text-xs);
     cursor: pointer;
     transition: all var(--duration-fast);
+    outline: none;
   }
 
   .cmd-trigger-btn:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-accent-primary);
     color: var(--color-accent-primary);
     background: var(--color-surface-2);
+    box-shadow: 0 0 12px rgba(25, 211, 230, 0.15);
+  }
+
+  .cmd-trigger-btn:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
   }
 
   .cmd-kbd {
     background: var(--color-bg-0);
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(27, 48, 66, 0.8);
     border-radius: 3px;
-    padding: 1px 5px;
+    padding: 1px 4px;
     font-size: 0.65rem;
     color: var(--color-text-muted);
+    line-height: 1.2;
   }
 
-  .desktop-status-wrap {
-    display: none;
-  }
-
-  @media (min-width: 1100px) {
-    .desktop-status-wrap {
-      display: block;
+  @media (max-width: 480px) {
+    .navbar {
+      height: 56px;
     }
-  }
-
-  @media (max-width: 640px) {
+    .brand-logo {
+      font-size: 0.82rem;
+      gap: 5px;
+    }
     .cmd-trigger-btn {
-      padding: 5px 9px;
+      height: 30px;
+      padding: 0 8px;
     }
-    .cmd-text {
+  }
+
+  @media (max-width: 360px) {
+    .brand-logo {
+      font-size: 0.74rem;
+      gap: 4px;
+    }
+    .cmd-kbd {
       display: none;
+    }
+    .cmd-trigger-btn {
+      padding: 0 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-indicator-dot {
+      animation: none;
     }
   }
 </style>

@@ -408,6 +408,28 @@ import Icon from '../common/Icon.astro';
     }
   }
 
+  @media (max-width: 380px) {
+    .node-col-1,
+    .node-col-2 {
+      width: 114px;
+    }
+    .topology-node {
+      padding: 5px 6px;
+      gap: 6px;
+    }
+    .node-title {
+      font-size: 0.62rem;
+    }
+    #hero-node-app1,
+    #hero-node-db {
+      left: 8px !important;
+    }
+    #hero-node-app2,
+    #hero-node-cache {
+      right: 8px !important;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-flow,
     .status-indicator {

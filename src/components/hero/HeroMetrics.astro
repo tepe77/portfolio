@@ -309,17 +309,26 @@ const circumference = 2 * Math.PI * radius; // ~175.93
   }
 
   @media (max-width: 360px) {
+    .hero-metrics-strip {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .circle-gauge-item {
+      padding: var(--space-3) var(--space-2);
+    }
+
     .gauge-ring-wrap {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
     }
 
     .gauge-value {
-      font-size: 0.62rem;
+      font-size: 0.68rem;
     }
 
     .gauge-label {
-      font-size: 0.52rem;
+      font-size: 0.58rem;
     }
   }
 

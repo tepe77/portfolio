@@ -967,7 +967,7 @@ import InfrastructureNode from './InfrastructureNode.astro';
       right: 0;
       bottom: 0;
       left: 0;
-      width: 100vw;
+      width: 100%;
       height: 82vh;
       max-height: 82dvh;
       border-left: none;
@@ -982,6 +982,27 @@ import InfrastructureNode from './InfrastructureNode.astro';
     .topology-details-panel.visible {
       transform: translateY(0);
       opacity: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .topology-filters {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+    }
+
+    .filter-btn {
+      padding: 6px 4px;
+      font-size: 0.68rem;
+    }
+
+    .toolbar-actions {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .topology-details-panel {
+      padding: var(--space-4) var(--space-3);
     }
   }
 </style>
