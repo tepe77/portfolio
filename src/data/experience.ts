@@ -1,5 +1,8 @@
 export interface Experience {
   id: string;
+  version: string;
+  branch: string;
+  badgeStatus: string;
   period: string;
   role: string;
   category: string;
@@ -11,7 +14,10 @@ export interface Experience {
 export const experienceData: Experience[] = [
   {
     id: "devops-infra",
-    period: "2025 — PRESENT",
+    version: "v3.0",
+    branch: "main/ha-cluster",
+    badgeStatus: "ACTIVE PRODUCTION",
+    period: "2025 - PRESENT",
     role: "DevOps & Infrastructure Engineer",
     category: "High Availability & Platform Reliability",
     description: "Architecting and maintaining production infrastructure, automated CI/CD pipelines, and high-availability database clusters.",
@@ -25,7 +31,10 @@ export const experienceData: Experience[] = [
   },
   {
     id: "infra-sysadmin",
-    period: "2024 — 2025",
+    version: "v2.0",
+    branch: "infra/migration-automation",
+    badgeStatus: "MIGRATED & HARDENED",
+    period: "2024 - 2025",
     role: "Infrastructure & Automation Specialist",
     category: "Containerization & Server Hardening",
     description: "Migrated legacy bare-metal and monolithic deployments into standardized containerized infrastructure.",
@@ -39,7 +48,10 @@ export const experienceData: Experience[] = [
   },
   {
     id: "software-backend",
-    period: "2023 — 2024",
+    version: "v1.0",
+    branch: "backend/core-services",
+    badgeStatus: "FOUNDATIONAL CORE",
+    period: "2023 - 2024",
     role: "Backend & Systems Developer",
     category: "API & Database Architecture",
     description: "Developed core backend microservices and database query optimization for scalable web services.",

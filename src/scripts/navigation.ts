@@ -6,9 +6,9 @@ export function initNavigation() {
 
   if (!navbar) return;
 
-  // Scroll effect on top navbar (translucent -> solid with border)
+  // Scroll effect on top navbar (floating pill -> full width sticky glass)
   const handleScroll = () => {
-    if (window.scrollY > 40) {
+    if (window.scrollY > 25) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');

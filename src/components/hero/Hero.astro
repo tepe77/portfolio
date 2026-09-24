@@ -12,7 +12,7 @@ import { profileData } from '../../data/profile';
   <HeroDeploymentCanvas />
 
   <div class="container-wide hero-container">
-    <!-- Left Column: Identity & Value Proposition -->
+    <!-- Left Column: Identity & Value Proposition (6 columns) -->
     <div class="hero-content" data-reveal>
       <div class="hero-eyebrow font-mono">
         <span class="eyebrow-slash">//</span>
@@ -21,10 +21,12 @@ import { profileData } from '../../data/profile';
       </div>
 
       <h1 class="hero-title">
-        <span class="text-gradient">DEVOPS ENGINEER</span>
-        <span class="title-ampersand">&amp;</span>
-        <span class="text-gradient-secondary">INFRASTRUCTURE</span>
-        <span class="title-suffix">ENGINEER</span>
+        <span class="title-row-1">
+          <span class="text-gradient">DEVOPS</span>
+          <span class="title-ampersand">&amp;</span>
+        </span>
+        <span class="title-row-2 text-gradient-secondary">INFRASTRUCTURE</span>
+        <span class="title-row-3 title-suffix">ENGINEERING</span>
       </h1>
 
       <p class="hero-description">
@@ -32,13 +34,13 @@ import { profileData } from '../../data/profile';
       </p>
 
       <div class="hero-cta-group">
-        <Button href="#projects" variant="primary" size="lg">
+        <Button href="#projects" variant="primary" size="md">
           EXPLORE MY WORK
-          <Icon name="arrow-right" size={18} />
+          <Icon name="arrow-right" size={16} />
         </Button>
 
-        <Button href={profileData.resumeUrl} variant="secondary" size="lg" download="prasaswo-tepe-resume.pdf">
-          <Icon name="download" size={18} />
+        <Button href={profileData.resumeUrl} variant="secondary" size="md" download="prasaswo-tepe-resume.pdf">
+          <Icon name="download" size={16} />
           DOWNLOAD RESUME
         </Button>
       </div>
@@ -47,7 +49,7 @@ import { profileData } from '../../data/profile';
       <HeroMetrics />
     </div>
 
-    <!-- Right Column: Interactive Topology Preview -->
+    <!-- Right Column: Interactive Topology Preview (6 columns) -->
     <div class="hero-visual">
       <HeroTopology />
     </div>
@@ -56,11 +58,11 @@ import { profileData } from '../../data/profile';
 
 <style>
   .hero-section {
-    min-height: calc(100vh - 64px);
+    min-height: auto;
     display: flex;
     align-items: center;
-    padding-top: clamp(40px, 6vw, 80px);
-    padding-bottom: clamp(60px, 8vw, 100px);
+    padding-top: 240px;
+    padding-bottom: 160px;
     position: relative;
     overflow: hidden;
   }
@@ -68,7 +70,7 @@ import { profileData } from '../../data/profile';
   .hero-container {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-12);
+    gap: var(--space-8);
     align-items: center;
     position: relative;
     z-index: 2;
@@ -76,8 +78,17 @@ import { profileData } from '../../data/profile';
 
   @media (min-width: 1024px) {
     .hero-container {
-      grid-template-columns: 1.15fr 1fr;
-      gap: var(--space-10);
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: var(--space-8);
+      align-items: center;
+    }
+
+    .hero-content {
+      grid-column: span 6;
+    }
+
+    .hero-visual {
+      grid-column: span 6;
     }
   }
 
@@ -108,13 +119,20 @@ import { profileData } from '../../data/profile';
   }
 
   .hero-title {
-    font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+    font-size: clamp(2.85rem, 2.5vw, 2.45rem);
     font-weight: 900;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    margin-bottom: var(--space-5);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    margin-bottom: var(--space-4);
     display: flex;
     flex-direction: column;
+    gap: 2px;
+  }
+
+  .title-row-1 {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   .text-gradient {
@@ -124,10 +142,9 @@ import { profileData } from '../../data/profile';
   }
 
   .title-ampersand {
-    font-size: 0.7em;
+    font-size: 0.85em;
     color: var(--color-accent-primary);
     font-weight: 300;
-    margin-block: -4px;
   }
 
   .text-gradient-secondary {
@@ -141,18 +158,18 @@ import { profileData } from '../../data/profile';
   }
 
   .hero-description {
-    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+    font-size: clamp(0.925rem, 1.15vw, 1.05rem);
     line-height: 1.6;
     color: var(--color-text-secondary);
-    max-width: 620px;
-    margin-bottom: var(--space-6);
+    max-width: 100%;
+    margin-bottom: var(--space-5);
   }
 
   .hero-cta-group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .hero-visual {
@@ -160,6 +177,11 @@ import { profileData } from '../../data/profile';
   }
 
   @media (max-width: 640px) {
+    .hero-section {
+      padding-top: clamp(100px, 16vw, 130px);
+      padding-bottom: clamp(64px, 12vw, 90px);
+    }
+
     .hero-cta-group {
       flex-direction: column;
       align-items: stretch;

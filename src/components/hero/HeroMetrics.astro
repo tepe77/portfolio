@@ -76,7 +76,7 @@ const circumference = 2 * Math.PI * radius; // ~175.93
     return (
       <div
         class="circle-gauge-item"
-        title={`${m.label}: ${m.value} — ${m.description}`}
+        title={`${m.label}: ${m.value} : ${m.description}`}
         tabindex="0"
         aria-label={`${m.label}: ${m.value}`}
         style={`--item-delay: ${index * 60}ms; --gauge-accent: ${config.colorVar};`}
@@ -146,10 +146,10 @@ const circumference = 2 * Math.PI * radius; // ~175.93
   .hero-metrics-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-3);
-    margin-top: var(--space-6);
+    gap: var(--space-2);
+    margin-top: var(--space-4);
     width: 100%;
-    max-width: 640px;
+    max-width: 560px;
   }
 
   .circle-gauge-item {
@@ -158,12 +158,12 @@ const circumference = 2 * Math.PI * radius; // ~175.93
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-2) 2px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
     transition: transform var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast), background-color var(--duration-fast);
     position: relative;
     cursor: default;
@@ -185,8 +185,8 @@ const circumference = 2 * Math.PI * radius; // ~175.93
 
   .gauge-ring-wrap {
     position: relative;
-    width: 68px;
-    height: 68px;
+    width: 58px;
+    height: 58px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -239,7 +239,7 @@ const circumference = 2 * Math.PI * radius; // ~175.93
   }
 
   .gauge-value {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 800;
     color: var(--color-text-primary);
     line-height: 1;
@@ -250,14 +250,14 @@ const circumference = 2 * Math.PI * radius; // ~175.93
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
   }
 
   .gauge-label {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 700;
     color: var(--color-text-secondary);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     text-align: center;
     line-height: 1.1;
     white-space: nowrap;

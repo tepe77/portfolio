@@ -59,23 +59,83 @@ const navLinks = [
 
 <style>
   .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 64px;
+    width: 100%;
+    height: 60px;
     z-index: var(--z-sticky-nav);
-    background: rgba(6, 11, 18, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(27, 48, 66, 0.6);
-    transition: background-color var(--duration-normal), border-color var(--duration-normal);
+    background: rgba(6, 11, 18, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.65);
+    transition: 
+      top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      padding 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .navbar.scrolled {
     background: rgba(6, 11, 18, 0.94);
     border-bottom-color: var(--color-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Desktop floating pill style & transition */
+  @media (min-width: 900px) {
+    .navbar {
+      top: 18px;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: min(calc(100% - 48px), 1260px);
+      height: 56px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(27, 48, 66, 0.75);
+      background: rgba(10, 17, 26, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 16px rgba(25, 211, 230, 0.05);
+      padding-inline: var(--space-4);
+    }
+
+    .navbar .navbar-container {
+      width: 100%;
+      max-width: 100%;
+      padding-inline: 0;
+    }
+
+    .navbar.scrolled {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 100%;
+      height: 64px;
+      border-radius: 0;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid rgba(27, 48, 66, 0.85);
+      background: rgba(6, 11, 18, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      padding-inline: 0;
+    }
+
+    .navbar.scrolled .navbar-container {
+      width: min(calc(100% - 64px), 1420px);
+      margin-inline: auto;
+      padding-inline: 0;
+    }
   }
 
   .navbar-container {
@@ -83,6 +143,7 @@ const navLinks = [
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .brand-logo {

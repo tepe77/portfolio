@@ -1,6 +1,6 @@
 ---
 import SectionHeader from '../common/SectionHeader.astro';
-import ExperienceItem from './ExperienceItem.astro';
+import Icon from '../common/Icon.astro';
 import { experienceData } from '../../data/experience';
 ---
 
@@ -9,22 +9,629 @@ import { experienceData } from '../../data/experience';
     <SectionHeader
       eyebrow="06 // CAREER PROGRESSION"
       title="ENGINEERING TIMELINE"
-      description="The progression from software engineering and containerization into dedicated infrastructure reliability and production operations."
+      description="Interactive system runlevel & GitOps branch tracker showcasing the progression from backend architecture into high-availability cluster reliability."
     />
 
-    <div class="timeline-container">
-      {experienceData.map((item, index) => (
-        <ExperienceItem item={item} index={index} />
-      ))}
+    <div class="experience-console-layout" data-reveal>
+      <!-- Left Column: Git Branch / Runlevel Rail Selector -->
+      <div class="branch-nav-column" role="tablist" aria-label="Career Progression Milestones">
+        <div class="branch-rail-line" aria-hidden="true"></div>
+
+        <div class="branch-nodes-list">
+          {experienceData.map((item, index) => (
+            <button
+              type="button"
+              role="tab"
+              id={`tab-${item.id}`}
+              class={`branch-node-btn ${index === 0 ? 'active' : ''}`}
+              data-target={item.id}
+              aria-selected={index === 0 ? "true" : "false"}
+              aria-controls={`panel-${item.id}`}
+              tabindex={index === 0 ? 0 : -1}
+            >
+              <div class="node-indicator">
+                <span class="node-dot"></span>
+                <span class="node-ring" aria-hidden="true"></span>
+              </div>
+
+              <div class="node-meta">
+                <div class="node-header">
+                  <span class="node-version font-mono">{item.version}</span>
+                  <span class="node-period font-mono">{item.period}</span>
+                </div>
+                <div class="node-role font-mono">{item.role}</div>
+                <div class="node-branch font-mono">
+                  <Icon name="git" size={13} />
+                  <span>{item.branch}</span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Milestone Inspection Console -->
+      <div class="detail-console-column">
+        {experienceData.map((item, index) => (
+          <div
+            id={`panel-${item.id}`}
+            role="tabpanel"
+            class={`milestone-detail-panel ${index === 0 ? 'active' : ''}`}
+            aria-labelledby={`tab-${item.id}`}
+            hidden={index !== 0}
+          >
+            <div class="console-terminal-card">
+              <!-- Terminal Top Bar -->
+              <div class="terminal-bar">
+                <div class="terminal-dots">
+                  <span class="dot dot-red"></span>
+                  <span class="dot dot-yellow"></span>
+                  <span class="dot dot-green"></span>
+                </div>
+                <div class="terminal-title font-mono">
+                  RELEASE // {item.version} [{item.branch}]
+                </div>
+                <div class="terminal-badge font-mono">
+                  <span class="badge-status-dot"></span>
+                  <span>{item.badgeStatus}</span>
+                </div>
+              </div>
+
+              <!-- Terminal Body -->
+              <div class="terminal-body">
+                <div class="milestone-headline">
+                  <span class="headline-category font-mono">{item.category}</span>
+                  <h3 class="headline-role">{item.role}</h3>
+                  <div class="headline-period font-mono">
+                    <span>TIMEFRAME: {item.period}</span>
+                  </div>
+                </div>
+
+                <p class="milestone-summary">{item.description}</p>
+
+                <!-- Key Achievements / Production highlights -->
+                <div class="milestone-achievements-block">
+                  <div class="block-header font-mono">
+                    <Icon name="terminal" size={14} />
+                    <span>PRODUCTION RUNBOOK &amp; KEY ACHIEVEMENTS</span>
+                  </div>
+                  <ul class="achievements-list">
+                    {item.responsibilities.map((resp) => (
+                      <li>
+                        <span class="prompt-arrow font-mono" aria-hidden="true">&gt;</span>
+                        <span class="resp-text">{resp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <!-- Verified Toolchain & Stack -->
+                <div class="milestone-tech-block">
+                  <div class="tech-header font-mono">
+                    <Icon name="layers" size={13} />
+                    <span>VERIFIED TOOLCHAIN &amp; STACK</span>
+                  </div>
+                  <div class="tech-tags">
+                    {item.technologies.map((t) => (
+                      <span class="tech-badge font-mono">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
 
+<script>
+  function initExperienceTimeline() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.branch-node-btn');
+    const panels = document.querySelectorAll<HTMLElement>('.milestone-detail-panel');
+    if (!tabs.length || !panels.length) return;
+
+    const selectTab = (tabToSelect: HTMLButtonElement) => {
+      const targetId = tabToSelect.getAttribute('data-target');
+      if (!targetId) return;
+
+      // Update tabs state
+      tabs.forEach((t) => {
+        const isCurrent = t === tabToSelect;
+        t.classList.toggle('active', isCurrent);
+        t.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
+        t.setAttribute('tabindex', isCurrent ? '0' : '-1');
+      });
+
+      // Update panels state
+      panels.forEach((p) => {
+        const isTarget = p.id === `panel-${targetId}`;
+        if (isTarget) {
+          p.hidden = false;
+          // Trigger slight reflow for smooth CSS animation
+          void p.offsetWidth;
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+          p.hidden = true;
+        }
+      });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectTab(tab));
+
+      // Keyboard accessibility navigation
+      tab.addEventListener('keydown', (e) => {
+        let newIndex = index;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          newIndex = (index + 1) % tabs.length;
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          newIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          newIndex = 0;
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          newIndex = tabs.length - 1;
+        }
+
+        if (newIndex !== index) {
+          tabs[newIndex].focus();
+          selectTab(tabs[newIndex]);
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM load and Astro transitions
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExperienceTimeline);
+  } else {
+    initExperienceTimeline();
+  }
+  document.addEventListener('astro:page-load', initExperienceTimeline);
+</script>
+
 <style>
-  .timeline-container {
-    max-width: 860px;
-    margin-inline: auto;
+  .experience-section {
+    position: relative;
+  }
+
+  .experience-console-layout {
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    gap: var(--space-8);
+    align-items: start;
+    margin-top: var(--space-6);
+  }
+
+  /* Left Column: Branch Nav */
+  .branch-nav-column {
+    position: relative;
     display: flex;
     flex-direction: column;
+  }
+
+  .branch-rail-line {
+    position: absolute;
+    top: 24px;
+    bottom: 24px;
+    left: 20px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--color-accent-primary), var(--color-border));
+    z-index: 1;
+  }
+
+  .branch-nodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: relative;
+    z-index: 2;
+  }
+
+  .branch-node-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    outline: none;
+    position: relative;
+    width: 100%;
+    color: inherit;
+  }
+
+  .branch-node-btn:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-2);
+    transform: translateX(4px);
+  }
+
+  .branch-node-btn:focus-visible {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 2px rgba(25, 211, 230, 0.35);
+  }
+
+  .branch-node-btn.active {
+    border-color: var(--color-accent-primary);
+    background: rgba(16, 26, 38, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 0 16px rgba(25, 211, 230, 0.12);
+    transform: translateX(6px);
+  }
+
+  .node-indicator {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    margin-top: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .node-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-bg-0);
+    border: 2px solid var(--color-text-muted);
+    transition: all var(--duration-fast);
+    z-index: 2;
+  }
+
+  .node-ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: transparent;
+    transition: all var(--duration-fast);
+    z-index: 1;
+  }
+
+  .branch-node-btn:hover .node-dot {
+    border-color: var(--color-accent-primary);
+  }
+
+  .branch-node-btn.active .node-dot {
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 8px var(--color-accent-primary);
+  }
+
+  .branch-node-btn.active .node-ring {
+    background: rgba(25, 211, 230, 0.2);
+  }
+
+  .node-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .node-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .node-version {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    letter-spacing: 0.04em;
+    background: rgba(25, 211, 230, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(25, 211, 230, 0.2);
+  }
+
+  .node-period {
+    font-size: 0.70rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .branch-node-btn.active .node-period {
+    color: var(--color-text-secondary);
+  }
+
+  .node-role {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.25;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .node-branch {
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+  }
+
+  .branch-node-btn.active .node-branch {
+    color: var(--color-accent-secondary);
+  }
+
+  /* Right Column: Console Detail */
+  .detail-console-column {
+    position: relative;
+    min-height: 380px;
+  }
+
+  .milestone-detail-panel {
+    display: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s var(--ease-standard), transform 0.22s var(--ease-standard);
+  }
+
+  .milestone-detail-panel.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .console-terminal-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Terminal Header Bar */
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #F05D6C; }
+  .dot-yellow { background: #F5B942; }
+  .dot-green { background: #20D39B; }
+
+  .terminal-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.04em;
+  }
+
+  .terminal-badge {
+    font-size: 0.65rem;
+    color: var(--color-success);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .badge-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+  }
+
+  /* Terminal Body */
+  .terminal-body {
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .milestone-headline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-bottom: 1px solid rgba(27, 48, 66, 0.6);
+    padding-bottom: var(--space-3);
+  }
+
+  .headline-category {
+    font-size: var(--text-xs);
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .headline-role {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  .headline-period {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .milestone-summary {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Achievements block */
+  .milestone-achievements-block {
+    background: var(--color-bg-0);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .block-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(27, 48, 66, 0.4);
+    padding-bottom: var(--space-2);
+  }
+
+  .achievements-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .achievements-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
+  .prompt-arrow {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .resp-text {
+    flex: 1;
+  }
+
+  /* Tech block */
+  .milestone-tech-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .tech-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tech-badge {
+    font-size: 0.70rem;
+    padding: 3px 9px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    transition: border-color var(--duration-fast), color var(--duration-fast);
+  }
+
+  .tech-badge:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 900px) {
+    .experience-console-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+
+    .branch-rail-line {
+      display: none;
+    }
+
+    .branch-nodes-list {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: var(--space-2);
+    }
+
+    .branch-node-btn {
+      flex: 0 0 240px;
+      scroll-snap-align: start;
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .branch-node-btn.active {
+      transform: none;
+    }
+
+    .node-role {
+      font-size: 0.78rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .terminal-title {
+      font-size: 0.65rem;
+    }
+
+    .terminal-badge {
+      display: none;
+    }
+
+    .branch-node-btn {
+      flex: 0 0 210px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .branch-node-btn,
+    .milestone-detail-panel {
+      transition: none !important;
+      transform: none !important;
+    }
   }
 </style>
