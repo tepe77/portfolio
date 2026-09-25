@@ -249,12 +249,17 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
     display: flex;
     flex-direction: column;
     transition: all var(--duration-fast) var(--ease-standard);
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   /* Bento grid column spans */
@@ -374,6 +379,10 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .project-quick-metrics {
@@ -383,11 +392,16 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     padding-top: var(--space-3);
     margin-bottom: var(--space-3);
     border-top: 1px dashed var(--color-border);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .quick-metric {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .qm-val {
@@ -399,6 +413,7 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
   .qm-lbl {
     font-size: 0.65rem;
     color: var(--color-text-muted);
+    word-break: break-word;
   }
 
   /* ----------------- SPAN 2 SPECIFICS ----------------- */
@@ -407,6 +422,10 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     grid-template-columns: 1fr;
     gap: var(--space-6);
     height: 100%;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   @media (min-width: 900px) {
@@ -420,10 +439,15 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .wide-title {
     font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .wide-highlights {
@@ -432,6 +456,9 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: var(--space-3);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .highlights-label {
@@ -447,6 +474,8 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .highlights-list li {
@@ -456,6 +485,9 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     align-items: flex-start;
     gap: 6px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   .highlight-bullet {
@@ -473,6 +505,9 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-4);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .bento-mini-flow {
@@ -559,12 +594,17 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .panoramic-badge-group {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    flex-wrap: wrap;
   }
 
   .panoramic-flagship-pill {
@@ -582,6 +622,10 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-4);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   @media (min-width: 900px) {
@@ -591,15 +635,26 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     }
   }
 
+  .panoramic-desc-col {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .panoramic-title {
     font-size: clamp(1.35rem, 2vw, 1.65rem);
     margin-bottom: var(--space-2);
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .panoramic-metrics-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-3);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .panoramic-metric-box {
@@ -610,6 +665,8 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     flex-direction: column;
     text-align: center;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .pm-val {
@@ -621,6 +678,7 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
   .pm-lbl {
     font-size: 0.70rem;
     color: var(--color-text-muted);
+    word-break: break-word;
   }
 
   /* Panoramic Flow Strip */
@@ -632,6 +690,11 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .pflow-label {
@@ -642,6 +705,7 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     align-items: center;
     gap: 6px;
     letter-spacing: 0.04em;
+    word-break: break-word;
   }
 
   .pflow-steps {
@@ -649,8 +713,13 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     align-items: center;
     gap: var(--space-2);
     overflow-x: auto;
-    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
     font-size: 0.70rem;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pflow-step {
@@ -663,6 +732,7 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     padding: 3px 8px;
     white-space: nowrap;
     color: var(--color-text-secondary);
+    flex-shrink: 0;
   }
 
   .pflow-step.active {
@@ -691,6 +761,110 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     gap: var(--space-4);
     padding-top: var(--space-2);
     border-top: 1px solid rgba(27, 48, 66, 0.5);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Responsive Mobile Adaptations */
+  @media (max-width: 767px) {
+    .project-card.bento-span-2,
+    .project-card.bento-span-3 {
+      grid-column: span 1 !important;
+    }
+
+    .project-card {
+      padding: var(--space-4);
+    }
+
+    .project-title {
+      font-size: 1.15rem;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .wide-title,
+    .panoramic-title {
+      font-size: 1.2rem;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .project-desc {
+      font-size: var(--text-xs);
+      line-height: 1.55;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .card-header {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .panoramic-badge-group {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .wide-right-col {
+      padding: var(--space-3);
+    }
+
+    .panoramic-flow-strip {
+      padding: var(--space-3);
+    }
+
+    .panoramic-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+    }
+
+    .panoramic-footer .project-cta-btn,
+    .card-footer .project-cta-btn,
+    .wide-footer .project-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      width: 100%;
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-2);
+      color: var(--color-accent-primary);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .wide-metrics-grid,
+    .panoramic-metrics-col,
+    .project-quick-metrics {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+
+    .panoramic-metric-box {
+      padding: var(--space-2) var(--space-3);
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .wide-metric-card {
+      padding: 6px 10px;
+    }
+
+    .flow-diagram {
+      padding: 6px 8px;
+      gap: 3px;
+    }
+
+    .flow-node {
+      font-size: 0.62rem;
+      padding: 2px 5px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -12,86 +12,121 @@ import { experienceData } from '../../data/experience';
       description="Interactive system runlevel & GitOps branch tracker showcasing the progression from backend architecture into high-availability cluster reliability."
     />
 
-    <div class="experience-console-layout" data-reveal>
-      <!-- Left Column: Git Branch / Runlevel Rail Selector -->
-      <div class="branch-nav-column" role="tablist" aria-label="Career Progression Milestones">
-        <div class="branch-rail-line" aria-hidden="true"></div>
-
-        <div class="branch-nodes-list">
-          {experienceData.map((item, index) => (
-            <button
-              type="button"
-              role="tab"
-              id={`tab-${item.id}`}
-              class={`branch-node-btn ${index === 0 ? 'active' : ''}`}
-              data-target={item.id}
-              aria-selected={index === 0 ? "true" : "false"}
-              aria-controls={`panel-${item.id}`}
-              tabindex={index === 0 ? 0 : -1}
-            >
-              <div class="node-indicator">
-                <span class="node-dot"></span>
-                <span class="node-ring" aria-hidden="true"></span>
-              </div>
-
-              <div class="node-meta">
-                <div class="node-header">
-                  <span class="node-version font-mono">{item.version}</span>
-                  <span class="node-period font-mono">{item.period}</span>
-                </div>
-                <div class="node-role font-mono">{item.role}</div>
-                <div class="node-branch font-mono">
-                  <Icon name="git" size={13} />
-                  <span>{item.branch}</span>
-                </div>
-              </div>
-            </button>
-          ))}
+    <!-- Unified Split-Pane GitOps Console Window -->
+    <div class="experience-unified-console" data-reveal>
+      <!-- Top Window Header Bar -->
+      <div class="console-window-bar">
+        <div class="window-left-group">
+          <div class="terminal-dots" aria-hidden="true">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <span class="window-title font-mono text-xs">
+            <Icon name="git" size={13} />
+            <span class="desktop-text">GITOPS CONSOLE // REPOSITORY RELEASE RUNLEVELS</span>
+            <span class="mobile-text">GITOPS // RUNLEVELS</span>
+          </span>
+        </div>
+        <div class="window-status font-mono text-xs">
+          <span class="status-pulse-dot" aria-hidden="true"></span>
+          <span class="status-label">3 RELEASES SYNCHRONIZED</span>
         </div>
       </div>
 
-      <!-- Right Column: Interactive Milestone Inspection Console -->
-      <div class="detail-console-column">
-        {experienceData.map((item, index) => (
-          <div
-            id={`panel-${item.id}`}
-            role="tabpanel"
-            class={`milestone-detail-panel ${index === 0 ? 'active' : ''}`}
-            aria-labelledby={`tab-${item.id}`}
-            hidden={index !== 0}
-          >
-            <div class="console-terminal-card">
-              <!-- Terminal Top Bar -->
-              <div class="terminal-bar">
-                <div class="terminal-dots">
-                  <span class="dot dot-red"></span>
-                  <span class="dot dot-yellow"></span>
-                  <span class="dot dot-green"></span>
-                </div>
-                <div class="terminal-title font-mono">
-                  RELEASE // {item.version} [{item.branch}]
-                </div>
-                <div class="terminal-badge font-mono">
-                  <span class="badge-status-dot"></span>
-                  <span>{item.badgeStatus}</span>
-                </div>
-              </div>
+      <!-- Split-Pane Body: Sidebar (Left) + Milestone Inspector (Right) -->
+      <div class="console-split-body">
+        <!-- Left Pane: Git Branch Selector Sidebar -->
+        <aside class="console-sidebar-pane" role="tablist" aria-label="Career Progression Milestones">
+          <div class="sidebar-header font-mono text-xs">
+            <span class="sidebar-title">// MILESTONE BRANCHES</span>
+            <span class="branch-count">3 BRANCHES</span>
+          </div>
 
-              <!-- Terminal Body -->
-              <div class="terminal-body">
+          <div class="branch-rail-wrap">
+            <div class="branch-rail-line" aria-hidden="true"></div>
+
+            <div class="branch-nodes-list">
+              {experienceData.map((item, index) => (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`tab-${item.id}`}
+                  class={`branch-node-btn ${index === 0 ? 'active' : ''}`}
+                  data-target={item.id}
+                  aria-selected={index === 0 ? "true" : "false"}
+                  aria-controls={`panel-${item.id}`}
+                  tabindex={index === 0 ? 0 : -1}
+                >
+                  <div class="node-indicator">
+                    <span class="node-dot"></span>
+                    <span class="node-ring" aria-hidden="true"></span>
+                  </div>
+
+                  <div class="node-meta">
+                    <div class="node-header">
+                      <span class="node-version font-mono">{item.version}</span>
+                      <span class="node-period font-mono">{item.period}</span>
+                    </div>
+                    <div class="node-role font-mono">{item.role}</div>
+                    <div class="node-branch font-mono">
+                      <Icon name="git" size={12} />
+                      <span>{item.branch}</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <!-- Sidebar Footer / GitOps Telemetry Info -->
+          <div class="sidebar-footer font-mono text-xs">
+            <div class="footer-stat">
+              <span class="stat-key">CURRENT_HEAD:</span>
+              <span class="stat-val text-cyan">v3.0.0-prod</span>
+            </div>
+            <div class="footer-stat">
+              <span class="stat-key">CAREER_UPTIME:</span>
+              <span class="stat-val text-green">100% RELIABLE</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Pane: Active Milestone Inspector -->
+        <main class="console-content-pane">
+          {experienceData.map((item, index) => (
+            <div
+              id={`panel-${item.id}`}
+              role="tabpanel"
+              class={`milestone-detail-panel ${index === 0 ? 'active' : ''}`}
+              aria-labelledby={`tab-${item.id}`}
+              hidden={index !== 0}
+            >
+              <div class="panel-inner-content">
+                <!-- Milestone Metadata Header -->
                 <div class="milestone-headline">
-                  <span class="headline-category font-mono">{item.category}</span>
+                  <div class="headline-meta">
+                    <span class="headline-category font-mono text-xs">{item.category}</span>
+                    <span class="headline-badge font-mono text-xs">
+                      <span class="badge-dot" aria-hidden="true"></span>
+                      {item.badgeStatus}
+                    </span>
+                  </div>
                   <h3 class="headline-role">{item.role}</h3>
-                  <div class="headline-period font-mono">
-                    <span>TIMEFRAME: {item.period}</span>
+                  <div class="headline-period font-mono text-xs">
+                    <span class="period-label">DEPLOYED TIMEFRAME:</span>
+                    <span class="period-val text-cyan">{item.period}</span>
+                    <span class="period-sep">&bull;</span>
+                    <span class="branch-label">BRANCH:</span>
+                    <span class="branch-val font-mono">{item.branch}</span>
                   </div>
                 </div>
 
                 <p class="milestone-summary">{item.description}</p>
 
-                <!-- Key Achievements / Production highlights -->
+                <!-- Production Runbook & Key Achievements -->
                 <div class="milestone-achievements-block">
-                  <div class="block-header font-mono">
+                  <div class="block-header font-mono text-xs">
                     <Icon name="terminal" size={14} />
                     <span>PRODUCTION RUNBOOK &amp; KEY ACHIEVEMENTS</span>
                   </div>
@@ -107,9 +142,9 @@ import { experienceData } from '../../data/experience';
 
                 <!-- Verified Toolchain & Stack -->
                 <div class="milestone-tech-block">
-                  <div class="tech-header font-mono">
+                  <div class="tech-header font-mono text-xs">
                     <Icon name="layers" size={13} />
-                    <span>VERIFIED TOOLCHAIN &amp; STACK</span>
+                    <span>VERIFIED TOOLCHAIN &amp; PRODUCTION STACK</span>
                   </div>
                   <div class="tech-tags">
                     {item.technologies.map((t) => (
@@ -119,8 +154,8 @@ import { experienceData } from '../../data/experience';
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </main>
       </div>
     </div>
   </div>
@@ -201,26 +236,141 @@ import { experienceData } from '../../data/experience';
     position: relative;
   }
 
-  .experience-console-layout {
-    display: grid;
-    grid-template-columns: 330px 1fr;
-    gap: var(--space-8);
-    align-items: start;
-    margin-top: var(--space-6);
-  }
-
-  /* Left Column: Branch Nav */
-  .branch-nav-column {
+  /* Unified Split-Pane Console Window Container */
+  .experience-unified-console {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
+    margin-top: var(--space-6);
+  }
+
+  /* Top Window Header Bar */
+  .console-window-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .window-left-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #F05D6C; }
+  .dot-yellow { background: #F5B942; }
+  .dot-green { background: #20D39B; }
+
+  .window-title {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .window-title :global(svg) {
+    color: var(--color-accent-primary);
+  }
+
+  .mobile-text {
+    display: none;
+  }
+
+  .window-status {
+    color: var(--color-success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .status-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+  }
+
+  /* Split-Pane Body: 100% Equal Height */
+  .console-split-body {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    align-items: stretch;
+    height: 100%;
+  }
+
+  /* Left Sidebar Pane */
+  .console-sidebar-pane {
+    background: rgba(6, 11, 18, 0.55);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    position: relative;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5) var(--space-3);
+    border-bottom: 1px dashed rgba(27, 48, 66, 0.7);
+  }
+
+  .sidebar-title {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .branch-count {
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.1);
+    border: 1px solid rgba(25, 211, 230, 0.2);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.65rem;
+  }
+
+  .branch-rail-wrap {
+    position: relative;
+    padding: var(--space-5) var(--space-4);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .branch-rail-line {
     position: absolute;
-    top: 24px;
-    bottom: 24px;
-    left: 20px;
+    top: 40px;
+    bottom: 40px;
+    left: 28px;
     width: 2px;
     background: linear-gradient(to bottom, var(--color-accent-primary), var(--color-border));
     z-index: 1;
@@ -229,7 +379,7 @@ import { experienceData } from '../../data/experience';
   .branch-nodes-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
     position: relative;
     z-index: 2;
   }
@@ -237,8 +387,8 @@ import { experienceData } from '../../data/experience';
   .branch-node-btn {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-4);
-    background: var(--color-surface-1);
+    gap: var(--space-3);
+    background: rgba(13, 22, 34, 0.85);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-3) var(--space-4);
@@ -249,12 +399,13 @@ import { experienceData } from '../../data/experience';
     position: relative;
     width: 100%;
     color: inherit;
+    min-height: 44px;
   }
 
   .branch-node-btn:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-accent-primary);
     background: var(--color-surface-2);
-    transform: translateX(4px);
+    transform: translateX(3px);
   }
 
   .branch-node-btn:focus-visible {
@@ -264,9 +415,9 @@ import { experienceData } from '../../data/experience';
 
   .branch-node-btn.active {
     border-color: var(--color-accent-primary);
-    background: rgba(16, 26, 38, 0.95);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 0 16px rgba(25, 211, 230, 0.12);
-    transform: translateX(6px);
+    background: rgba(20, 34, 52, 0.95);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 14px rgba(25, 211, 230, 0.15);
+    transform: translateX(4px);
   }
 
   .node-indicator {
@@ -373,125 +524,154 @@ import { experienceData } from '../../data/experience';
     color: var(--color-accent-secondary);
   }
 
-  /* Right Column: Console Detail */
-  .detail-console-column {
+  /* Sidebar Footer: Metadata & Runlevel Metrics */
+  .sidebar-footer {
+    padding: var(--space-3) var(--space-5);
+    background: rgba(3, 7, 12, 0.6);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .footer-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.68rem;
+  }
+
+  .stat-key {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .text-cyan {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .text-green {
+    color: var(--color-success);
+    font-weight: 700;
+  }
+
+  /* Right Content Pane */
+  .console-content-pane {
     position: relative;
-    min-height: 380px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface-1);
+    min-width: 0;
   }
 
   .milestone-detail-panel {
     display: none;
+    height: 100%;
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
     transition: opacity 0.22s var(--ease-standard), transform 0.22s var(--ease-standard);
   }
 
   .milestone-detail-panel.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     opacity: 1;
     transform: translateY(0);
   }
 
-  .console-terminal-card {
-    background: var(--color-surface-1);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-  }
-
-  /* Terminal Header Bar */
-  .terminal-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-3) var(--space-4);
-    background: var(--color-surface-2);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .terminal-dots {
-    display: flex;
-    gap: 6px;
-  }
-
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
-  .dot-red { background: #F05D6C; }
-  .dot-yellow { background: #F5B942; }
-  .dot-green { background: #20D39B; }
-
-  .terminal-title {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    letter-spacing: 0.04em;
-  }
-
-  .terminal-badge {
-    font-size: 0.65rem;
-    color: var(--color-success);
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .badge-status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-success);
-  }
-
-  /* Terminal Body */
-  .terminal-body {
-    padding: clamp(var(--space-4), 3vw, var(--space-6));
+  .panel-inner-content {
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    justify-content: space-between;
+    gap: var(--space-5);
+    height: 100%;
   }
 
   .milestone-headline {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     border-bottom: 1px solid rgba(27, 48, 66, 0.6);
-    padding-bottom: var(--space-3);
+    padding-bottom: var(--space-4);
+  }
+
+  .headline-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
   }
 
   .headline-category {
-    font-size: var(--text-xs);
     color: var(--color-accent-primary);
     font-weight: 700;
     letter-spacing: 0.06em;
   }
 
+  .headline-badge {
+    color: var(--color-success);
+    background: rgba(32, 211, 155, 0.1);
+    border: 1px solid rgba(32, 211, 155, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.65rem;
+  }
+
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-success);
+  }
+
   .headline-role {
-    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-size: clamp(1.35rem, 2.2vw, 1.7rem);
     font-weight: 800;
     color: var(--color-text-primary);
     line-height: 1.2;
+    margin: 2px 0 0;
   }
 
   .headline-period {
-    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: var(--color-text-muted);
     font-weight: 600;
     margin-top: 2px;
+    flex-wrap: wrap;
+  }
+
+  .period-val {
+    color: var(--color-accent-primary);
+    font-weight: 700;
+  }
+
+  .period-sep {
+    color: var(--color-border);
+  }
+
+  .branch-val {
+    color: var(--color-text-secondary);
   }
 
   .milestone-summary {
     font-size: var(--text-sm);
-    line-height: 1.6;
+    line-height: 1.65;
     color: var(--color-text-secondary);
+    margin: 0;
   }
 
-  /* Achievements block */
+  /* Achievements Block */
   .milestone-achievements-block {
     background: var(--color-bg-0);
     border: 1px solid var(--color-border);
@@ -506,11 +686,10 @@ import { experienceData } from '../../data/experience';
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: 0.72rem;
     font-weight: 700;
     color: var(--color-text-muted);
     letter-spacing: 0.06em;
-    border-bottom: 1px solid rgba(27, 48, 66, 0.4);
+    border-bottom: 1px solid rgba(27, 48, 66, 0.5);
     padding-bottom: var(--space-2);
   }
 
@@ -519,6 +698,8 @@ import { experienceData } from '../../data/experience';
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    margin: 0;
+    padding: 0;
   }
 
   .achievements-list li {
@@ -540,7 +721,7 @@ import { experienceData } from '../../data/experience';
     flex: 1;
   }
 
-  /* Tech block */
+  /* Tech Block */
   .milestone-tech-block {
     display: flex;
     flex-direction: column;
@@ -551,7 +732,6 @@ import { experienceData } from '../../data/experience';
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: 0.70rem;
     font-weight: 700;
     color: var(--color-text-muted);
     letter-spacing: 0.06em;
@@ -578,15 +758,28 @@ import { experienceData } from '../../data/experience';
     color: var(--color-accent-primary);
   }
 
-  /* Responsive Breakpoints */
+  /* Responsive Media Queries */
   @media (max-width: 900px) {
-    .experience-console-layout {
+    .console-split-body {
       grid-template-columns: 1fr;
-      gap: var(--space-5);
+    }
+
+    .console-sidebar-pane {
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+      height: auto;
+    }
+
+    .sidebar-footer {
+      display: none;
     }
 
     .branch-rail-line {
       display: none;
+    }
+
+    .branch-rail-wrap {
+      padding: var(--space-3) var(--space-4);
     }
 
     .branch-nodes-list {
@@ -611,19 +804,56 @@ import { experienceData } from '../../data/experience';
     .node-role {
       font-size: 0.78rem;
     }
+
+    .panel-inner-content {
+      padding: var(--space-5) var(--space-4);
+    }
   }
 
-  @media (max-width: 480px) {
-    .terminal-title {
-      font-size: 0.65rem;
+  @media (max-width: 640px) {
+    .console-window-bar {
+      padding: var(--space-3) var(--space-4);
     }
 
-    .terminal-badge {
+    .desktop-text {
       display: none;
+    }
+
+    .mobile-text {
+      display: inline;
+    }
+
+    .window-status .status-label {
+      font-size: 0.65rem;
     }
 
     .branch-node-btn {
       flex: 0 0 210px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .headline-role {
+      font-size: 1.15rem;
+    }
+
+    .panel-inner-content {
+      padding: var(--space-4);
+      gap: var(--space-4);
+    }
+
+    .milestone-headline {
+      gap: 3px;
+    }
+
+    .headline-period {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .period-sep {
+      display: none;
     }
   }
 
