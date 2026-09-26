@@ -24,7 +24,7 @@ import { profileData } from '../../data/profile';
           aria-label="Send direct email to Prasaswo Tepe"
           title="Email Me Directly"
         >
-          <Icon name="external-link" size={18} />
+          <Icon name="mail" size={20} />
           <span class="cmd-text">EMAIL ME DIRECTLY</span>
         </a>
 
@@ -36,7 +36,7 @@ import { profileData } from '../../data/profile';
           aria-label="Visit GitHub Profile"
           title="GitHub Profile"
         >
-          <Icon name="git" size={18} />
+          <Icon name="github" size={20} />
           <span class="cmd-text">GITHUB</span>
         </a>
 
@@ -48,7 +48,7 @@ import { profileData } from '../../data/profile';
           aria-label="Visit LinkedIn Profile"
           title="LinkedIn Profile"
         >
-          <Icon name="globe" size={18} />
+          <Icon name="linkedin" size={20} />
           <span class="cmd-text">LINKEDIN</span>
         </a>
 
@@ -59,7 +59,7 @@ import { profileData } from '../../data/profile';
           aria-label="Download Resume PDF"
           title="Download Resume (PDF)"
         >
-          <Icon name="download" size={18} />
+          <Icon name="file-text" size={20} />
           <span class="cmd-text">RESUME</span>
         </a>
       </div>
@@ -194,6 +194,8 @@ import { profileData } from '../../data/profile';
   .cmd-btn-ghost:hover {
     background: var(--color-surface-2);
     border-color: var(--color-border-hover);
+  }
+
   /* Divider */
   .footer-divider {
     height: 1px;
@@ -213,15 +215,15 @@ import { profileData } from '../../data/profile';
     .site-footer {
       padding-bottom: calc(var(--space-8) + 56px + env(safe-area-inset-bottom, 0px));
     }
-  }
 
-  @media (max-width: 640px) {
+    /* Mobile: Single row, icon-only, strictly no text */
     .command-bar {
+      display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: center;
       flex-wrap: nowrap;
-      gap: clamp(8px, 3vw, 14px);
+      gap: clamp(10px, 3.5vw, 16px);
       width: 100%;
       max-width: 100%;
     }
@@ -231,7 +233,7 @@ import { profileData } from '../../data/profile';
       height: 48px;
       min-width: 48px;
       min-height: 48px;
-      padding: 0;
+      padding: 0 !important;
       border-radius: var(--radius-md);
       display: inline-flex;
       align-items: center;
@@ -247,6 +249,7 @@ import { profileData } from '../../data/profile';
     .cmd-btn :global(svg) {
       width: 20px;
       height: 20px;
+      margin: 0;
     }
 
     .footer-bottom {
