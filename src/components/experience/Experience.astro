@@ -40,7 +40,17 @@ import { experienceData } from '../../data/experience';
         <aside class="console-sidebar-pane" role="tablist" aria-label="Career Progression Milestones">
           <div class="sidebar-header font-mono text-xs">
             <span class="sidebar-title">// MILESTONE BRANCHES</span>
-            <span class="branch-count">3 BRANCHES</span>
+            <div class="sidebar-header-right">
+              <span class="branch-count">3 BRANCHES</span>
+              <div class="branch-nav-controls" aria-label="Milestone branch navigation">
+                <button type="button" id="prev-branch-btn" class="branch-nav-arrow" aria-label="Previous milestone branch">
+                  <Icon name="arrow-right" size={12} class="icon-flip" />
+                </button>
+                <button type="button" id="next-branch-btn" class="branch-nav-arrow" aria-label="Next milestone branch">
+                  <Icon name="arrow-right" size={12} />
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="branch-rail-wrap">
@@ -165,6 +175,10 @@ import { experienceData } from '../../data/experience';
   function initExperienceTimeline() {
     const tabs = document.querySelectorAll<HTMLButtonElement>('.branch-node-btn');
     const panels = document.querySelectorAll<HTMLElement>('.milestone-detail-panel');
+    const prevBtn = document.getElementById('prev-branch-btn');
+    const nextBtn = document.getElementById('next-branch-btn');
+    const branchList = document.querySelector<HTMLElement>('.branch-nodes-list');
+
     if (!tabs.length || !panels.length) return;
 
     const selectTab = (tabToSelect: HTMLButtonElement) => {
@@ -178,6 +192,9 @@ import { experienceData } from '../../data/experience';
         t.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
         t.setAttribute('tabindex', isCurrent ? '0' : '-1');
       });
+
+      // Smoothly scroll active tab into view horizontally on mobile
+      tabToSelect.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
       // Update panels state
       panels.forEach((p) => {
@@ -220,6 +237,19 @@ import { experienceData } from '../../data/experience';
         }
       });
     });
+
+    // Milestone navigation buttons for mobile
+    prevBtn?.addEventListener('click', () => {
+      if (branchList) {
+        branchList.scrollBy({ left: -240, behavior: 'smooth' });
+      }
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      if (branchList) {
+        branchList.scrollBy({ left: 240, behavior: 'smooth' });
+      }
+    });
   }
 
   // Initialize on DOM load and Astro transitions
@@ -247,6 +277,10 @@ import { experienceData } from '../../data/experience';
     display: flex;
     flex-direction: column;
     margin-top: var(--space-6);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   /* Top Window Header Bar */
@@ -257,6 +291,8 @@ import { experienceData } from '../../data/experience';
     padding: var(--space-3) var(--space-5);
     background: var(--color-surface-2);
     border-bottom: 1px solid var(--color-border);
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .window-left-group {
@@ -320,6 +356,10 @@ import { experienceData } from '../../data/experience';
     grid-template-columns: 340px 1fr;
     align-items: stretch;
     height: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   /* Left Sidebar Pane */
@@ -331,6 +371,11 @@ import { experienceData } from '../../data/experience';
     justify-content: space-between;
     height: 100%;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .sidebar-header {
@@ -339,6 +384,13 @@ import { experienceData } from '../../data/experience';
     justify-content: space-between;
     padding: var(--space-4) var(--space-5) var(--space-3);
     border-bottom: 1px dashed rgba(27, 48, 66, 0.7);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .branch-nav-controls {
+    display: none;
   }
 
   .sidebar-title {
@@ -761,13 +813,66 @@ import { experienceData } from '../../data/experience';
   /* Responsive Media Queries */
   @media (max-width: 900px) {
     .console-split-body {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
     }
 
     .console-sidebar-pane {
       border-right: none;
       border-bottom: 1px solid var(--color-border);
       height: auto;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .sidebar-header {
+      padding: var(--space-3) var(--space-4);
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .sidebar-header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .branch-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .branch-nav-arrow {
+      background: var(--color-bg-0);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary);
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+      padding: 0;
+      outline: none;
+    }
+
+    .branch-nav-arrow:hover,
+    .branch-nav-arrow:focus-visible {
+      border-color: var(--color-accent-primary);
+      color: var(--color-accent-primary);
+      background: var(--color-surface-2);
+    }
+
+    .icon-flip {
+      transform: rotate(180deg);
     }
 
     .sidebar-footer {
@@ -780,21 +885,63 @@ import { experienceData } from '../../data/experience';
 
     .branch-rail-wrap {
       padding: var(--space-3) var(--space-4);
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .branch-nodes-list {
+      display: flex;
       flex-direction: row;
       overflow-x: auto;
-      padding-bottom: var(--space-2);
-      scroll-snap-type: x mandatory;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
-      gap: var(--space-2);
+      touch-action: pan-x;
+      scroll-snap-type: x mandatory;
+      padding-bottom: var(--space-3);
+      padding-top: 2px;
+      padding-inline: 2px;
+      gap: var(--space-3);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-accent-primary) rgba(255, 255, 255, 0.05);
+    }
+
+    .branch-nodes-list::-webkit-scrollbar {
+      height: 4px;
+      display: block;
+    }
+
+    .branch-nodes-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    .branch-nodes-list::-webkit-scrollbar-thumb {
+      background: var(--color-accent-primary);
+      border-radius: 4px;
     }
 
     .branch-node-btn {
-      flex: 0 0 240px;
+      flex: 0 0 clamp(230px, 72vw, 280px);
       scroll-snap-align: start;
-      padding: var(--space-2) var(--space-3);
+      scroll-margin-inline: var(--space-2);
+      padding: var(--space-3);
+      touch-action: pan-x;
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .branch-node-btn:hover {
+      transform: none;
     }
 
     .branch-node-btn.active {
@@ -805,8 +952,20 @@ import { experienceData } from '../../data/experience';
       font-size: 0.78rem;
     }
 
+    .console-content-pane {
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
     .panel-inner-content {
       padding: var(--space-5) var(--space-4);
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
     }
   }
 
@@ -828,7 +987,7 @@ import { experienceData } from '../../data/experience';
     }
 
     .branch-node-btn {
-      flex: 0 0 210px;
+      flex: 0 0 clamp(210px, 72vw, 260px);
     }
   }
 
