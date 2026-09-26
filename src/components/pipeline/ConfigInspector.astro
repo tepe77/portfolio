@@ -209,6 +209,9 @@ import { productionConfigs } from '../../data/pipeline';
     display: flex;
     flex-direction: column;
     margin-top: var(--space-8);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .config-header {
@@ -220,12 +223,16 @@ import { productionConfigs } from '../../data/pipeline';
     padding: var(--space-4) var(--space-6);
     background: var(--color-surface-1);
     border-bottom: 1px solid var(--color-border);
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .config-title-wrap {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .config-badge {
@@ -235,6 +242,7 @@ import { productionConfigs } from '../../data/pipeline';
     padding: 2px 8px;
     border-radius: var(--radius-pill);
     font-weight: 700;
+    flex-shrink: 0;
   }
 
   .config-title {
@@ -242,6 +250,8 @@ import { productionConfigs } from '../../data/pipeline';
     font-weight: 800;
     color: var(--color-text-primary);
     letter-spacing: 0.04em;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .config-tabs-bar {
@@ -251,6 +261,9 @@ import { productionConfigs } from '../../data/pipeline';
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
   }
 
   .config-tabs-bar::-webkit-scrollbar {
@@ -271,6 +284,7 @@ import { productionConfigs } from '../../data/pipeline';
     transition: all var(--duration-fast);
     white-space: nowrap;
     user-select: none;
+    flex-shrink: 0;
   }
 
   .config-tab-btn:hover {
@@ -287,7 +301,10 @@ import { productionConfigs } from '../../data/pipeline';
 
   .config-content-grid {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   /* Code Viewport Column */
@@ -296,6 +313,10 @@ import { productionConfigs } from '../../data/pipeline';
     border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
   }
 
   .code-window-bar {
@@ -305,6 +326,11 @@ import { productionConfigs } from '../../data/pipeline';
     padding: var(--space-3) var(--space-5);
     background: rgba(13, 22, 34, 0.95);
     border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .file-meta {
@@ -312,6 +338,8 @@ import { productionConfigs } from '../../data/pipeline';
     align-items: center;
     gap: var(--space-3);
     font-weight: 700;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .badge-role {
@@ -335,6 +363,7 @@ import { productionConfigs } from '../../data/pipeline';
     padding: 4px 10px;
     cursor: pointer;
     transition: all var(--duration-fast);
+    flex-shrink: 0;
   }
 
   .copy-code-btn:hover {
@@ -349,14 +378,23 @@ import { productionConfigs } from '../../data/pipeline';
   }
 
   .code-editor-wrap {
-    padding: var(--space-4) var(--space-2);
+    padding: var(--space-4) var(--space-3);
     height: 480px;
     overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overscroll-behavior-x: contain;
   }
 
   .code-pre {
     margin: 0;
     line-height: 1.6;
+    font-size: 0.72rem;
+    min-width: 0;
   }
 
   :global(.code-line-row) {
@@ -364,6 +402,9 @@ import { productionConfigs } from '../../data/pipeline';
     padding: 1px var(--space-3);
     border-radius: 2px;
     transition: background-color var(--duration-fast);
+    width: max-content;
+    min-width: 100%;
+    box-sizing: border-box;
   }
 
   :global(.code-line-row:hover) {
@@ -378,14 +419,17 @@ import { productionConfigs } from '../../data/pipeline';
   :global(.code-num) {
     color: rgba(148, 163, 184, 0.4);
     user-select: none;
-    margin-right: var(--space-4);
-    min-width: 24px;
+    margin-right: var(--space-3);
+    min-width: 22px;
     text-align: right;
+    font-size: 0.68rem;
+    flex-shrink: 0;
   }
 
   :global(.code-text) {
     color: var(--color-text-primary);
     white-space: pre;
+    font-size: 0.72rem;
   }
 
   :global(.code-comment) {
@@ -407,6 +451,10 @@ import { productionConfigs } from '../../data/pipeline';
     gap: var(--space-4);
     height: 100%;
     overflow-y: auto;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .annotations-header {
@@ -423,6 +471,7 @@ import { productionConfigs } from '../../data/pipeline';
     color: var(--color-text-secondary);
     line-height: 1.6;
     margin-bottom: 0;
+    word-break: break-word;
   }
 
   .annotations-list-title {
@@ -435,6 +484,10 @@ import { productionConfigs } from '../../data/pipeline';
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   :global(.annotation-card) {
@@ -444,19 +497,28 @@ import { productionConfigs } from '../../data/pipeline';
     padding: var(--space-3) var(--space-4);
     cursor: pointer;
     transition: all var(--duration-fast);
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
-  :global(.annotation-card:hover) {
-    border-color: var(--color-accent-primary);
-    transform: translateX(4px);
-    background: var(--color-surface-2);
+  @media (hover: hover) and (min-width: 641px) {
+    :global(.annotation-card:hover) {
+      border-color: var(--color-accent-primary);
+      transform: translateX(4px);
+      background: var(--color-surface-2);
+    }
   }
 
   :global(.annotation-card-top) {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-2);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   :global(.ann-line-badge) {
@@ -465,23 +527,33 @@ import { productionConfigs } from '../../data/pipeline';
     padding: 1px 6px;
     border-radius: 4px;
     font-weight: 700;
+    font-size: 0.65rem;
+    flex-shrink: 0;
   }
 
   :global(.ann-title) {
     font-weight: 700;
     color: var(--color-text-primary);
+    font-size: 0.78rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   :global(.ann-desc) {
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     color: var(--color-text-muted);
     line-height: 1.5;
     margin-bottom: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   @media (max-width: 1024px) {
     .config-content-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .code-viewport-column {
@@ -502,12 +574,64 @@ import { productionConfigs } from '../../data/pipeline';
       padding: var(--space-3) var(--space-4);
     }
 
-    .config-window-bar {
+    .config-title-wrap {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .config-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+    }
+
+    .config-tab-btn {
+      padding: 5px 9px;
+      font-size: 0.68rem;
+    }
+
+    .code-window-bar {
       padding: var(--space-2) var(--space-3);
+      gap: var(--space-2);
+    }
+
+    .code-editor-wrap {
+      height: 280px;
+      padding: var(--space-3) var(--space-2);
+    }
+
+    .code-pre,
+    :global(.code-text) {
+      font-size: 0.68rem;
+    }
+
+    :global(.code-num) {
+      font-size: 0.62rem;
+      min-width: 18px;
+      margin-right: var(--space-2);
     }
 
     .annotations-column {
-      padding: var(--space-4);
+      padding: var(--space-4) var(--space-3);
+      height: auto;
+      overflow-y: visible;
+    }
+
+    :global(.annotation-card) {
+      padding: var(--space-3);
+    }
+
+    :global(.annotation-card:active) {
+      border-color: var(--color-accent-primary);
+      background: var(--color-surface-2);
+    }
+
+    :global(.ann-title) {
+      font-size: 0.74rem;
+    }
+
+    :global(.ann-desc) {
+      font-size: 0.7rem;
     }
   }
 </style>

@@ -128,7 +128,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    font-size: var(--text-sm);
+    font-size: 0.8125rem;
     line-height: 1.6;
     overflow-y: auto;
     cursor: text;
@@ -200,9 +200,9 @@
     border-radius: var(--radius-sm);
     color: var(--color-accent-primary);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 2px 8px;
+    padding: 2px 7px;
     cursor: pointer;
     transition: all var(--duration-fast);
     outline: none;
@@ -231,6 +231,7 @@
     color: var(--color-accent-primary);
     font-weight: 700;
     white-space: nowrap;
+    font-size: 0.8125rem;
   }
 
   .terminal-input {
@@ -239,23 +240,47 @@
     border: none;
     outline: none;
     color: var(--color-text-primary);
-    font-size: var(--text-sm);
+    font-size: 0.8125rem;
     caret-color: var(--color-accent-primary);
+  }
+
+  @media (max-width: 768px) {
+    .terminal-content {
+      padding: var(--space-3) var(--space-4);
+      font-size: 0.75rem;
+    }
+
+    .terminal-prompt {
+      font-size: 0.75rem;
+    }
+
+    .terminal-input {
+      font-size: 0.75rem;
+    }
   }
 
   @media (max-width: 480px) {
     .terminal-content {
-      padding: var(--space-3) var(--space-4);
-      font-size: var(--text-xs);
+      padding: var(--space-3) var(--space-3);
+      font-size: 0.7rem;
+      line-height: 1.5;
     }
 
     .terminal-prompt {
-      font-size: 0.76rem;
+      font-size: 0.7rem;
+    }
+
+    .terminal-input {
+      font-size: 0.7rem;
     }
 
     .terminal-chip {
-      padding: 4px 8px;
-      font-size: 0.68rem;
+      padding: 3px 6px;
+      font-size: 0.62rem;
+    }
+
+    .quick-chips-lbl {
+      font-size: 0.6rem;
     }
   }
 </style>
