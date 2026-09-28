@@ -21,7 +21,7 @@ export function initTerminal() {
       "  clear        Clear the terminal screen"
     ],
     about: [
-      "Prasaswo Tepe — DevOps & Infrastructure Engineer",
+      "Prasaswo Tepe // DevOps & Infrastructure Engineer",
       "Specializing in container orchestration, high availability database clustering,",
       "GitLab CI/CD delivery pipelines, and Linux server reliability engineering.",
       "Mindset: Automate repetitive work. Observe everything. Design for failure."

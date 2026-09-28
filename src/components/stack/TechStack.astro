@@ -187,25 +187,29 @@ const initialTech = stackData.find((t) => t.id === 'docker') || stackData[0];
       }
 
       // Update Text Details
-      titleEl.textContent = tech.name;
+      if (titleEl) titleEl.textContent = tech.name;
       if (catEl) catEl.textContent = tech.category;
-      descEl.textContent = tech.description;
+      if (descEl) descEl.textContent = tech.description;
 
       // Update Key-Value Specifications
-      specsEl.innerHTML = tech.specs
-        .map(
-          (s) => `
-          <div class="spec-row">
-            <span class="spec-key font-mono text-xs">${s.label}</span>
-            <span class="spec-val font-mono text-xs">${s.value}</span>
-          </div>`
-        )
-        .join('');
+      if (specsEl) {
+        specsEl.innerHTML = tech.specs
+          .map(
+            (s) => `
+            <div class="spec-row">
+              <span class="spec-key font-mono text-xs">${s.label}</span>
+              <span class="spec-val font-mono text-xs">${s.value}</span>
+            </div>`
+          )
+          .join('');
+      }
 
       // Update Related Projects
-      projectsListEl.innerHTML = tech.relatedProjects
-        .map((p) => `<li>${p}</li>`)
-        .join('');
+      if (projectsListEl) {
+        projectsListEl.innerHTML = tech.relatedProjects
+          .map((p) => `<li>${p}</li>`)
+          .join('');
+      }
 
       // Update CTA trigger
       if (ctaBtn) {

@@ -16,8 +16,44 @@ export interface TopologyNodeData {
   };
   techDetails: string[];
   connections: string[];
-  group: 'ingress' | 'compute' | 'database' | 'observability' | 'storage';
+  group: 'ingress' | 'compute' | 'database' | 'observability';
 }
+
+export interface ConnectionDefinition {
+  from: string;
+  to: string;
+  isPrimary?: boolean;
+}
+
+export const clusterConnections: ConnectionDefinition[] = [
+  // Stage 1 Ingress to Gateway
+  { from: 'internet', to: 'nginx', isPrimary: true },
+
+  // Stage 1 Gateway to Stage 2 App Nodes
+  { from: 'nginx', to: 'app-01', isPrimary: true },
+  { from: 'nginx', to: 'app-02', isPrimary: true },
+
+  // Stage 2 Cache and to Stage 3 PgBouncer
+  { from: 'app-01', to: 'redis' },
+  { from: 'app-02', to: 'redis' },
+  { from: 'app-01', to: 'pgbouncer', isPrimary: true },
+  { from: 'app-02', to: 'pgbouncer', isPrimary: true },
+
+  // Stage 3 Database HA
+  { from: 'pgbouncer', to: 'patroni-01', isPrimary: true },
+  { from: 'patroni-01', to: 'patroni-02', isPrimary: true },
+  { from: 'patroni-01', to: 'patroni-03' },
+  { from: 'patroni-01', to: 'etcd-dcs' },
+  { from: 'patroni-02', to: 'etcd-dcs' },
+  { from: 'patroni-03', to: 'etcd-dcs' },
+
+  // Stage 3 to Stage 4 Storage & Telemetry
+  { from: 'patroni-01', to: 'object-storage' },
+  { from: 'app-01', to: 'prometheus' },
+  { from: 'app-02', to: 'prometheus' },
+  { from: 'patroni-01', to: 'prometheus' },
+  { from: 'prometheus', to: 'grafana', isPrimary: true }
+];
 
 export const topologyData: Record<string, TopologyNodeData> = {
   internet: {
@@ -53,7 +89,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
       throughput: "8.6 MB/s"
     },
     techDetails: ["HTTP/2 Support", "Upstream Health Checks", "SSL Ciphers A+", "Real-IP Forwarding", "Gzip / Brotli"],
-    connections: ["app-01", "app-02"],
+    connections: ["internet", "app-01", "app-02"],
     group: "ingress"
   },
   "app-01": {
@@ -71,7 +107,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
       throughput: "450 req/s"
     },
     techDetails: ["Zero-Downtime Rollouts", "Resource Quotas (1 CPU, 2GB)", "Read-only Root FS", "Internal Overlay DNS"],
-    connections: ["pgbouncer", "redis", "prometheus"],
+    connections: ["nginx", "pgbouncer", "redis", "prometheus"],
     group: "compute"
   },
   "app-02": {
@@ -89,7 +125,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
       throughput: "420 req/s"
     },
     techDetails: ["High Availability Redundancy", "Auto-Heal on SIGKILL", "Shared Overlay Network", "Ephemeral State"],
-    connections: ["pgbouncer", "redis", "prometheus"],
+    connections: ["nginx", "pgbouncer", "redis", "prometheus"],
     group: "compute"
   },
   redis: {
@@ -125,7 +161,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
       throughput: "890 qps"
     },
     techDetails: ["Max 1000 Client Conns", "Auto-Retry on Failover", "TLS Connection to DB", "Zero Memory Overhead"],
-    connections: ["patroni-01"],
+    connections: ["app-01", "app-02", "patroni-01"],
     group: "database"
   },
   "patroni-01": {
@@ -144,7 +180,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
       lag: "0 bytes (Leader)"
     },
     techDetails: ["Leader Lock via etcd", "Synchronous Replication Mode", "Continuous WAL Archiving", "Automatic Failover Support"],
-    connections: ["patroni-02", "patroni-03", "etcd-dcs", "object-storage", "prometheus"],
+    connections: ["pgbouncer", "patroni-02", "patroni-03", "etcd-dcs", "object-storage", "prometheus"],
     group: "database"
   },
   "patroni-02": {
@@ -219,7 +255,7 @@ export const topologyData: Record<string, TopologyNodeData> = {
     },
     techDetails: ["WAL-G Continuous Backup", "Lifecycle Snapshot Purging", "Cryptographic Checksums", "Offsite Mirroring"],
     connections: ["patroni-01"],
-    group: "storage"
+    group: "observability"
   },
   prometheus: {
     id: "prometheus",
@@ -264,8 +300,13 @@ export function initTopology() {
   if (!container) return;
 
   const nodeElements = container.querySelectorAll<HTMLElement>('[data-node-id]');
-  const lineElements = container.querySelectorAll<SVGLineElement | SVGPathElement>('[data-from][data-to]');
-  const detailPanel = document.getElementById('topology-details-panel');
+  const stageColumns = container.querySelectorAll<HTMLElement>('[data-stage]');
+  const gridEl = container.querySelector('.pipeline-grid') as HTMLElement | null;
+  const svg = document.getElementById('topology-connections-svg') as SVGSVGElement | null;
+  const pathsGroup = document.getElementById('topology-svg-paths');
+
+  const idleBar = document.getElementById('inspector-idle-bar');
+  const activeContent = document.getElementById('inspector-active-content');
   const detailTitle = document.getElementById('topology-detail-title');
   const detailCategory = document.getElementById('topology-detail-category');
   const detailPort = document.getElementById('topology-detail-port');
@@ -278,6 +319,7 @@ export function initTopology() {
   const detailLag = document.getElementById('topology-detail-lag');
   const detailLagRow = document.getElementById('topology-detail-lag-row');
   const detailTechList = document.getElementById('topology-detail-tech');
+  const detailConnectedList = document.getElementById('topology-detail-connected');
   const detailClose = document.getElementById('topology-detail-close');
 
   const filterButtons = container.querySelectorAll<HTMLButtonElement>('[data-topo-filter]');
@@ -289,11 +331,92 @@ export function initTopology() {
   let activeNodeId: string | null = null;
   let activeFilter: string = 'all';
 
+  // Render SVG Paths connecting nodes across stages
+  const renderConnectionPaths = () => {
+    if (!svg || !pathsGroup || !gridEl) return;
+    if (window.innerWidth < 768) {
+      pathsGroup.innerHTML = '';
+      return;
+    }
+
+    const gridRect = gridEl.getBoundingClientRect();
+    if (gridRect.width <= 0 || gridRect.height <= 0) return;
+
+    svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
+    svg.style.height = `${gridRect.height}px`;
+
+    pathsGroup.innerHTML = '';
+
+    clusterConnections.forEach(({ from, to, isPrimary }) => {
+      const fromEl = container.querySelector(`[data-node-id="${from}"]`) as HTMLElement | null;
+      const toEl = container.querySelector(`[data-node-id="${to}"]`) as HTMLElement | null;
+      if (!fromEl || !toEl) return;
+
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
+
+      let startX: number;
+      let startY: number;
+      let endX: number;
+      let endY: number;
+      let pathD: string;
+
+      const isHorizontal = Math.abs(toRect.left - fromRect.left) > 60;
+
+      if (isHorizontal) {
+        if (toRect.left >= fromRect.left) {
+          // Flowing right
+          startX = fromRect.right - gridRect.left;
+          startY = fromRect.top + fromRect.height / 2 - gridRect.top;
+          endX = toRect.left - gridRect.left;
+          endY = toRect.top + toRect.height / 2 - gridRect.top;
+        } else {
+          // Flowing left
+          startX = fromRect.left - gridRect.left;
+          startY = fromRect.top + fromRect.height / 2 - gridRect.top;
+          endX = toRect.right - gridRect.left;
+          endY = toRect.top + toRect.height / 2 - gridRect.top;
+        }
+        const dx = Math.abs(endX - startX) * 0.45;
+        pathD = `M ${startX} ${startY} C ${startX + (endX >= startX ? dx : -dx)} ${startY}, ${endX - (endX >= startX ? dx : -dx)} ${endY}, ${endX} ${endY}`;
+      } else {
+        // Same column (vertical)
+        startX = fromRect.left + fromRect.width / 2 - gridRect.left;
+        startY = (toRect.top >= fromRect.top) ? (fromRect.bottom - gridRect.top) : (fromRect.top - gridRect.top);
+        endX = toRect.left + toRect.width / 2 - gridRect.left;
+        endY = (toRect.top >= fromRect.top) ? (toRect.top - gridRect.top) : (toRect.bottom - gridRect.top);
+        pathD = `M ${startX} ${startY} L ${endX} ${endY}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('data-from', from);
+      path.setAttribute('data-to', to);
+      path.classList.add('topo-line');
+      if (isPrimary) {
+        path.classList.add('topo-line-primary');
+      }
+
+      if (activeNodeId) {
+        if (from === activeNodeId || to === activeNodeId) {
+          path.classList.add('line-active');
+        } else {
+          path.classList.add('line-dimmed');
+        }
+      }
+
+      pathsGroup.appendChild(path);
+    });
+  };
+
   const highlightNodeAndConnections = (nodeId: string | null) => {
+    const lines = pathsGroup?.querySelectorAll<SVGPathElement>('.topo-line') || [];
+
     if (!nodeId) {
       if (activeFilter === 'all') {
-        nodeElements.forEach((node) => node.classList.remove('node-dimmed', 'node-active'));
-        lineElements.forEach((line) => line.classList.remove('line-dimmed', 'line-active'));
+        nodeElements.forEach((node) => node.classList.remove('node-dimmed', 'node-active', 'node-connected'));
+        stageColumns.forEach((col) => col.classList.remove('stage-dimmed', 'stage-active'));
+        lines.forEach((line) => line.classList.remove('line-dimmed', 'line-active'));
       } else {
         applyFilter(activeFilter);
       }
@@ -312,23 +435,42 @@ export function initTopology() {
       }
     });
 
+    // Determine which stages have connected nodes
+    const activeStageSet = new Set<string>();
+    connectedIds.forEach((id) => {
+      const stage = topologyData[id]?.group;
+      if (stage) activeStageSet.add(stage);
+    });
+
     nodeElements.forEach((node) => {
       const id = node.dataset.nodeId;
       if (id === nodeId) {
         node.classList.add('node-active');
-        node.classList.remove('node-dimmed');
+        node.classList.remove('node-dimmed', 'node-connected');
       } else if (id && connectedIds.has(id)) {
+        node.classList.add('node-connected');
         node.classList.remove('node-dimmed', 'node-active');
       } else {
         node.classList.add('node-dimmed');
-        node.classList.remove('node-active');
+        node.classList.remove('node-active', 'node-connected');
       }
     });
 
-    lineElements.forEach((line) => {
+    stageColumns.forEach((col) => {
+      const stageName = col.dataset.stage;
+      if (stageName && activeStageSet.has(stageName)) {
+        col.classList.add('stage-active');
+        col.classList.remove('stage-dimmed');
+      } else {
+        col.classList.add('stage-dimmed');
+        col.classList.remove('stage-active');
+      }
+    });
+
+    lines.forEach((line) => {
       const from = line.dataset.from;
       const to = line.dataset.to;
-      if ((from === nodeId && connectedIds.has(to || '')) || (to === nodeId && connectedIds.has(from || ''))) {
+      if (from === nodeId || to === nodeId) {
         line.classList.add('line-active');
         line.classList.remove('line-dimmed');
       } else {
@@ -340,10 +482,13 @@ export function initTopology() {
 
   const showNodeDetails = (nodeId: string) => {
     const data = topologyData[nodeId];
-    if (!data || !detailPanel) return;
+    if (!data) return;
 
     activeNodeId = nodeId;
     highlightNodeAndConnections(nodeId);
+
+    if (idleBar) idleBar.style.display = 'none';
+    if (activeContent) activeContent.style.display = 'flex';
 
     if (detailTitle) detailTitle.textContent = data.name;
     if (detailCategory) detailCategory.textContent = data.category.toUpperCase();
@@ -375,29 +520,60 @@ export function initTopology() {
       });
     }
 
-    detailPanel.classList.add('visible');
-    detailPanel.setAttribute('aria-hidden', 'false');
+    if (detailConnectedList) {
+      detailConnectedList.innerHTML = '';
+      const allConnected = new Set<string>([...data.connections]);
+      Object.values(topologyData).forEach((item) => {
+        if (item.connections.includes(nodeId)) {
+          allConnected.add(item.id);
+        }
+      });
+
+      allConnected.forEach((connectedId) => {
+        const target = topologyData[connectedId];
+        if (!target) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'connected-node-tag font-mono';
+        btn.textContent = `${target.name.split(' ')[0]} (${target.port.split(' ')[0]})`;
+        btn.addEventListener('click', () => {
+          showNodeDetails(connectedId);
+        });
+        detailConnectedList.appendChild(btn);
+      });
+    }
   };
 
   const hideNodeDetails = () => {
-    if (!detailPanel) return;
     activeNodeId = null;
+    if (activeContent) activeContent.style.display = 'none';
+    if (idleBar) idleBar.style.display = 'flex';
     highlightNodeAndConnections(null);
-    detailPanel.classList.remove('visible');
-    detailPanel.setAttribute('aria-hidden', 'true');
   };
 
   const applyFilter = (filter: string) => {
     activeFilter = filter;
     filterButtons.forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.topoFilter === filter);
+      const isSelected = btn.dataset.topoFilter === filter;
+      btn.classList.toggle('active', isSelected);
+      btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
     });
 
+    const lines = pathsGroup?.querySelectorAll<SVGPathElement>('.topo-line') || [];
+
     if (filter === 'all') {
-      nodeElements.forEach((node) => node.classList.remove('node-dimmed', 'node-active'));
-      lineElements.forEach((line) => line.classList.remove('line-dimmed', 'line-active'));
+      nodeElements.forEach((node) => node.classList.remove('node-dimmed', 'node-active', 'node-connected'));
+      stageColumns.forEach((col) => col.classList.remove('stage-dimmed', 'stage-active'));
+      lines.forEach((line) => line.classList.remove('line-dimmed', 'line-active'));
       return;
     }
+
+    stageColumns.forEach((col) => {
+      const stage = col.dataset.stage;
+      const isColMatch = stage === filter;
+      col.classList.toggle('stage-active', isColMatch);
+      col.classList.toggle('stage-dimmed', !isColMatch);
+    });
 
     nodeElements.forEach((node) => {
       const id = node.dataset.nodeId;
@@ -405,8 +581,9 @@ export function initTopology() {
       if (!data) return;
 
       const isMatch =
-        (filter === 'ingress' && (data.group === 'ingress' || data.group === 'compute')) ||
-        (filter === 'database' && (data.group === 'database' || data.group === 'storage')) ||
+        (filter === 'ingress' && data.group === 'ingress') ||
+        (filter === 'compute' && data.group === 'compute') ||
+        (filter === 'database' && data.group === 'database') ||
         (filter === 'observability' && data.group === 'observability');
 
       if (isMatch) {
@@ -414,21 +591,16 @@ export function initTopology() {
         node.classList.add('node-active');
       } else {
         node.classList.add('node-dimmed');
-        node.classList.remove('node-active');
+        node.classList.remove('node-active', 'node-connected');
       }
     });
 
-    lineElements.forEach((line) => {
+    lines.forEach((line) => {
       const from = line.dataset.from;
       const to = line.dataset.to;
-      const fromData = from ? topologyData[from] : null;
-      const toData = to ? topologyData[to] : null;
-
-      const isLineMatch =
-        (filter === 'ingress' && (fromData?.group === 'ingress' || toData?.group === 'ingress')) ||
-        (filter === 'database' && (fromData?.group === 'database' || toData?.group === 'database')) ||
-        (filter === 'observability' && (fromData?.group === 'observability' || toData?.group === 'observability'));
-
+      const fromGroup = from ? topologyData[from]?.group : null;
+      const toGroup = to ? topologyData[to]?.group : null;
+      const isLineMatch = fromGroup === filter || toGroup === filter;
       if (isLineMatch) {
         line.classList.add('line-active');
         line.classList.remove('line-dimmed');
@@ -461,7 +633,7 @@ export function initTopology() {
     });
 
     node.addEventListener('focus', () => {
-      highlightNodeAndConnections(nodeId);
+      if (!activeNodeId) highlightNodeAndConnections(nodeId);
     });
 
     node.addEventListener('blur', () => {
@@ -483,7 +655,7 @@ export function initTopology() {
   detailClose?.addEventListener('click', hideNodeDetails);
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && detailPanel?.classList.contains('visible')) {
+    if (e.key === 'Escape' && activeNodeId) {
       hideNodeDetails();
     }
   });
@@ -502,16 +674,43 @@ export function initTopology() {
 
       const patroni01 = container.querySelector('[data-node-id="patroni-01"]');
       const patroni02 = container.querySelector('[data-node-id="patroni-02"]');
+      const etcdDcs = container.querySelector('[data-node-id="etcd-dcs"]');
+      const pgbouncerToPatroni01 = pathsGroup?.querySelector('[data-from="pgbouncer"][data-to="patroni-01"]');
 
       patroni01?.classList.add('node-error-flash');
+      pgbouncerToPatroni01?.classList.add('line-failover');
 
       setTimeout(() => {
         drillBannerText.textContent = "[T+3.8s] etcd detected heartbeat expiration. Raft consensus election triggered.";
+        etcdDcs?.classList.add('sonar-pulse');
       }, 1500);
 
       setTimeout(() => {
         drillBannerText.textContent = "[T+7.4s] Patroni-02 acquired DCS leader lock! Promoted to Primary Master (RW).";
         patroni02?.classList.add('node-promoted-flash');
+
+        // Dynamically create or activate line to Patroni-02
+        let failoverLine = pathsGroup?.querySelector('[data-from="pgbouncer"][data-to="patroni-02"]') as SVGPathElement | null;
+        if (!failoverLine && gridEl) {
+          const pgEl = container.querySelector('[data-node-id="pgbouncer"]');
+          const p2El = container.querySelector('[data-node-id="patroni-02"]');
+          if (pgEl && p2El) {
+            const gridRect = gridEl.getBoundingClientRect();
+            const pgRect = pgEl.getBoundingClientRect();
+            const p2Rect = p2El.getBoundingClientRect();
+            const startX = pgRect.left + pgRect.width / 2 - gridRect.left;
+            const startY = pgRect.bottom - gridRect.top;
+            const endX = p2Rect.left + p2Rect.width / 2 - gridRect.left;
+            const endY = p2Rect.top - gridRect.top;
+            failoverLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            failoverLine.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
+            failoverLine.setAttribute('data-from', 'pgbouncer');
+            failoverLine.setAttribute('data-to', 'patroni-02');
+            failoverLine.classList.add('topo-line');
+            pathsGroup?.appendChild(failoverLine);
+          }
+        }
+        failoverLine?.classList.add('line-promoted');
       }, 3200);
 
       setTimeout(() => {
@@ -521,6 +720,10 @@ export function initTopology() {
       setTimeout(() => {
         patroni01?.classList.remove('node-error-flash');
         patroni02?.classList.remove('node-promoted-flash');
+        etcdDcs?.classList.remove('sonar-pulse');
+        pgbouncerToPatroni01?.classList.remove('line-failover');
+        const failoverLine = pathsGroup?.querySelector('[data-from="pgbouncer"][data-to="patroni-02"]');
+        failoverLine?.remove();
         drillBanner.classList.remove('active');
         drillInProgress = false;
         failoverBtn.disabled = false;
@@ -533,8 +736,28 @@ export function initTopology() {
     pingBtn.addEventListener('click', () => {
       nodeElements.forEach((node) => {
         node.classList.add('sonar-pulse');
-        setTimeout(() => node.classList.remove('sonar-pulse'), 1000);
+        setTimeout(() => node.classList.remove('sonar-pulse'), 800);
+      });
+      const lines = pathsGroup?.querySelectorAll<SVGPathElement>('.topo-line') || [];
+      lines.forEach((line) => {
+        line.classList.add('line-active');
+        setTimeout(() => line.classList.remove('line-active'), 800);
       });
     });
   }
+
+  // Initial draw and reactive resize observers
+  requestAnimationFrame(() => {
+    renderConnectionPaths();
+    setTimeout(renderConnectionPaths, 300);
+  });
+
+  if (window.ResizeObserver && gridEl) {
+    const ro = new ResizeObserver(() => {
+      renderConnectionPaths();
+    });
+    ro.observe(gridEl);
+  }
+
+  window.addEventListener('resize', renderConnectionPaths);
 }
