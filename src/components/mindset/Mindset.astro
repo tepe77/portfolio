@@ -2,51 +2,231 @@
 import SectionHeader from '../common/SectionHeader.astro';
 import PrincipleCard from './PrincipleCard.astro';
 
-const principles = [
+interface Tactic {
+  label: string;
+  detail: string;
+}
+
+interface Axiom {
+  id: string;
+  num: string;
+  title: string;
+  category: string;
+  statement: string;
+  explanation: string;
+  rule: string;
+  impact: string;
+  fileName: string;
+  tactics: Tactic[];
+  yamlLines: Array<{ indent: number; key?: string; value?: string; comment?: string }>;
+  cliCommand: string;
+  cliOutputs: Array<{ label: string; value: string }>;
+}
+
+const axioms: Axiom[] = [
   {
+    id: "automate",
     num: "01",
     title: "AUTOMATE",
     category: "GITOPS & WORKFLOWS",
     statement: "If a task happens repeatedly, it should be automated.",
-    explanation: "Manual actions introduce variance and human error into production. Automation turns infrastructure knowledge into version-controlled, auditable code.",
+    explanation: "Manual actions introduce variance and human error into production. Automation turns infrastructure knowledge into version-controlled, auditable, and repeatable code.",
     rule: "policy: zero_manual_drift",
-    impact: "100% reproducible environments"
+    impact: "100% reproducible environments",
+    fileName: "gitops-guardrail.yaml",
+    tactics: [
+      {
+        label: "Declarative GitOps State",
+        detail: "Infrastructure and cluster states are versioned in Git and continuously reconciled via automated pipelines."
+      },
+      {
+        label: "Zero Manual Drift Policy",
+        detail: "Mutating production commands applied directly via SSH or kubectl are detected and reverted automatically within seconds."
+      },
+      {
+        label: "Audited & Signed Commits",
+        detail: "Every infrastructure modification requires cryptographically signed commits and peer review before deployment."
+      }
+    ],
+    yamlLines: [
+      { indent: 0, comment: "# GitOps Continuous Reconciliation" },
+      { indent: 0, key: "apiVersion", value: "gitops.io/v1" },
+      { indent: 0, key: "kind", value: "SyncPolicy" },
+      { indent: 0, key: "spec", value: "" },
+      { indent: 2, key: "reconcileStrategy", value: "Automated" },
+      { indent: 2, key: "autoHeal", value: "true" },
+      { indent: 2, key: "pruneResources", value: "true" },
+      { indent: 2, key: "syncInterval", value: "30s" }
+    ],
+    cliCommand: "policy-engine verify --rule zero_manual_drift",
+    cliOutputs: [
+      { label: "GitOps state", value: "In-sync with git@main" },
+      { label: "Manual mutation test", value: "REVERTED (0s drift)" },
+      { label: "Verification result", value: "PASSED [14ms]" }
+    ]
   },
   {
+    id: "observe",
     num: "02",
     title: "OBSERVE",
     category: "RELIABILITY & TELEMETRY",
     statement: "You cannot fix what you cannot measure.",
-    explanation: "Reliability requires deep observability into saturation, latencies, and anomalies. Telemetry must be active before incidents occur.",
+    explanation: "Reliability requires deep observability into saturation, latencies, and anomalies. Telemetry must be active and alerting before incidents impact end users.",
     rule: "telemetry: metrics_logs_traces",
-    impact: "Sub-second anomaly triage"
+    impact: "Sub-second anomaly triage",
+    fileName: "observability-gate.yaml",
+    tactics: [
+      {
+        label: "Four Golden Signals",
+        detail: "Real-time instrumentation of Latency, Traffic, Error rates, and Resource Saturation on every critical route."
+      },
+      {
+        label: "Active Synthetic Probes",
+        detail: "Automated health probes simulate production traffic every 5 seconds to uncover edge routing failures early."
+      },
+      {
+        label: "Burn-Rate Alerting",
+        detail: "Multi-window SLO burn-rate alerts notify on-call engineers long before user-facing availability budgets deplete."
+      }
+    ],
+    yamlLines: [
+      { indent: 0, comment: "# Telemetry & SLO Enforcement Gate" },
+      { indent: 0, key: "apiVersion", value: "telemetry.io/v1" },
+      { indent: 0, key: "kind", value: "ObservabilityGate" },
+      { indent: 0, key: "spec", value: "" },
+      { indent: 2, key: "slos", value: "" },
+      { indent: 4, key: "latencyP99", value: "\"< 45ms\"" },
+      { indent: 4, key: "errorRate", value: "\"< 0.01%\"" },
+      { indent: 2, key: "syntheticProbes", value: "5s interval" }
+    ],
+    cliCommand: "telemetry verify --slo production-core",
+    cliOutputs: [
+      { label: "P99 Latency", value: "22ms (threshold: 45ms)" },
+      { label: "Synthetic probe health", value: "100% passed" },
+      { label: "Alerting status", value: "ACTIVE (0 firing)" }
+    ]
   },
   {
+    id: "design-for-failure",
     num: "03",
     title: "DESIGN FOR FAILURE",
     category: "DISTRIBUTED SYSTEMS",
     statement: "Assume every component will fail at the worst time.",
-    explanation: "Nodes crash, disks corrupt, networks partition. High availability is achieved by architecting automated consensus, leader elections, and recovery loops.",
+    explanation: "Nodes crash, disks corrupt, and networks partition. High availability is achieved by architecting automated consensus, leader elections, and self-healing recovery loops.",
     rule: "topology: multi_az_redundant",
-    impact: "Zero single points of failure"
+    impact: "Zero single points of failure",
+    fileName: "ha-topology-guard.yaml",
+    tactics: [
+      {
+        label: "Multi-AZ Anti-Affinity",
+        detail: "Application pods and database instances are strictly distributed across independent availability zones."
+      },
+      {
+        label: "Sub-10s Auto-Failover",
+        detail: "Patroni with etcd distributed consensus detects primary node drops and promotes a healthy standby in under 10 seconds."
+      },
+      {
+        label: "Graceful Load Shedding",
+        detail: "Non-critical async background jobs automatically throttle down during failover drills to protect core ingress."
+      }
+    ],
+    yamlLines: [
+      { indent: 0, comment: "# Cluster High Availability Guard" },
+      { indent: 0, key: "apiVersion", value: "cluster.ha.io/v1" },
+      { indent: 0, key: "kind", value: "TopologyGuard" },
+      { indent: 0, key: "spec", value: "" },
+      { indent: 2, key: "minHealthyReplicas", value: "3" },
+      { indent: 2, key: "distribution", value: "MultiZoneAntiAffinity" },
+      { indent: 2, key: "etcdQuorumRequired", value: "true" },
+      { indent: 2, key: "maxFailoverDowntime", value: "10s" }
+    ],
+    cliCommand: "cluster-ha verify --resilience-check",
+    cliOutputs: [
+      { label: "Replicas active", value: "3/3 across AZ-a, AZ-b, AZ-c" },
+      { label: "Quorum health", value: "HEALTHY (split-brain immune)" },
+      { label: "Automated failover", value: "PASSED (< 8s MTTR)" }
+    ]
   },
   {
+    id: "security-by-default",
     num: "04",
     title: "SECURITY BY DEFAULT",
     category: "DEVSECOPS PIPELINE",
     statement: "Security belongs in the pipeline, not as an afterthought.",
-    explanation: "Vulnerability gating, secret segregation, minimal container base images, and least-privilege firewalls must be integral to every deployment.",
+    explanation: "Vulnerability gating, secret segregation, minimal container base images, and least-privilege firewalls must be integral to every automated deployment.",
     rule: "pipeline: shift_left_scanning",
-    impact: "Zero unverified production assets"
+    impact: "Zero unverified production assets",
+    fileName: "devsecops-supply-chain.yaml",
+    tactics: [
+      {
+        label: "Shift-Left Vulnerability Gating",
+        detail: "CI/CD container vulnerability scanning with Trivy automatically halts pipelines on Critical or High CVE findings."
+      },
+      {
+        label: "Zero Secret Storage in Code",
+        detail: "Zero plaintext credentials in repositories; dynamic short-lived tokens are injected at runtime via Vault."
+      },
+      {
+        label: "Rootless Hardened Containers",
+        detail: "All containers execute as non-root users with read-only root filesystems and dropped Linux kernel capabilities."
+      }
+    ],
+    yamlLines: [
+      { indent: 0, comment: "# DevSecOps Supply Chain Policy" },
+      { indent: 0, key: "apiVersion", value: "security.io/v1" },
+      { indent: 0, key: "kind", value: "SupplyChainPolicy" },
+      { indent: 0, key: "spec", value: "" },
+      { indent: 2, key: "blockOnSeverity", value: "[CRITICAL, HIGH]" },
+      { indent: 2, key: "enforceSecretScan", value: "Gitleaks" },
+      { indent: 2, key: "runAsNonRoot", value: "true" },
+      { indent: 2, key: "readOnlyRootFilesystem", value: "true" }
+    ],
+    cliCommand: "devsecops scan --gate-pipeline",
+    cliOutputs: [
+      { label: "Container CVEs", value: "0 Critical / 0 High CVEs" },
+      { label: "Secret detection", value: "CLEAN (0 leaked credentials)" },
+      { label: "Runtime privilege", value: "NON-ROOT ENFORCED" }
+    ]
   },
   {
+    id: "keep-it-simple",
     num: "05",
     title: "KEEP IT SIMPLE",
     category: "OPERATIONAL COMPLEXITY",
     statement: "Complexity is an operational tax. Prefer boring technology.",
-    explanation: "Proven, mature tools with predictable failure characteristics will always outperform bloated frameworks when troubleshooting outages at 3 AM.",
+    explanation: "Proven, mature tools with predictable failure characteristics will always outperform bloated frameworks when troubleshooting outages at 3 AM under pressure.",
     rule: "stack: boring_and_proven",
-    impact: "Minimal cognitive load during incidents"
+    impact: "Minimal cognitive load during incidents",
+    fileName: "architecture-budget.yaml",
+    tactics: [
+      {
+        label: "Battle-Tested Core Stack",
+        detail: "Prioritize proven, robust infrastructure foundations like Linux, PostgreSQL, Docker, and Nginx."
+      },
+      {
+        label: "Minimal Dependency Footprint",
+        detail: "Keep the system architecture simple enough that every component can be reasoned about quickly during triage."
+      },
+      {
+        label: "Deterministic Playbooks",
+        detail: "Standardize disaster recovery into unambiguous, tested runbooks rather than ad-hoc emergency decisions."
+      }
+    ],
+    yamlLines: [
+      { indent: 0, comment: "# Architectural Complexity Budget" },
+      { indent: 0, key: "apiVersion", value: "architecture.io/v1" },
+      { indent: 0, key: "kind", value: "ComplexityBudget" },
+      { indent: 0, key: "spec", value: "" },
+      { indent: 2, key: "paradigm", value: "MinimalDependencyGraph" },
+      { indent: 2, key: "operationalTax", value: "Low" },
+      { indent: 2, key: "diagnosableUnderPressure", value: "true" }
+    ],
+    cliCommand: "audit-architecture --complexity-budget",
+    cliOutputs: [
+      { label: "Dependency graph", value: "5 core foundational components" },
+      { label: "Diagnosis MTTR", value: "< 5 minutes estimated" },
+      { label: "Complexity rating", value: "OPTIMAL (low cognitive load)" }
+    ]
   }
 ];
 ---
@@ -78,23 +258,242 @@ const principles = [
       </div>
     </div>
 
-    <!-- The Clean Operational Matrix Container -->
-    <div class="principles-matrix" role="region" aria-label="Engineering Mindset Operational Matrix">
-      {principles.map((p, index) => (
-        <PrincipleCard
-          num={p.num}
-          title={p.title}
-          category={p.category}
-          statement={p.statement}
-          explanation={p.explanation}
-          rule={p.rule}
-          impact={p.impact}
-          delay={index * 80}
-        />
-      ))}
+    <!-- The Interactive Policy Matrix & Inspector Split Console -->
+    <div class="matrix-split-console" role="region" aria-label="Interactive Operational Mindset Console" data-reveal>
+      <!-- Left Column: Axiom Selector Rail -->
+      <nav class="axiom-rail" role="tablist" aria-label="Engineering Axioms Selector">
+        {axioms.map((axiom, index) => (
+          <PrincipleCard
+            id={axiom.id}
+            num={axiom.num}
+            title={axiom.title}
+            category={axiom.category}
+            index={index}
+            isActive={index === 0}
+          />
+        ))}
+      </nav>
+
+      <!-- Right Column: Active Policy Guardrail Inspector -->
+      <div class="axiom-inspector-dock">
+        {axioms.map((axiom, index) => (
+          <div
+            id={`axiom-panel-${index}`}
+            role="tabpanel"
+            tabindex="0"
+            aria-labelledby={`axiom-tab-${index}`}
+            class:list={['inspector-panel', { 'is-active': index === 0 }]}
+            hidden={index !== 0}
+          >
+            <!-- Inspector Top Window Header Bar -->
+            <div class="inspector-top-bar font-mono">
+              <div class="top-bar-left">
+                <svg class="terminal-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="4 17 10 11 4 5"></polyline>
+                  <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+                <span class="top-bar-title">POLICY ENGINE // RUNTIME INSPECTOR</span>
+                <span class="top-bar-tag">AXIOM-{axiom.num}</span>
+              </div>
+              <div class="top-bar-right">
+                <span class="window-dot min" aria-hidden="true"></span>
+                <span class="window-dot max" aria-hidden="true"></span>
+                <span class="window-dot close" aria-hidden="true"></span>
+              </div>
+            </div>
+
+            <!-- Inspector Body Content -->
+            <div class="inspector-body">
+              <!-- Axiom Core Statement Header -->
+              <blockquote class="axiom-quote">
+                <span class="quote-mark font-mono">“</span>
+                <span class="quote-text font-mono">{axiom.statement}</span>
+                <span class="quote-mark font-mono">”</span>
+              </blockquote>
+
+              <!-- 2-Sub-Column Inspector Grid -->
+              <div class="inspector-grid">
+                <!-- Sub-Column 1: Context & Key Production Safeguards -->
+                <div class="inspector-tactics-col">
+                  <p class="axiom-explanation">
+                    {axiom.explanation}
+                  </p>
+
+                  <div class="safeguards-container">
+                    <div class="safeguards-header font-mono">
+                      <svg class="safeguard-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                      <span>KEY PRODUCTION SAFEGUARDS</span>
+                    </div>
+
+                    <div class="safeguards-list">
+                      {axiom.tactics.map((tactic) => (
+                        <div class="safeguard-item">
+                          <div class="safeguard-bullet" aria-hidden="true"></div>
+                          <div class="safeguard-text">
+                            <h4 class="safeguard-title font-mono">{tactic.label}</h4>
+                            <p class="safeguard-detail">{tactic.detail}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sub-Column 2: Compact Policy Spec & Runtime Verification Terminal -->
+                <div class="inspector-terminal-col">
+                  <div class="terminal-window">
+                    <div class="terminal-top font-mono">
+                      <div class="terminal-file">
+                        <svg class="file-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>{axiom.fileName}</span>
+                      </div>
+                      <span class="terminal-badge">POLICY & AUDIT</span>
+                    </div>
+
+                    <div class="terminal-inner font-mono" tabindex="0">
+                      <!-- YAML Policy Spec -->
+                      <div class="spec-section">
+                        {axiom.yamlLines.map((line) => (
+                          <div class="code-line" style={`padding-left: ${line.indent * 10}px;`}>
+                            {line.comment && <span class="syntax-comment">{line.comment}</span>}
+                            {line.key && <span class="syntax-key">{line.key}: </span>}
+                            {line.value && <span class="syntax-val">{line.value}</span>}
+                          </div>
+                        ))}
+                      </div>
+
+                      <!-- Divider between Spec and Verification -->
+                      <div class="terminal-divider" aria-hidden="true">
+                        <span class="divider-label">RUNTIME EVALUATION</span>
+                      </div>
+
+                      <!-- CLI Verification Output -->
+                      <div class="cli-section">
+                        <div class="cli-cmd-line">
+                          <span class="cli-prompt">$ </span>
+                          <span class="cli-cmd">{axiom.cliCommand}</span>
+                        </div>
+                        {axiom.cliOutputs.map((out) => (
+                          <div class="cli-result-line">
+                            <span class="cli-check">✔</span>
+                            <span class="cli-label">{out.label}: </span>
+                            <span class="cli-val">{out.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inspector Footer Bar -->
+            <div class="inspector-footer font-mono">
+              <div class="footer-outcome">
+                <span class="outcome-label">OUTCOME:</span>
+                <span class="outcome-value">{axiom.impact}</span>
+              </div>
+              <div class="footer-status-badge">
+                <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>ENFORCED: PASSED</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  function initMindsetConsole() {
+    const section = document.getElementById('mindset');
+    if (!section) return;
+
+    const tabs = Array.from(section.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const panels = Array.from(section.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+
+    if (tabs.length === 0 || panels.length === 0) return;
+
+    function activateAxiom(index: number, focusTab = false) {
+      if (index < 0 || index >= tabs.length) return;
+
+      tabs.forEach((tab, i) => {
+        const isTarget = i === index;
+        tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+        tab.setAttribute('tabindex', isTarget ? '0' : '-1');
+        tab.classList.toggle('is-active', isTarget);
+        if (isTarget && focusTab) {
+          tab.focus();
+        }
+      });
+
+      panels.forEach((panel, i) => {
+        const isTarget = i === index;
+        panel.hidden = !isTarget;
+        panel.classList.toggle('is-active', isTarget);
+      });
+    }
+
+    // Attach click events
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        activateAxiom(index, false);
+      });
+    });
+
+    // Keyboard navigation (WAI-ARIA Tablist Pattern)
+    const tablist = section.querySelector('[role="tablist"]');
+    if (tablist) {
+      tablist.addEventListener('keydown', (e: Event) => {
+        const event = e as KeyboardEvent;
+        const currentActiveIndex = tabs.findIndex(tab => tab.classList.contains('is-active'));
+        if (currentActiveIndex === -1) return;
+
+        let targetIndex = currentActiveIndex;
+
+        switch (event.key) {
+          case 'ArrowDown':
+          case 'ArrowRight':
+            event.preventDefault();
+            targetIndex = (currentActiveIndex + 1) % tabs.length;
+            activateAxiom(targetIndex, true);
+            break;
+          case 'ArrowUp':
+          case 'ArrowLeft':
+            event.preventDefault();
+            targetIndex = (currentActiveIndex - 1 + tabs.length) % tabs.length;
+            activateAxiom(targetIndex, true);
+            break;
+          case 'Home':
+            event.preventDefault();
+            activateAxiom(0, true);
+            break;
+          case 'End':
+            event.preventDefault();
+            activateAxiom(tabs.length - 1, true);
+            break;
+        }
+      });
+    }
+  }
+
+  // Execute on initial DOM load & on Astro page transitions
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMindsetConsole);
+  } else {
+    initMindsetConsole();
+  }
+
+  document.addEventListener('astro:page-load', initMindsetConsole);
+</script>
 
 <style>
   .mindset-section {
@@ -147,14 +546,471 @@ const principles = [
     box-shadow: 0 0 6px var(--color-success);
   }
 
-  /* Matrix Rows Container */
-  .principles-matrix {
-    display: flex;
-    flex-direction: column;
+  /* Split Console Container */
+  .matrix-split-console {
+    display: grid;
+    grid-template-columns: 310px 1fr;
     border: 1px solid var(--color-border);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     background: var(--color-bg-1);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
+  }
+
+  /* Left Column: Axiom Selector Rail */
+  .axiom-rail {
+    display: flex;
+    flex-direction: column;
+    background: rgba(10, 17, 26, 0.7);
+    border-right: 1px solid var(--color-border);
+  }
+
+  /* Right Column: Active Policy Guardrail Inspector */
+  .axiom-inspector-dock {
+    display: flex;
+    flex-direction: column;
+    background: rgba(6, 11, 18, 0.75);
+    position: relative;
+  }
+
+  .inspector-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeInPanel 220ms var(--ease-standard);
+  }
+
+  .inspector-panel[hidden] {
+    display: none !important;
+  }
+
+  .inspector-panel:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: -2px;
+  }
+
+  @keyframes fadeInPanel {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Inspector Top Bar */
+  .inspector-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-6);
+    background: rgba(16, 26, 38, 0.6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.72rem;
+  }
+
+  .terminal-icon {
+    color: var(--color-accent-primary);
+    flex-shrink: 0;
+  }
+
+  .top-bar-title {
+    color: var(--color-text-secondary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .top-bar-tag {
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.1);
+    border: 1px solid rgba(25, 211, 230, 0.25);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .window-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border);
+  }
+
+  .window-dot.close {
+    background: rgba(240, 93, 108, 0.4);
+  }
+
+  .window-dot.max {
+    background: rgba(245, 185, 66, 0.4);
+  }
+
+  .window-dot.min {
+    background: rgba(32, 211, 155, 0.4);
+  }
+
+  /* Inspector Body */
+  .inspector-body {
+    padding: clamp(var(--space-4), 2vw, var(--space-6)) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    flex: 1;
+  }
+
+  .axiom-quote {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    border-left: 2px solid var(--color-accent-primary);
+    padding-left: var(--space-3);
+  }
+
+  .quote-mark {
+    font-size: clamp(1.2rem, 1.6vw, 1.5rem);
+    color: var(--color-accent-primary);
+    line-height: 1;
+  }
+
+  .quote-text {
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.4;
+  }
+
+  /* 2-Sub-Column Inspector Grid */
+  .inspector-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: var(--space-5);
+    align-items: stretch;
+  }
+
+  /* Sub-column 1: Tactics */
+  .inspector-tactics-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .axiom-explanation {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .safeguards-container {
+    background: rgba(10, 17, 26, 0.6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .safeguards-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    letter-spacing: 0.08em;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px dashed rgba(27, 48, 66, 0.8);
+  }
+
+  .safeguard-icon {
+    flex-shrink: 0;
+    color: var(--color-accent-primary);
+  }
+
+  .safeguards-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .safeguard-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .safeguard-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    margin-top: 5px;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(32, 211, 155, 0.5);
+  }
+
+  .safeguard-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .safeguard-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .safeguard-detail {
+    font-size: 0.775rem;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  /* Sub-column 2: Terminal */
+  .inspector-terminal-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .terminal-window {
+    background: #060B12;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .terminal-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+    background: rgba(16, 26, 38, 0.6);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.6875rem;
+  }
+
+  .terminal-file {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .file-icon {
+    color: var(--color-accent-primary);
+  }
+
+  .terminal-badge {
+    color: var(--color-accent-primary);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .terminal-inner {
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    flex: 1;
+    overflow-x: auto;
+  }
+
+  .terminal-inner:focus-visible {
+    outline: 1px solid var(--color-accent-primary);
+  }
+
+  .spec-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .code-line {
+    white-space: pre;
+  }
+
+  .syntax-comment {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .syntax-key {
+    color: #38BDF8;
+    font-weight: 600;
+  }
+
+  .syntax-val {
+    color: #20D39B;
+  }
+
+  .terminal-divider {
+    display: flex;
+    align-items: center;
+    margin: var(--space-2) 0;
+    position: relative;
+    border-top: 1px dashed rgba(27, 48, 66, 0.8);
+    padding-top: var(--space-2);
+  }
+
+  .divider-label {
+    font-size: 0.625rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  .cli-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cli-cmd-line {
+    color: #FFFFFF;
+    font-weight: 600;
+  }
+
+  .cli-prompt {
+    color: var(--color-accent-primary);
+  }
+
+  .cli-cmd {
+    color: #E6EDF3;
+  }
+
+  .cli-result-line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.72rem;
+  }
+
+  .cli-check {
+    color: var(--color-success);
+    font-weight: 700;
+  }
+
+  .cli-label {
+    color: var(--color-text-muted);
+  }
+
+  .cli-val {
+    color: var(--color-success);
+  }
+
+  /* Inspector Footer */
+  .inspector-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-6);
+    background: rgba(16, 26, 38, 0.5);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.75rem;
+  }
+
+  .footer-outcome {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .outcome-label {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    font-size: 0.6875rem;
+  }
+
+  .outcome-value {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .footer-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-success);
+    background: rgba(32, 211, 155, 0.1);
+    border: 1px solid rgba(32, 211, 155, 0.35);
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    box-shadow: 0 0 10px rgba(32, 211, 155, 0.15);
+  }
+
+  .check-icon {
+    flex-shrink: 0;
+  }
+
+  /* Responsive Reflow */
+  @media (max-width: 1100px) {
+    .inspector-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .matrix-split-console {
+      grid-template-columns: 1fr;
+    }
+
+    .axiom-rail {
+      flex-direction: row;
+      overflow-x: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .axiom-rail::-webkit-scrollbar {
+      display: none;
+    }
+
+    .inspector-top-bar {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .inspector-body {
+      padding: var(--space-4);
+    }
+
+    .inspector-footer {
+      padding: var(--space-3) var(--space-4);
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
   }
 
   @media (max-width: 768px) {
@@ -169,6 +1025,21 @@ const principles = [
       align-items: flex-start;
       gap: var(--space-2);
       padding: var(--space-3);
+    }
+
+    .quote-text {
+      font-size: 0.95rem;
+    }
+
+    .terminal-inner {
+      font-size: 0.7rem;
+      padding: var(--space-2) var(--space-3);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .inspector-panel {
+      animation: none !important;
     }
   }
 </style>

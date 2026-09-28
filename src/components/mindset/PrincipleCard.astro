@@ -1,138 +1,131 @@
 ---
 export interface Props {
+  id: string;
   num: string;
   title: string;
   category: string;
-  statement: string;
-  explanation: string;
-  rule: string;
-  impact: string;
-  delay?: number;
+  index: number;
+  isActive: boolean;
 }
 
-const {
-  num,
-  title,
-  category,
-  statement,
-  explanation,
-  rule,
-  impact,
-  delay = 0
-} = Astro.props;
+const { num, title, category, index, isActive } = Astro.props;
 ---
 
-<article class="matrix-row" data-reveal data-reveal-delay={delay} tabindex="0">
-  <!-- Col 1: Index & Enforcement Status -->
-  <div class="row-index-col">
-    <span class="row-num font-mono">{num}</span>
-    <div class="row-status font-mono">
+<button
+  type="button"
+  role="tab"
+  id={`axiom-tab-${index}`}
+  class:list={['axiom-tab-btn', { 'is-active': isActive }]}
+  data-axiom-index={index}
+  aria-selected={isActive ? 'true' : 'false'}
+  aria-controls={`axiom-panel-${index}`}
+  tabindex={isActive ? 0 : -1}
+>
+  <div class="tab-header">
+    <span class="tab-num font-mono">{num}</span>
+    <span class="tab-status-pill font-mono">
       <span class="status-dot" aria-hidden="true"></span>
-      <span class="status-text">ENFORCED</span>
-    </div>
+      <span class="status-label">ENFORCED</span>
+    </span>
   </div>
 
-  <!-- Col 2: Core Philosophy & Axiom -->
-  <div class="row-core-col">
-    <span class="row-category font-mono">{category}</span>
-    <h3 class="row-title font-mono">{title}</h3>
-    <p class="row-statement">{statement}</p>
+  <div class="tab-body">
+    <span class="tab-category font-mono">{category}</span>
+    <h3 class="tab-title font-mono">{title}</h3>
   </div>
 
-  <!-- Col 3: Practical Implementation & Guardrails -->
-  <div class="row-detail-col">
-    <p class="row-explanation">{explanation}</p>
-    <div class="row-guardrail font-mono">
-      <div class="guardrail-item">
-        <span class="guardrail-key">POLICY:</span>
-        <code class="guardrail-code">{rule}</code>
-      </div>
-      <div class="guardrail-item">
-        <span class="guardrail-key">OUTCOME:</span>
-        <span class="guardrail-impact">{impact}</span>
-      </div>
-    </div>
-  </div>
-</article>
+  <div class="tab-active-indicator" aria-hidden="true"></div>
+</button>
 
 <style>
-  .matrix-row {
-    display: grid;
-    grid-template-columns: 140px 1.15fr 1.35fr;
-    gap: var(--space-8);
-    align-items: start;
-    padding: clamp(var(--space-6), 2.5vw, var(--space-8)) var(--space-6);
-    border-bottom: 1px solid var(--color-border);
-    position: relative;
+  .axiom-tab-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: clamp(var(--space-4), 1.6vw, var(--space-5)) var(--space-5);
     background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
     border-left: 3px solid transparent;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
     transition:
       background var(--duration-fast) var(--ease-standard),
       border-color var(--duration-fast) var(--ease-standard),
       box-shadow var(--duration-fast) var(--ease-standard);
+    min-height: 44px; /* WCAG 44px touch target */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .matrix-row:hover,
-  .matrix-row:focus-visible {
-    background: rgba(16, 26, 38, 0.55);
-    border-left-color: var(--color-accent-primary);
-    border-bottom-color: var(--color-border-hover);
-    box-shadow: inset 1px 0 0 rgba(25, 211, 230, 0.2);
+  .axiom-tab-btn:hover {
+    background: rgba(16, 26, 38, 0.6);
+    border-left-color: rgba(25, 211, 230, 0.4);
   }
 
-  .matrix-row:focus-visible {
+  .axiom-tab-btn:focus-visible {
     outline: 2px solid var(--color-accent-primary);
     outline-offset: -2px;
   }
 
-  /* Column 1: Index & Status */
-  .row-index-col {
+  .axiom-tab-btn.is-active {
+    background: rgba(25, 211, 230, 0.07);
+    border-left-color: var(--color-accent-primary);
+    box-shadow: inset 1px 0 0 rgba(25, 211, 230, 0.3);
+  }
+
+  .tab-header {
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--space-2);
   }
 
-  .row-num {
-    font-size: clamp(2rem, 2.8vw, 2.5rem);
-    font-weight: 800;
-    line-height: 1;
+  .tab-num {
+    font-size: var(--text-md);
+    font-weight: 700;
     color: var(--color-text-muted);
-    opacity: 0.5;
-    transition: color var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
 
-  .matrix-row:hover .row-num,
-  .matrix-row:focus-visible .row-num {
+  .axiom-tab-btn:hover .tab-num,
+  .axiom-tab-btn.is-active .tab-num {
     color: var(--color-accent-primary);
-    opacity: 0.9;
   }
 
-  .row-status {
+  .tab-status-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.6875rem;
+    gap: 5px;
+    font-size: 0.625rem;
     color: var(--color-success);
     letter-spacing: 0.08em;
+    background: rgba(32, 211, 155, 0.08);
+    border: 1px solid rgba(32, 211, 155, 0.25);
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
   }
 
   .status-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--color-success);
-    box-shadow: 0 0 8px rgba(32, 211, 155, 0.6);
+    box-shadow: 0 0 6px var(--color-success);
   }
 
-  /* Column 2: Core Philosophy */
-  .row-core-col {
+  .tab-body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 3px;
   }
 
-  .row-category {
-    font-size: 0.6875rem;
+  .tab-category {
+    font-size: 0.625rem;
     font-weight: 600;
     letter-spacing: 0.12em;
     color: var(--color-accent-primary);
@@ -140,146 +133,88 @@ const {
     opacity: 0.85;
   }
 
-  .row-title {
-    font-size: clamp(1.125rem, 1.6vw, 1.35rem);
-    font-weight: 800;
+  .tab-title {
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    font-weight: 700;
     color: var(--color-text-primary);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     margin: 0;
     transition: color var(--duration-fast) var(--ease-standard);
   }
 
-  .matrix-row:hover .row-title,
-  .matrix-row:focus-visible .row-title {
+  .axiom-tab-btn:hover .tab-title,
+  .axiom-tab-btn.is-active .tab-title {
     color: #FFFFFF;
   }
 
-  .row-statement {
-    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
-    font-weight: 600;
-    line-height: 1.45;
-    color: var(--color-text-primary);
-    margin: var(--space-2) 0 0 0;
+  .tab-active-indicator {
+    position: absolute;
+    right: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent-primary);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
   }
 
-  /* Column 3: Explanation & Guardrails */
-  .row-detail-col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+  .axiom-tab-btn.is-active .tab-active-indicator {
+    opacity: 1;
+    box-shadow: 0 0 8px var(--color-accent-primary);
   }
 
-  .row-explanation {
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  .row-guardrail {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: var(--space-3) var(--space-4);
-    background: rgba(6, 11, 18, 0.7);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    margin-top: var(--space-1);
-    transition: border-color var(--duration-fast) var(--ease-standard);
-  }
-
-  .matrix-row:hover .row-guardrail,
-  .matrix-row:focus-visible .row-guardrail {
-    border-color: rgba(25, 211, 230, 0.3);
-  }
-
-  .guardrail-item {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    font-size: 0.75rem;
-    line-height: 1.4;
-  }
-
-  .guardrail-key {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    color: var(--color-text-muted);
-    letter-spacing: 0.06em;
-    flex-shrink: 0;
-    min-width: 60px;
-  }
-
-  .guardrail-code {
-    color: var(--color-accent-primary);
-    background: rgba(25, 211, 230, 0.08);
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-size: 0.72rem;
-    word-break: break-all;
-  }
-
-  .guardrail-impact {
-    color: var(--color-text-primary);
-    font-weight: 500;
-  }
-
-  /* Tablet reflow (641px - 1023px) */
-  @media (min-width: 641px) and (max-width: 1023px) {
-    .matrix-row {
-      grid-template-columns: 110px 1fr;
-      gap: var(--space-6);
-      padding: var(--space-6) var(--space-4);
-    }
-
-    .row-detail-col {
-      grid-column: 2 / -1;
-      padding-top: var(--space-2);
-    }
-  }
-
-  /* Mobile reflow (<= 640px) */
-  @media (max-width: 640px) {
-    .matrix-row {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-      padding: var(--space-6) var(--space-3);
-    }
-
-    .row-index-col {
+  /* Responsive styling for horizontal tab strip on tablet and mobile */
+  @media (max-width: 960px) {
+    .axiom-tab-btn {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
-      padding-bottom: var(--space-2);
-      border-bottom: 1px dashed rgba(27, 48, 66, 0.6);
+      border-bottom: 1px solid var(--color-border);
+      border-left: 3px solid transparent;
+      padding: var(--space-3) var(--space-4);
     }
 
-    .row-num {
-      font-size: 1.5rem;
+    .tab-header {
+      width: auto;
+      gap: var(--space-3);
     }
 
-    .row-statement {
-      margin-top: var(--space-1);
+    .tab-body {
+      flex: 1;
+      margin-left: var(--space-3);
     }
 
-    .guardrail-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
+    .tab-active-indicator {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .axiom-tab-btn {
+      padding: var(--space-3);
     }
 
-    .guardrail-key {
-      min-width: auto;
+    .tab-status-pill {
+      font-size: 0.5625rem;
+      padding: 1px 5px;
+    }
+
+    .tab-title {
+      font-size: 0.875rem;
+    }
+
+    .tab-category {
+      font-size: 0.5625rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .matrix-row,
-    .row-num,
-    .row-title,
-    .row-guardrail {
+    .axiom-tab-btn,
+    .tab-num,
+    .tab-title,
+    .tab-active-indicator {
       transition: none !important;
     }
   }
