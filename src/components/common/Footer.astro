@@ -82,18 +82,42 @@ import { profileData } from '../../data/profile';
 
 <style>
   .site-footer {
-    background: var(--color-bg-0);
+    background-color: var(--color-bg-0);
+    background-image:
+      radial-gradient(ellipse 70% 60% at 50% 35%, rgba(6, 11, 18, 0.92) 0%, rgba(6, 11, 18, 0.99) 80%, var(--color-bg-0) 100%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+    background-position: center center, center center, center center;
     border-top: 1px solid var(--color-border);
     padding-top: clamp(var(--space-12), 6vw, var(--space-16));
     padding-bottom: var(--space-8);
     position: relative;
     z-index: var(--z-content);
+    overflow: hidden;
+  }
+
+  /* Edge Horizon Glow on Top Border */
+  .site-footer::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(720px, 85vw);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--color-accent-primary-rgb), 0.7), transparent);
+    box-shadow: 0 0 20px 2px rgba(var(--color-accent-primary-rgb), 0.22);
+    pointer-events: none;
+    z-index: 1;
   }
 
   .footer-container {
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
+    position: relative;
+    z-index: 2;
   }
 
   /* Transmission Area */
@@ -104,6 +128,28 @@ import { profileData } from '../../data/profile';
     align-items: center;
     max-width: 760px;
     margin-inline: auto;
+    position: relative;
+  }
+
+  .footer-transmission::before {
+    content: "";
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(540px, 90vw);
+    height: 220px;
+    background: radial-gradient(ellipse at center, rgba(var(--color-accent-primary-rgb), 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .transmission-eyebrow,
+  .transmission-heading,
+  .transmission-desc,
+  .command-bar {
+    position: relative;
+    z-index: 1;
   }
 
   .transmission-eyebrow {
