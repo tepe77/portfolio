@@ -108,4 +108,22 @@ const socialItems = [
       transform: none !important;
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .social-card {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .social-card:hover {
+    background: #FFFFFF;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 8px 24px #0000000f, 0 0 12px rgba(14, 165, 233, 0.12);
+  }
+
+  :global([data-theme="light"]) .social-icon-wrap {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
 </style>

@@ -155,6 +155,29 @@ import { profileData } from '../../data/profile';
       align-items: stretch;
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .contact-terminal {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 4px 16px #0000000f;
+  }
+
+  :global([data-theme="light"]) .ct-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .btn-copy-email {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.85);
+    box-shadow: 0 1px 3px #00000008;
+  }
+
+  :global([data-theme="light"]) .btn-copy-email:hover {
+    background: #FFFFFF;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 4px 14px #0000000f;
+  }
 </style>
 
 <script>

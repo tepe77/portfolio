@@ -44,7 +44,7 @@
 
 /* Backdrop & Glassmorphism */
 .glass {
-  background: rgba(13, 22, 34, 0.75);
+  background: var(--color-surface-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);

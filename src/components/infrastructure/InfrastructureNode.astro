@@ -281,4 +281,19 @@ const {
   .infra-node:focus-visible .node-hover-cta {
     opacity: 1;
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .infra-node {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.9);
+  }
+
+  :global([data-theme="light"]) .infra-node:hover,
+  :global([data-theme="light"]) .infra-node:focus-visible {
+    box-shadow: 0 4px 14px #0000000f, 0 0 10px rgba(14, 165, 233, 0.12);
+  }
+
+  :global([data-theme="light"]) .node-footer {
+    border-top-color: rgba(209, 217, 226, 0.85);
+  }
 </style>

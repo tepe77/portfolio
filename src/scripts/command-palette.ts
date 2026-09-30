@@ -74,6 +74,16 @@ export function initCommandPalette() {
       shortcut: "M"
     },
     {
+      id: "theme-toggle",
+      label: "Toggle Light / Dark Theme",
+      category: "Preferences",
+      action: () => {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (btn) btn.click();
+      },
+      shortcut: "T"
+    },
+    {
       id: "contact",
       label: "Jump to Contact",
       category: "Contact",

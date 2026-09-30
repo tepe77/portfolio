@@ -3,7 +3,7 @@ import Icon from '../common/Icon.astro';
 import InfrastructureNode from './InfrastructureNode.astro';
 ---
 
-<div id="infrastructure-topology" class="topology-container" data-reveal>
+<div id="infrastructure-topology" class="topology-container blueprint-crosshair" data-reveal>
   <!-- Topology Interactive Control Bar -->
   <div class="topology-toolbar">
     <div class="toolbar-main">
@@ -1021,5 +1021,46 @@ import InfrastructureNode from './InfrastructureNode.astro';
     .idle-right {
       display: none;
     }
+  }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .topology-container {
+    background: #FFFFFF;
+    border-color: var(--color-border);
+    box-shadow: 0 16px 40px #00000012, 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .pipeline-stage-column {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .pipeline-stage-column:hover {
+    background: #e9e9e9;
+    border-color: var(--color-border-hover);
+  }
+
+  :global([data-theme="light"]) .pipeline-stage-column.stage-active {
+    background: #f0f0f0;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 1px var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) .stage-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .stage-flow-indicator {
+    background: #FFFFFF;
+    border-color: var(--color-border);
+    box-shadow: 0 2px 6px #00000012;
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme="light"]) .panel-telemetry-hud,
+  :global([data-theme="light"]) .panel-arch,
+  :global([data-theme="light"]) .kbd-hint {
+    background: #FFFFFF;
+    border-color: var(--color-border);
   }
 </style>

@@ -143,6 +143,12 @@ import { profileData } from '../../data/profile';
     -webkit-text-fill-color: transparent;
   }
 
+  :global([data-theme="light"]) .text-gradient {
+    background: linear-gradient(135deg, #0F172A 15%, #0369A1 65%, #0EA5E9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   .title-ampersand {
     font-size: 0.85em;
     color: var(--color-accent-primary);
@@ -151,6 +157,12 @@ import { profileData } from '../../data/profile';
 
   .text-gradient-secondary {
     background: linear-gradient(135deg, #E6EDF3 40%, var(--color-accent-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :global([data-theme="light"]) .text-gradient-secondary {
+    background: linear-gradient(135deg, #1E293B 20%, #2563EB 70%, #38BDF8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }

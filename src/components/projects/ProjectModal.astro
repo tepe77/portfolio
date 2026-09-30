@@ -332,4 +332,32 @@ import Icon from '../common/Icon.astro';
       padding: var(--space-3) var(--space-4);
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .project-modal {
+    background: #FFFFFF;
+    box-shadow: 0 24px 60px #00000018, 0 4px 12px #0000000a;
+    border-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .project-modal::backdrop {
+    background: rgba(15, 23, 42, 0.4);
+  }
+
+  :global([data-theme="light"]) .modal-header {
+    background: var(--color-surface-1);
+    border-bottom-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .ps-card,
+  :global([data-theme="light"]) :global(.modal-arch-steps li),
+  :global([data-theme="light"]) :global(.modal-metric-card) {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .modal-footer {
+    background: var(--color-surface-1);
+    border-top-color: var(--color-border);
+  }
 </style>

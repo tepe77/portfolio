@@ -152,4 +152,19 @@ const capabilities = [
     color: var(--color-text-secondary);
     line-height: 1.4;
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .profile-summary-card {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 16px 40px #00000012, 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .summary-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .summary-philosophy {
+    background: #f0f0f0;
+  }
 </style>

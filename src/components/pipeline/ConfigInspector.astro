@@ -309,7 +309,7 @@ import { productionConfigs } from '../../data/pipeline';
 
   /* Code Viewport Column */
   .code-viewport-column {
-    background: #03070C;
+    background: var(--color-code-bg);
     border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
@@ -317,6 +317,7 @@ import { productionConfigs } from '../../data/pipeline';
     max-width: 100%;
     width: 100%;
     overflow: hidden;
+    transition: background var(--duration-normal) var(--ease-standard);
   }
 
   .code-window-bar {
@@ -324,13 +325,14 @@ import { productionConfigs } from '../../data/pipeline';
     align-items: center;
     justify-content: space-between;
     padding: var(--space-3) var(--space-5);
-    background: rgba(13, 22, 34, 0.95);
+    background: var(--color-code-bar);
     border-bottom: 1px solid var(--color-border);
     flex-wrap: wrap;
     gap: var(--space-2);
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
+    transition: background var(--duration-normal) var(--ease-standard);
   }
 
   .file-meta {
@@ -633,5 +635,100 @@ import { productionConfigs } from '../../data/pipeline';
     :global(.ann-desc) {
       font-size: 0.7rem;
     }
+  }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .config-inspector-card {
+    background: #FFFFFF;
+    border-color: var(--color-border);
+    box-shadow: 0 16px 40px #00000012, 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .config-header {
+    background: #FFFFFF;
+    border-bottom-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .config-tab-btn {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme="light"]) .config-tab-btn.active {
+    background: #FFFFFF;
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+  }
+
+  :global([data-theme="light"]) .copy-code-btn {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme="light"]) .copy-code-btn:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) .code-viewport-column {
+    background: #f0f0f0;
+    border-right-color: rgba(209, 217, 226, 0.85);
+  }
+
+  :global([data-theme="light"]) .code-window-bar {
+    background: #e5e7eb;
+    border-bottom-color: rgba(209, 217, 226, 0.85);
+  }
+
+  :global([data-theme="light"]) .badge-role {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--color-text-muted);
+  }
+
+  :global([data-theme="light"]) :global(.code-line-row:hover) {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) :global(.code-line-row.highlighted) {
+    background: rgba(2, 132, 199, 0.12) !important;
+    border-left-color: var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) :global(.code-num) {
+    color: #94A3B8;
+  }
+
+  :global([data-theme="light"]) :global(.code-text) {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme="light"]) :global(.code-comment) {
+    color: #64748B !important;
+  }
+
+  :global([data-theme="light"]) :global(.yaml-k) {
+    color: #0284C7;
+  }
+
+  :global([data-theme="light"]) .annotations-column {
+    background: #FFFFFF;
+  }
+
+  :global([data-theme="light"]) :global(.annotation-card) {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) :global(.annotation-card:hover) {
+    background: #e5e7eb;
+    border-color: var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) :global(.ann-line-badge) {
+    background: rgba(2, 132, 199, 0.12);
+    color: #0284C7;
   }
 </style>

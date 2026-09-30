@@ -218,4 +218,19 @@ const { num, title, category, index, isActive } = Astro.props;
       transition: none !important;
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .axiom-tab-btn:hover {
+    background: #e8e8e8;
+  }
+
+  :global([data-theme="light"]) .axiom-tab-btn.is-active {
+    background: #FFFFFF;
+    box-shadow: inset 2px 0 0 var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) .axiom-tab-btn:hover .tab-title,
+  :global([data-theme="light"]) .axiom-tab-btn.is-active .tab-title {
+    color: var(--color-text-primary);
+  }
 </style>

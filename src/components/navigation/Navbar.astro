@@ -34,8 +34,23 @@ const navLinks = [
       </ul>
     </nav>
 
-    <!-- Right Controls: Compact Cmd+K Search -->
+    <!-- Right Controls: Theme Toggle & Compact Cmd+K Search -->
     <div class="navbar-actions">
+      <button
+        type="button"
+        id="theme-toggle-btn"
+        class="theme-toggle-btn"
+        aria-label="Toggle light or dark theme"
+        title="Toggle Theme"
+      >
+        <span class="icon-sun-wrap" aria-hidden="true">
+          <Icon name="sun" size={15} />
+        </span>
+        <span class="icon-moon-wrap" aria-hidden="true">
+          <Icon name="moon" size={15} />
+        </span>
+      </button>
+
       <button
         type="button"
         id="cmd-palette-btn"
@@ -48,9 +63,28 @@ const navLinks = [
       </button>
     </div>
   </div>
+
+  <!-- Slim Scroll Progress Rail -->
+  <div id="navbar-scroll-progress" class="navbar-scroll-progress" aria-hidden="true"></div>
 </header>
 
 <style>
+  .navbar-scroll-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-accent-primary), var(--color-accent-secondary));
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.08s ease-out;
+    pointer-events: none;
+    border-radius: var(--radius-pill);
+    opacity: 0.85;
+    z-index: 10;
+  }
+
   .navbar {
     position: fixed;
     top: 0;
@@ -59,10 +93,10 @@ const navLinks = [
     width: 100%;
     height: 60px;
     z-index: var(--z-sticky-nav);
-    background: rgba(6, 11, 18, 0.85);
+    background: var(--color-nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(27, 48, 66, 0.65);
+    border-bottom: 1px solid var(--color-border);
     transition: 
       top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -76,9 +110,9 @@ const navLinks = [
   }
 
   .navbar.scrolled {
-    background: rgba(6, 11, 18, 0.94);
+    background: var(--color-nav-scrolled);
     border-bottom-color: var(--color-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--shadow-sm);
   }
 
   /* Desktop floating pill style & transition */
@@ -88,18 +122,17 @@ const navLinks = [
       left: 50%;
       right: auto;
       transform: translateX(-50%);
-      width: min(calc(100% - 48px), 960px);
+      width: min(calc(100% - 48px), 980px);
       height: 54px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(25, 211, 230, 0.28);
-      background: linear-gradient(180deg, rgba(20, 33, 49, 0.88) 0%, rgba(10, 18, 28, 0.82) 100%);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface-glass);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
       box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
-        inset 0 0 16px rgba(25, 211, 230, 0.06),
-        0 14px 40px rgba(0, 0, 0, 0.75),
-        0 0 28px rgba(25, 211, 230, 0.12);
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+        0 14px 40px var(--shadow-md),
+        0 0 24px rgba(var(--color-accent-primary-rgb), 0.1);
       padding-inline: var(--space-5);
     }
 
@@ -120,11 +153,11 @@ const navLinks = [
       border-top: none;
       border-left: none;
       border-right: none;
-      border-bottom: 1px solid rgba(27, 48, 66, 0.85);
-      background: rgba(6, 11, 18, 0.90);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-nav-scrolled);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+      box-shadow: var(--shadow-sm);
       padding-inline: 0;
     }
 
@@ -246,7 +279,71 @@ const navLinks = [
   .navbar-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .theme-toggle-btn:hover {
+    color: var(--color-accent-primary);
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-sm);
+  }
+
+  .theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+  }
+
+  .icon-sun-wrap,
+  .icon-moon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--duration-normal) var(--ease-standard), opacity var(--duration-normal) var(--ease-standard);
+  }
+
+  /* In dark mode: show sun icon */
+  :global(:root) .icon-sun-wrap,
+  :global([data-theme="dark"]) .icon-sun-wrap {
+    display: flex;
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  :global(:root) .icon-moon-wrap,
+  :global([data-theme="dark"]) .icon-moon-wrap {
+    display: none;
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+  }
+
+  /* In light mode: show moon icon */
+  :global([data-theme="light"]) .icon-sun-wrap {
+    display: none;
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  :global([data-theme="light"]) .icon-moon-wrap {
+    display: flex;
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
   }
 
   .cmd-trigger-btn {
@@ -255,8 +352,8 @@ const navLinks = [
     gap: 6px;
     height: 32px;
     padding: 0 10px;
-    background: rgba(16, 26, 38, 0.6);
-    border: 1px solid rgba(27, 48, 66, 0.85);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
     font-size: var(--text-xs);
@@ -268,8 +365,8 @@ const navLinks = [
   .cmd-trigger-btn:hover {
     border-color: var(--color-accent-primary);
     color: var(--color-accent-primary);
-    background: var(--color-surface-2);
-    box-shadow: 0 0 12px rgba(25, 211, 230, 0.15);
+    background: var(--color-surface-1);
+    box-shadow: 0 0 12px rgba(var(--color-accent-primary-rgb), 0.15);
   }
 
   .cmd-trigger-btn:focus-visible {
@@ -279,7 +376,7 @@ const navLinks = [
 
   .cmd-kbd {
     background: var(--color-bg-0);
-    border: 1px solid rgba(27, 48, 66, 0.8);
+    border: 1px solid var(--color-border);
     border-radius: 3px;
     padding: 1px 4px;
     font-size: 0.65rem;

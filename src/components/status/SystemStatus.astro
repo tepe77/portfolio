@@ -183,4 +183,29 @@ const services = [
     font-size: 0.65rem;
     color: var(--color-text-muted);
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .status-dashboard {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 16px 40px #00000012, 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .dashboard-header {
+    background: var(--color-surface-1);
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .service-row {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .service-row:hover {
+    background: #f0f0f0;
+  }
+
+  :global([data-theme="light"]) .dashboard-footer {
+    background: #f0f0f0;
+    border-top-color: rgba(209, 217, 226, 0.75);
+  }
 </style>

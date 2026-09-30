@@ -13,7 +13,7 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
 ---
 
 <article
-  class={`project-card bento-${bentoSpan}`}
+  class={`project-card bento-${bentoSpan} blueprint-crosshair`}
   data-reveal
   data-reveal-delay={index * 90}
 >
@@ -874,5 +874,43 @@ const { project, index, bentoSpan = 'span-1' } = Astro.props;
     .project-card:hover .cta-arrow {
       transform: none !important;
     }
+  }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .project-card {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 4px 20px #0000000f;
+  }
+
+  :global([data-theme="light"]) .project-card:hover {
+    background: #FFFFFF;
+    border-color: var(--color-border-hover);
+    box-shadow: 0 12px 32px #0000000f, 0 2px 8px #00000006;
+  }
+
+  :global([data-theme="light"]) .wide-highlights,
+  :global([data-theme="light"]) .wide-right-col,
+  :global([data-theme="light"]) .panoramic-flow-strip {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .flow-diagram,
+  :global([data-theme="light"]) .wide-metric-card,
+  :global([data-theme="light"]) .panoramic-metric-box,
+  :global([data-theme="light"]) .pflow-step {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .tech-tag {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.6);
+  }
+
+  :global([data-theme="light"]) .card-footer,
+  :global([data-theme="light"]) .panoramic-footer {
+    border-top-color: rgba(209, 217, 226, 0.75);
   }
 </style>

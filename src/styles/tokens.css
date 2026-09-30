@@ -1,36 +1,4 @@
 :root {
-  /* Color Palette - Base */
-  --color-bg-0: #060B12;
-  --color-bg-1: #0A111A;
-  --color-bg-2: #0D1622;
-
-  /* Surfaces */
-  --color-surface-1: #101A26;
-  --color-surface-2: #142130;
-
-  /* Borders */
-  --color-border: #1B3042;
-  --color-border-hover: #126B83;
-
-  /* Typography Colors */
-  --color-text-primary: #E6EDF3;
-  --color-text-secondary: #9AA9B8;
-  --color-text-muted: #647585;
-
-  /* Accents */
-  --color-accent-primary: #19D3E6;
-  --color-accent-primary-rgb: 25, 211, 230;
-  --color-accent-secondary: #5C8DFF;
-  --color-accent-secondary-rgb: 92, 141, 255;
-
-  /* Status Colors */
-  --color-success: #20D39B;
-  --color-success-rgb: 32, 211, 155;
-  --color-warning: #F5B942;
-  --color-warning-rgb: 245, 185, 66;
-  --color-danger: #F05D6C;
-  --color-danger-rgb: 240, 93, 108;
-
   /* Typography Families */
   --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -67,12 +35,6 @@
   --radius-xl: 20px;
   --radius-pill: 999px;
 
-  /* Elevation Shadows */
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 24px rgba(25, 211, 230, 0.12);
-  --shadow-glow-strong: 0 0 32px rgba(25, 211, 230, 0.25);
-
   /* Z-Index Hierarchy */
   --z-base: 0;
   --z-content: 10;
@@ -90,3 +52,190 @@
   --duration-reveal: 650ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* ==========================================================================
+   DARK THEME (Default)
+   ========================================================================== */
+:root,
+[data-theme="dark"] {
+  /* Color Palette - Base */
+  --color-bg-0: #060B12;
+  --color-bg-0-rgb: 6, 11, 18;
+  --color-bg-1: #0A111A;
+  --color-bg-1-rgb: 10, 17, 26;
+  --color-bg-2: #0D1622;
+  --color-bg-2-rgb: 13, 22, 34;
+
+  /* Surfaces */
+  --color-surface-1: #101A26;
+  --color-surface-1-rgb: 16, 26, 38;
+  --color-surface-2: #142130;
+  --color-surface-2-rgb: 20, 33, 48;
+  --color-surface-glass: rgba(13, 22, 34, 0.75);
+  --color-nav-bg: rgba(6, 11, 18, 0.85);
+  --color-nav-scrolled: rgba(6, 11, 18, 0.94);
+  --color-modal-backdrop: rgba(6, 11, 18, 0.85);
+
+  /* Code & Editor Panels */
+  --color-code-bg: #03070C;
+  --color-code-bar: rgba(13, 22, 34, 0.95);
+
+  /* Borders */
+  --color-border: #1B3042;
+  --color-border-rgb: 27, 48, 66;
+  --color-border-hover: #126B83;
+  --color-border-subtle: rgba(27, 48, 66, 0.5);
+
+  /* Typography Colors */
+  --color-text-primary: #E6EDF3;
+  --color-text-secondary: #9AA9B8;
+  --color-text-muted: #647585;
+
+  /* Accents */
+  --color-accent-primary: #19D3E6;
+  --color-accent-primary-rgb: 25, 211, 230;
+  --color-accent-secondary: #5C8DFF;
+  --color-accent-secondary-rgb: 92, 141, 255;
+
+  /* Status Colors */
+  --color-success: #20D39B;
+  --color-success-rgb: 32, 211, 155;
+  --color-warning: #F5B942;
+  --color-warning-rgb: 245, 185, 66;
+  --color-danger: #F05D6C;
+  --color-danger-rgb: 240, 93, 108;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 24px rgba(25, 211, 230, 0.12);
+  --shadow-glow-strong: 0 0 32px rgba(25, 211, 230, 0.25);
+
+  /* Background Grid Pattern */
+  --bg-grid-color: rgba(27, 48, 66, 0.18);
+  --bg-radial-glow: rgba(25, 211, 230, 0.07);
+}
+
+/* ==========================================================================
+   LIGHT THEME (Calibrated Engineering Palette)
+   ========================================================================== */
+[data-theme="light"] {
+  /* Color Palette - Base */
+  --color-bg-0: #F8FAFC;
+  --color-bg-0-rgb: 248, 250, 252;
+  --color-bg-1: #FFFFFF;
+  --color-bg-1-rgb: 255, 255, 255;
+  --color-bg-2: #F1F5F9;
+  --color-bg-2-rgb: 241, 245, 249;
+
+  /* Surfaces */
+  --color-surface-1: #FFFFFF;
+  --color-surface-1-rgb: 255, 255, 255;
+  --color-surface-2: #EDF2F7;
+  --color-surface-2-rgb: 237, 242, 247;
+  --color-surface-glass: rgba(255, 255, 255, 0.85);
+  --color-nav-bg: rgba(248, 250, 252, 0.88);
+  --color-nav-scrolled: rgba(255, 255, 255, 0.95);
+  --color-modal-backdrop: rgba(15, 23, 42, 0.55);
+
+  /* Code & Editor Panels (Refined High-Contrast Light Terminal) */
+  --color-code-bg: #f0f0f0;
+  --color-code-bar: #e5e7eb;
+
+  /* Borders */
+  --color-border: #D1D9E2;
+  --color-border-rgb: 209, 217, 226;
+  --color-border-hover: #0284C7;
+  --color-border-subtle: rgba(209, 217, 226, 0.7);
+
+  /* Typography Colors (High contrast, WCAG AAA compliant) */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+
+  /* Accents (Deep electric cyan/sky tuned for light background contrast) */
+  --color-accent-primary: #0284C7;
+  --color-accent-primary-rgb: 2, 132, 199;
+  --color-accent-secondary: #2563EB;
+  --color-accent-secondary-rgb: 37, 99, 235;
+
+  /* Status Colors */
+  --color-success: #16A34A;
+  --color-success-rgb: 22, 163, 74;
+  --color-warning: #D97706;
+  --color-warning-rgb: 217, 119, 6;
+  --color-danger: #DC2626;
+  --color-danger-rgb: 220, 38, 38;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-glow: 0 0 24px rgba(2, 132, 199, 0.12);
+  --shadow-glow-strong: 0 0 32px rgba(2, 132, 199, 0.2);
+
+  /* Background Grid Pattern */
+  --bg-grid-color: rgba(15, 23, 42, 0.06);
+  --bg-radial-glow: rgba(2, 132, 199, 0.04);
+}
+
+/* ==========================================================================
+   VIEW TRANSITIONS API (Circular Theme Switch Reveal)
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  display: block;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: none !important;
+}
+
+/* ==========================================================================
+   TECHNICAL BLUEPRINT ACCENTS (Engineering Crosshairs)
+   ========================================================================== */
+.blueprint-crosshair {
+  position: relative;
+}
+
+.blueprint-crosshair::before,
+.blueprint-crosshair::after {
+  content: "+";
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  color: var(--color-accent-primary);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity var(--duration-fast), color var(--duration-fast);
+}
+
+.blueprint-crosshair::before {
+  top: 6px;
+  left: 8px;
+}
+
+.blueprint-crosshair::after {
+  top: 6px;
+  right: 8px;
+}
+
+.blueprint-crosshair:hover::before,
+.blueprint-crosshair:hover::after {
+  opacity: 0.85;
+}
+

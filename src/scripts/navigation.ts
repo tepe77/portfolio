@@ -7,11 +7,20 @@ export function initNavigation() {
   if (!navbar) return;
 
   // Scroll effect on top navbar (floating pill -> full width sticky glass)
+  const progressEl = document.getElementById('navbar-scroll-progress');
+
   const handleScroll = () => {
     if (window.scrollY > 25) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
+    }
+
+    // Dynamic scroll progress calculation
+    if (progressEl) {
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollableHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollableHeight)) : 0;
+      progressEl.style.transform = `scaleX(${progress})`;
     }
 
     // Active link highlighting via scroll spy

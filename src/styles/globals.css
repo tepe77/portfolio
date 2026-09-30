@@ -27,11 +27,12 @@ body {
   max-width: 100%;
   background-color: var(--color-bg-0);
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(25, 211, 230, 0.07), transparent),
-    linear-gradient(to right, rgba(27, 48, 66, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(27, 48, 66, 0.15) 1px, transparent 1px);
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--bg-radial-glow), transparent),
+    linear-gradient(to right, var(--bg-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bg-grid-color) 1px, transparent 1px);
   background-size: 100% 100%, 48px 48px, 48px 48px;
   background-position: 0 0, 0 0, 0 0;
+  transition: background-color var(--duration-normal) var(--ease-standard), color var(--duration-normal) var(--ease-standard);
 }
 
 /* Typography Hierarchy */
@@ -64,7 +65,7 @@ a {
 }
 
 a:hover {
-  color: #5ce7f5;
+  color: var(--color-accent-secondary);
 }
 
 code, kbd, samp, pre {

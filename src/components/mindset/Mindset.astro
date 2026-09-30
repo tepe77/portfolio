@@ -1042,4 +1042,108 @@ const axioms: Axiom[] = [
       animation: none !important;
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .matrix-control-strip {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .matrix-split-console {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.75);
+    box-shadow: 0 4px 20px #0000000f;
+  }
+
+  :global([data-theme="light"]) .axiom-rail {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .axiom-inspector-dock {
+    background: #FFFFFF;
+  }
+
+  :global([data-theme="light"]) .inspector-top-bar {
+    background: #FFFFFF;
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .quote-text {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme="light"]) .safeguards-container {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .safeguards-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .inspector-footer {
+    background: #FFFFFF;
+    border-top-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .terminal-window {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.85);
+    box-shadow: 0 4px 16px #00000012, 0 1px 3px #00000008;
+  }
+
+  :global([data-theme="light"]) .terminal-top {
+    background: #e5e7eb;
+    border-bottom-color: rgba(209, 217, 226, 0.85);
+  }
+
+  :global([data-theme="light"]) .terminal-file {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme="light"]) .terminal-inner {
+    background: #f0f0f0;
+  }
+
+  :global([data-theme="light"]) .syntax-comment {
+    color: var(--color-text-muted);
+  }
+
+  :global([data-theme="light"]) .syntax-key {
+    color: #0284C7;
+  }
+
+  :global([data-theme="light"]) .syntax-val {
+    color: #16A34A;
+  }
+
+  :global([data-theme="light"]) .terminal-divider {
+    border-top-color: rgba(209, 217, 226, 0.9);
+  }
+
+  :global([data-theme="light"]) .divider-label {
+    color: var(--color-text-muted);
+  }
+
+  :global([data-theme="light"]) .cli-cmd-line {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme="light"]) .cli-prompt {
+    color: #0284C7;
+  }
+
+  :global([data-theme="light"]) .cli-cmd {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme="light"]) .cli-label {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme="light"]) .cli-val,
+  :global([data-theme="light"]) .cli-check {
+    color: #16A34A;
+  }
 </style>

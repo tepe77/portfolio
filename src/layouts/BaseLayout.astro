@@ -92,6 +92,19 @@ const jsonLd = {
     <!-- Self-hosted font preloading or system fallbacks -->
     <link rel="dns-prefetch" href="https://prasaswo.dev" />
 
+    <!-- Immediate Theme Initialization (Prevents FOUC) -->
+    <script is:inline>
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          document.documentElement.dataset.theme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#F8FAFC' : '#060B12');
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- JSON-LD Structured Data -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
@@ -123,8 +136,10 @@ const jsonLd = {
       import { initCommandPalette } from '../scripts/command-palette';
       import { initScrollReveal } from '../scripts/scroll-reveal';
       import { initProjectModal, initTechDrawer } from '../scripts/modal';
+      import { initThemeToggle } from '../scripts/theme';
 
       document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
         initNavigation();
         initTerminal();
         initTopology();

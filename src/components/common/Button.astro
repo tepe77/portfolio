@@ -105,6 +105,19 @@ const safeRel = target === "_blank" ? (rel || "noopener noreferrer") : rel;
     color: var(--color-bg-0);
   }
 
+  :global([data-theme="light"]) .btn-primary {
+    background-color: var(--color-accent-primary);
+    color: #FFFFFF;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+  }
+
+  :global([data-theme="light"]) .btn-primary:hover {
+    background-color: #0369A1;
+    color: #FFFFFF;
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+  }
+
   /* Variant: Secondary */
   .btn-secondary {
     background-color: rgba(16, 26, 38, 0.6);
@@ -117,6 +130,20 @@ const safeRel = target === "_blank" ? (rel || "noopener noreferrer") : rel;
     background-color: var(--color-surface-2);
     border-color: var(--color-border-hover);
     color: var(--color-accent-primary);
+    transform: translateY(-2px);
+  }
+
+  :global([data-theme="light"]) .btn-secondary {
+    background-color: #F8EDED;
+    color: #4A1D24;
+    border-color: #EBD3D3;
+    box-shadow: 0 2px 8px #0000000a;
+  }
+
+  :global([data-theme="light"]) .btn-secondary:hover {
+    background-color: #F2DEDE;
+    border-color: #DCB8B8;
+    color: #260A0E;
     transform: translateY(-2px);
   }
 

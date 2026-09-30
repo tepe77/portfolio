@@ -46,18 +46,39 @@ import Icon from '../common/Icon.astro';
     width: min(420px, 100vw);
     background: var(--color-surface-1);
     border-left: 1px solid var(--color-border);
-    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.6);
+    box-shadow: none;
+    visibility: hidden;
+    pointer-events: none;
     z-index: var(--z-modal);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: var(--space-6);
     transform: translateX(100%);
-    transition: transform var(--duration-normal) var(--ease-standard);
+    transition: 
+      transform var(--duration-normal) var(--ease-standard),
+      visibility var(--duration-normal) var(--ease-standard);
   }
 
   .tech-drawer.open {
     transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+  }
+
+  :global([data-theme="light"]) .tech-drawer {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.85);
+  }
+
+  :global([data-theme="light"]) .tech-drawer.open {
+    box-shadow: -12px 0 36px #00000014, -2px 0 8px #00000008;
+  }
+
+  :global([data-theme="light"]) :global(.drawer-project-item) {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
   }
 
   .drawer-header {
@@ -176,6 +197,11 @@ import Icon from '../common/Icon.astro';
 
     .tech-drawer.open {
       transform: translateY(0);
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    :global([data-theme="light"]) .tech-drawer.open {
+      box-shadow: 0 -12px 36px #00000014;
     }
   }
 </style>

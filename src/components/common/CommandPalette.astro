@@ -217,4 +217,25 @@ import Icon from './Icon.astro';
       display: none;
     }
   }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .command-dialog {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.85);
+    box-shadow: 0 20px 50px #00000018, 0 4px 12px #0000000a;
+  }
+
+  :global([data-theme="light"]) .command-palette-modal {
+    background: rgba(15, 23, 42, 0.35);
+  }
+
+  :global([data-theme="light"]) .command-search-bar {
+    background: var(--color-surface-1);
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .keyboard-hints kbd {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.75);
+  }
 </style>

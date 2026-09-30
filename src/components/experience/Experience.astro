@@ -13,7 +13,7 @@ import { experienceData } from '../../data/experience';
     />
 
     <!-- Unified Split-Pane GitOps Console Window -->
-    <div class="experience-unified-console" data-reveal>
+    <div class="experience-unified-console blueprint-crosshair" data-reveal>
       <!-- Top Window Header Bar -->
       <div class="console-window-bar">
         <div class="window-left-group">
@@ -1022,5 +1022,69 @@ import { experienceData } from '../../data/experience';
       transition: none !important;
       transform: none !important;
     }
+  }
+
+  /* Light Mode Specific Overrides */
+  :global([data-theme="light"]) .experience-unified-console {
+    background: #FFFFFF;
+    border-color: var(--color-border);
+    box-shadow: 0 16px 40px #00000012, 0 2px 8px #00000008;
+  }
+
+  :global([data-theme="light"]) .console-window-bar {
+    background: var(--color-surface-1);
+    border-bottom-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .console-sidebar-pane {
+    background: #f0f0f0;
+    border-right-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .sidebar-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .sidebar-footer {
+    background: var(--color-surface-1);
+    border-top-color: var(--color-border);
+  }
+
+  :global([data-theme="light"]) .branch-node-btn {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.85);
+    box-shadow: 0 1px 3px #00000008;
+  }
+
+  :global([data-theme="light"]) .branch-node-btn:hover {
+    border-color: var(--color-accent-primary);
+  }
+
+  :global([data-theme="light"]) .branch-node-btn.active {
+    background: #FFFFFF;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 2px 8px #00000012;
+  }
+
+  :global([data-theme="light"]) .branch-rail-line {
+    background: linear-gradient(to bottom, var(--color-accent-primary), rgba(209, 217, 226, 0.75));
+  }
+
+  :global([data-theme="light"]) .milestone-headline {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .milestone-achievements-block {
+    background: #f0f0f0;
+    border-color: rgba(209, 217, 226, 0.7);
+  }
+
+  :global([data-theme="light"]) .block-header {
+    border-bottom-color: rgba(209, 217, 226, 0.75);
+  }
+
+  :global([data-theme="light"]) .tech-badge {
+    background: #FFFFFF;
+    border-color: rgba(209, 217, 226, 0.8);
   }
 </style>
