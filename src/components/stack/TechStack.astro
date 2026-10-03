@@ -215,6 +215,14 @@ const initialTech = stackData.find((t) => t.id === 'docker') || stackData[0];
       if (ctaBtn) {
         ctaBtn.dataset.openTech = tech.id;
       }
+
+      // Smooth tactile transition for detail content
+      const detailTopGroup = document.querySelector<HTMLElement>('.detail-top-group');
+      if (detailTopGroup) {
+        detailTopGroup.classList.remove('detail-swap-animate');
+        void detailTopGroup.offsetWidth;
+        detailTopGroup.classList.add('detail-swap-animate');
+      }
     }
 
     chips.forEach((chip) => {
@@ -464,6 +472,21 @@ const initialTech = stackData.find((t) => t.id === 'docker') || stackData[0];
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+  }
+
+  .detail-top-group.detail-swap-animate {
+    animation: detailContentFade 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes detailContentFade {
+    0% {
+      opacity: 0.35;
+      transform: translateY(3px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .detail-header {

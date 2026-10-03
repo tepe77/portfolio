@@ -25,7 +25,11 @@ const bentoProjects = bentoLayoutConfig
 ---
 
 <section id="projects" class="projects-section">
-  <div class="container-wide">
+  <!-- Subtle Blueprint Grid & Soft Ambient Glow Backing -->
+  <div class="projects-blueprint-grid" aria-hidden="true"></div>
+  <div class="projects-ambient-glow" aria-hidden="true"></div>
+
+  <div class="container-wide projects-container">
     <SectionHeader
       eyebrow="03 // PROOF OF ENGINEERING"
       title="FEATURED CASE STUDIES"
@@ -47,7 +51,45 @@ const bentoProjects = bentoLayoutConfig
     position: relative;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    padding-block: clamp(var(--space-12), 6vw, var(--space-20));
+    overflow: hidden;
+  }
+
+  /* Subtle Blueprint Grid backdrop with top/bottom smooth gradient mask */
+  .projects-blueprint-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--bg-grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid-color) 1px, transparent 1px);
+    background-size: 44px 44px;
+    background-position: center top;
+    mask-image: linear-gradient(180deg, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 12%, black 88%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.75;
+  }
+
+  /* Soft Ambient Glow situated in the background */
+  .projects-ambient-glow {
+    position: absolute;
+    top: 30%;
+    right: 10%;
+    width: min(720px, 85vw);
+    height: 480px;
+    background: radial-gradient(ellipse at center, rgba(92, 141, 255, 0.035) 0%, rgba(25, 211, 230, 0.015) 50%, transparent 72%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  :global([data-theme="light"]) .projects-ambient-glow {
+    background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.03) 0%, rgba(14, 165, 233, 0.012) 50%, transparent 72%);
+  }
+
+  .projects-container {
+    position: relative;
+    z-index: 1;
   }
 
   .projects-bento-grid {

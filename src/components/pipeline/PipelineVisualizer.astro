@@ -10,6 +10,10 @@ import { pipelineStages } from '../../data/pipeline';
       <div class="pipeline-title-wrap">
         <span class="pipeline-badge font-mono text-xs">CI/CD ENGINE</span>
         <h3 class="pipeline-title">AUTOMATED DELIVERY &amp; DEVSECOPS PIPELINE</h3>
+        <span class="pipeline-hint-badge font-mono text-xs">
+          <span class="hint-pulse-dot" aria-hidden="true"></span>
+          <span>INTERACTIVE DAG RUNNER</span>
+        </span>
       </div>
       <div class="scenario-selector" role="tablist" aria-label="Select Pipeline Scenario">
         <button
@@ -411,6 +415,34 @@ import { pipelineStages } from '../../data/pipeline';
     font-weight: 800;
     color: var(--color-text-primary);
     letter-spacing: 0.04em;
+  }
+
+  .pipeline-hint-badge {
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(25, 211, 230, 0.25);
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .hint-pulse-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent-primary);
+    box-shadow: 0 0 6px var(--color-accent-primary);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @media (max-width: 640px) {
+    .pipeline-hint-badge {
+      display: none;
+    }
   }
 
   .scenario-selector {

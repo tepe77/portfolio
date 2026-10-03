@@ -26,7 +26,13 @@ export function initScrollReveal() {
     }
   );
 
-  revealElements.forEach((el) => observer.observe(el));
+  revealElements.forEach((el) => {
+    const delay = el.dataset.revealDelay;
+    if (delay && !isReducedMotion) {
+      el.style.transitionDelay = `${delay}ms`;
+    }
+    observer.observe(el);
+  });
 
   // Metric Counter Animation
   const metricElements = document.querySelectorAll<HTMLElement>('[data-counter-target]');

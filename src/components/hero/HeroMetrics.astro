@@ -75,7 +75,18 @@ function generateSparkline(data: number[], width = 120, height = 30, padding = 3
 }
 ---
 
-<div class="hero-metrics-strip" data-reveal>
+<div class="hero-metrics-container" data-reveal>
+  <div class="metrics-status-bar font-mono text-xs">
+    <div class="msb-left">
+      <span class="live-pulse-dot" aria-hidden="true"></span>
+      <span class="msb-title">CLUSTER TELEMETRY // REAL-TIME MONITOR</span>
+    </div>
+    <div class="msb-right">
+      <span class="msb-synced">4 NODES SYNCED</span>
+    </div>
+  </div>
+
+  <div class="hero-metrics-strip">
   {profileData.metrics.map((m, index) => {
     const config = metricConfigs[m.id] || {
       shortLabel: m.label,
@@ -141,16 +152,61 @@ function generateSparkline(data: number[], width = 120, height = 30, padding = 3
       </div>
     );
   })}
+  </div>
 </div>
 
 <style>
+  .hero-metrics-container {
+    margin-top: var(--space-5);
+    width: 100%;
+    max-width: 580px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .metrics-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 3px 6px;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+  }
+
+  .msb-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .live-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+    animation: pulse-dot 2s infinite;
+  }
+
+  .msb-title {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+  }
+
+  .msb-synced {
+    color: var(--color-accent-primary);
+    font-weight: 600;
+    font-size: 0.62rem;
+  }
+
   .hero-metrics-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--space-2);
-    margin-top: var(--space-5);
     width: 100%;
-    max-width: 580px;
   }
 
   .telemetry-card {

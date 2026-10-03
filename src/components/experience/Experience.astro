@@ -41,6 +41,7 @@ import { experienceData } from '../../data/experience';
           <div class="sidebar-header font-mono text-xs">
             <span class="sidebar-title">// MILESTONE BRANCHES</span>
             <div class="sidebar-header-right">
+              <span class="mobile-swipe-hint font-mono">SWIPE &rarr;</span>
               <span class="branch-count">3 BRANCHES</span>
               <div class="branch-nav-controls" aria-label="Milestone branch navigation">
                 <button type="button" id="prev-branch-btn" class="branch-nav-arrow" aria-label="Previous milestone branch">
@@ -238,17 +239,17 @@ import { experienceData } from '../../data/experience';
       });
     });
 
-    // Milestone navigation buttons for mobile
+    // Milestone navigation buttons for mobile: directly select and scroll adjacent branch
     prevBtn?.addEventListener('click', () => {
-      if (branchList) {
-        branchList.scrollBy({ left: -240, behavior: 'smooth' });
-      }
+      const activeIndex = Array.from(tabs).findIndex((t) => t.classList.contains('active'));
+      const targetIndex = activeIndex > 0 ? activeIndex - 1 : tabs.length - 1;
+      selectTab(tabs[targetIndex]);
     });
 
     nextBtn?.addEventListener('click', () => {
-      if (branchList) {
-        branchList.scrollBy({ left: 240, behavior: 'smooth' });
-      }
+      const activeIndex = Array.from(tabs).findIndex((t) => t.classList.contains('active'));
+      const targetIndex = (activeIndex + 1) % tabs.length;
+      selectTab(tabs[targetIndex]);
     });
   }
 
@@ -840,6 +841,15 @@ import { experienceData } from '../../data/experience';
       display: flex;
       align-items: center;
       gap: var(--space-2);
+    }
+
+    .mobile-swipe-hint {
+      display: inline-block;
+      color: var(--color-accent-primary);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      opacity: 0.9;
     }
 
     .branch-nav-controls {

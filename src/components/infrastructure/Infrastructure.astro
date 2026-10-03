@@ -4,7 +4,11 @@ import InfrastructureTopology from './InfrastructureTopology.astro';
 ---
 
 <section id="infrastructure" class="infrastructure-section">
-  <div class="container-wide">
+  <!-- Subtle Blueprint Grid & Soft Ambient Glow Backing -->
+  <div class="infra-ambient-glow" aria-hidden="true"></div>
+  <div class="infra-blueprint-grid" aria-hidden="true"></div>
+
+  <div class="container-wide infra-container">
     <SectionHeader
       eyebrow="02 // ARCHITECTURE & TOPOLOGY"
       title="SYSTEM TOPOLOGY"
@@ -18,5 +22,45 @@ import InfrastructureTopology from './InfrastructureTopology.astro';
 <style>
   .infrastructure-section {
     position: relative;
+    padding-block: clamp(var(--space-12), 6vw, var(--space-20));
+    overflow: hidden;
+  }
+
+  /* Soft Ambient Glow centered behind the cluster diagram */
+  .infra-ambient-glow {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(1040px, 92vw);
+    height: 520px;
+    background: radial-gradient(ellipse at center, rgba(25, 211, 230, 0.045) 0%, rgba(92, 141, 255, 0.02) 45%, transparent 72%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  :global([data-theme="light"]) .infra-ambient-glow {
+    background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.04) 0%, rgba(37, 99, 235, 0.015) 45%, transparent 72%);
+  }
+
+  /* Delicate Blueprint Grid with gentle radial feathering */
+  .infra-blueprint-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--bg-grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 55%, black 25%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 55%, black 25%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+  }
+
+  .infra-container {
+    position: relative;
+    z-index: 1;
   }
 </style>

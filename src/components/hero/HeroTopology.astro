@@ -54,19 +54,19 @@ import Icon from '../common/Icon.astro';
 
       <!-- Animated Signal Packet Pings -->
       <circle r="3.5" class="signal-packet-dot packet-ingress">
-        <animateMotion dur="2.2s" repeatCount="indefinite" path="M 260 56 L 260 98" />
+        <animateMotion id="anim-ingress" dur="2.2s" repeatCount="indefinite" path="M 260 56 L 260 98" />
       </circle>
       <circle r="3" class="signal-packet-dot packet-app1">
-        <animateMotion dur="3.0s" repeatCount="indefinite" path="M 260 148 L 260 174 L 115 174 L 115 198" />
+        <animateMotion id="anim-app1" dur="3.0s" repeatCount="indefinite" path="M 260 148 L 260 174 L 115 174 L 115 198" />
       </circle>
       <circle r="3" class="signal-packet-dot packet-app2">
-        <animateMotion dur="3.0s" begin="0.8s" repeatCount="indefinite" path="M 260 148 L 260 174 L 405 174 L 405 198" />
+        <animateMotion id="anim-app2" dur="3.0s" begin="0.8s" repeatCount="indefinite" path="M 260 148 L 260 174 L 405 174 L 405 198" />
       </circle>
       <circle r="3" class="signal-packet-dot packet-db">
-        <animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite" path="M 115 248 L 115 298" />
+        <animateMotion id="anim-db" dur="2.4s" begin="1.2s" repeatCount="indefinite" path="M 115 248 L 115 298" />
       </circle>
       <circle r="3" class="signal-packet-dot packet-cache">
-        <animateMotion dur="2.4s" begin="1.5s" repeatCount="indefinite" path="M 405 248 L 405 298" />
+        <animateMotion id="anim-cache" dur="2.4s" begin="1.5s" repeatCount="indefinite" path="M 405 248 L 405 298" />
       </circle>
     </svg>
 
@@ -194,35 +194,44 @@ import Icon from '../common/Icon.astro';
 
     // 1. Internet -> Nginx
     const lineInternet = document.getElementById('hero-line-internet');
+    const pathInternetStr = `M ${pInternet.x} ${pInternet.y} L ${pNginxTop.x} ${pNginxTop.y}`;
     if (lineInternet) {
       lineInternet.setAttribute('x1', `${pInternet.x}`);
       lineInternet.setAttribute('y1', `${pInternet.y}`);
       lineInternet.setAttribute('x2', `${pNginxTop.x}`);
       lineInternet.setAttribute('y2', `${pNginxTop.y}`);
     }
+    const animIngress = document.getElementById('anim-ingress');
+    if (animIngress) animIngress.setAttribute('path', pathInternetStr);
 
     // 2. Nginx -> App 01 and App 02
     const midY1 = pNginxBottom.y + (pApp1Top.y - pNginxBottom.y) * 0.45;
+    
+    const pathApp1Str = `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${col1X} ${midY1} L ${col1X} ${pApp1Top.y}`;
     const pathApp1 = document.getElementById('hero-path-app1');
-    if (pathApp1) {
-      pathApp1.setAttribute('d', `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${col1X} ${midY1} L ${col1X} ${pApp1Top.y}`);
-    }
+    if (pathApp1) pathApp1.setAttribute('d', pathApp1Str);
+    const animApp1 = document.getElementById('anim-app1');
+    if (animApp1) animApp1.setAttribute('path', pathApp1Str);
+
+    const pathApp2Str = `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${col2X} ${midY1} L ${col2X} ${pApp2Top.y}`;
     const pathApp2 = document.getElementById('hero-path-app2');
-    if (pathApp2) {
-      pathApp2.setAttribute('d', `M ${pNginxBottom.x} ${pNginxBottom.y} L ${pNginxBottom.x} ${midY1} L ${col2X} ${midY1} L ${col2X} ${pApp2Top.y}`);
-    }
+    if (pathApp2) pathApp2.setAttribute('d', pathApp2Str);
+    const animApp2 = document.getElementById('anim-app2');
+    if (animApp2) animApp2.setAttribute('path', pathApp2Str);
 
     // 3. App 01 -> DB (100% strictly vertical line)
+    const pathDbStr = `M ${col1X} ${pApp1Bottom.y} L ${col1X} ${pDbTop.y}`;
     const pathDb = document.getElementById('hero-path-db');
-    if (pathDb) {
-      pathDb.setAttribute('d', `M ${col1X} ${pApp1Bottom.y} L ${col1X} ${pDbTop.y}`);
-    }
+    if (pathDb) pathDb.setAttribute('d', pathDbStr);
+    const animDb = document.getElementById('anim-db');
+    if (animDb) animDb.setAttribute('path', pathDbStr);
 
     // 4. App 02 -> Cache (100% strictly vertical line)
+    const pathCacheStr = `M ${col2X} ${pApp2Bottom.y} L ${col2X} ${pCacheTop.y}`;
     const pathCache = document.getElementById('hero-path-cache');
-    if (pathCache) {
-      pathCache.setAttribute('d', `M ${col2X} ${pApp2Bottom.y} L ${col2X} ${pCacheTop.y}`);
-    }
+    if (pathCache) pathCache.setAttribute('d', pathCacheStr);
+    const animCache = document.getElementById('anim-cache');
+    if (animCache) animCache.setAttribute('path', pathCacheStr);
 
     // 5. Cross replication / read connections
     const pathCrossDb = document.getElementById('hero-path-cross-db');

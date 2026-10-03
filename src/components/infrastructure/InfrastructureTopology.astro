@@ -13,6 +13,10 @@ import InfrastructureNode from './InfrastructureNode.astro';
           <span class="mobile-text">CLUSTER TOPOLOGY // HA</span>
         </span>
         <span class="badge-live font-mono text-xs">● 12 NODES ONLINE</span>
+        <span class="badge-interactive font-mono text-xs">
+          <span class="interactive-dot" aria-hidden="true"></span>
+          <span>INTERACTIVE // CLICK NODES</span>
+        </span>
       </div>
 
       <!-- Filter Buttons -->
@@ -440,6 +444,34 @@ import InfrastructureNode from './InfrastructureNode.astro';
     border-radius: var(--radius-pill);
     border: 1px solid rgba(32, 211, 155, 0.3);
     font-size: 0.65rem;
+  }
+
+  .badge-interactive {
+    color: var(--color-accent-primary);
+    background: rgba(25, 211, 230, 0.08);
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(25, 211, 230, 0.25);
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .interactive-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent-primary);
+    box-shadow: 0 0 6px var(--color-accent-primary);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @media (max-width: 640px) {
+    .badge-interactive {
+      display: none;
+    }
   }
 
   .topology-filters {
